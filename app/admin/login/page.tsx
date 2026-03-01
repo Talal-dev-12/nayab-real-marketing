@@ -85,10 +85,10 @@ export default function AdminLogin() {
           </button>
         </form>
 
-        <div className="mt-6 bg-slate-50 rounded-xl p-4 text-xs text-slate-500 text-center">
+        {/* <div className="mt-6 bg-slate-50 rounded-xl p-4 text-xs text-slate-500 text-center">
           Default credentials:<br />
           Username: <strong>admin</strong> | Password: <strong>admin123</strong>
-        </div>
+        </div> */}
       </div>
     </div>
   );
