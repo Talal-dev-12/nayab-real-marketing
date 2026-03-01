@@ -32,16 +32,14 @@ const BlogSchema = new Schema<IBlog>(
 );
 
 // Auto-generate slug from title if not provided
-BlogSchema.pre('validate', function (next) {
+BlogSchema.pre('save', function (this: IBlog) {
   if (this.title && !this.slug) {
     this.slug = this.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
   }
-  next();
 });
-
 // Index for fast slug lookups and text search
 BlogSchema.index({ slug: 1 });
 BlogSchema.index({ published: 1, createdAt: -1 });

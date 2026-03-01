@@ -1,4 +1,21 @@
 {
+  "/_global-error/page": "app/_global-error/page.js",
   "/_not-found/page": "app/_not-found/page.js",
-  "/page": "app/page.js"
+  "/about/page": "app/about/page.js",
+  "/admin/agents/page": "app/admin/agents/page.js",
+  "/admin/analytics/page": "app/admin/analytics/page.js",
+  "/admin/blogs/new/page": "app/admin/blogs/new/page.js",
+  "/admin/blogs/page": "app/admin/blogs/page.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/admin/messages/page": "app/admin/messages/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/properties/new/page": "app/admin/properties/new/page.js",
+  "/admin/properties/page": "app/admin/properties/page.js",
+  "/admin/settings/page": "app/admin/settings/page.js",
+  "/agents/page": "app/agents/page.js",
+  "/blog/page": "app/blog/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/page": "app/page.js",
+  "/properties/page": "app/properties/page.js",
+  "/services/page": "app/services/page.js"
 }

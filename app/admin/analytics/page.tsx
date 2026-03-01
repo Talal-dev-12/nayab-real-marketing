@@ -6,6 +6,7 @@ import {
 } from 'recharts';
 import { TrendingUp, Users, Eye, MousePointer, ArrowUpRight } from 'lucide-react';
 import { getFromStorage, saveToStorage, STORAGE_KEYS, generateTrafficData, defaultBlogs, defaultProperties } from '@/lib/data';
+import { TrafficData } from '@/src/types';
 
 export default function AdminAnalytics() {
   const [traffic, setTraffic] = useState<any[]>([]);
@@ -14,11 +15,10 @@ export default function AdminAnalytics() {
   const [period, setPeriod] = useState<7 | 14 | 30>(30);
 
   useEffect(() => {
-    let data = getFromStorage(STORAGE_KEYS.TRAFFIC, []);
-    if (!data.length) {
-      data = generateTrafficData();
-      saveToStorage(STORAGE_KEYS.TRAFFIC, data);
-    }
+    let data: TrafficData[] = getFromStorage(
+  STORAGE_KEYS.TRAFFIC,
+  []
+) as TrafficData[];
     setTraffic(data);
     
     const blogs = getFromStorage(STORAGE_KEYS.BLOGS, defaultBlogs);

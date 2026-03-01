@@ -12,6 +12,7 @@ import {
   defaultProperties, defaultBlogs, defaultAgents, defaultMessages,
   generateTrafficData, getFromStorage, saveToStorage, STORAGE_KEYS
 } from '@/lib/data';
+import { TrafficData } from '@/types';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({ properties: 0, blogs: 0, agents: 0, messages: 0, unreadMessages: 0 });
@@ -25,11 +26,15 @@ export default function AdminDashboard() {
     const agents = getFromStorage(STORAGE_KEYS.AGENTS, defaultAgents);
     const messages = getFromStorage(STORAGE_KEYS.MESSAGES, defaultMessages);
     
-    let traffic = getFromStorage(STORAGE_KEYS.TRAFFIC, []);
-    if (!traffic.length) {
-      traffic = generateTrafficData();
-      saveToStorage(STORAGE_KEYS.TRAFFIC, traffic);
-    }
+  let traffic: TrafficData[] = getFromStorage(
+  STORAGE_KEYS.TRAFFIC,
+  []
+);
+
+if (!traffic.length) {
+  traffic = generateTrafficData();
+  saveToStorage(STORAGE_KEYS.TRAFFIC, traffic);
+}
 
     setStats({
       properties: properties.length,

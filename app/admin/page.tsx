@@ -25,7 +25,7 @@ export default function AdminDashboard() {
     const agents = getFromStorage(STORAGE_KEYS.AGENTS, defaultAgents);
     const messages = getFromStorage(STORAGE_KEYS.MESSAGES, defaultMessages);
     
-    let traffic = getFromStorage(STORAGE_KEYS.TRAFFIC, []);
+    let traffic: any[] = getFromStorage(STORAGE_KEYS.TRAFFIC, []);
     if (!traffic.length) {
       traffic = generateTrafficData();
       saveToStorage(STORAGE_KEYS.TRAFFIC, traffic);
