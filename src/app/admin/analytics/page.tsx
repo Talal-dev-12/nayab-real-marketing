@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import { TrendingUp, Users, Eye, MousePointer, ArrowUpRight } from 'lucide-react';
 import { getFromStorage, saveToStorage, STORAGE_KEYS, generateTrafficData, defaultBlogs, defaultProperties } from '@/lib/data';
-import { TrafficData } from '@/src/types';
+import { TrafficData } from '@/types';
 
 export default function AdminAnalytics() {
   const [traffic, setTraffic] = useState<any[]>([]);
