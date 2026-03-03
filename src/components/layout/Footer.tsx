@@ -102,8 +102,8 @@ export default function Footer() {
             © {new Date().getFullYear()} Nayab Real Marketing. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-slate-500">
-            <Link href="/privacy" className="hover:text-red-400 transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-red-400 transition-colors">Terms of Service</Link>
+            <Link href="/privacy-policy" className="hover:text-red-400 transition-colors">Privacy Policy</Link>
+            <Link href="/terms-of-service" className="hover:text-red-400 transition-colors">Terms of Service</Link>
             <Link href="/admin" className="hover:text-red-400 transition-colors">Admin</Link>
           </div>
         </div>

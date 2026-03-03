@@ -49,7 +49,7 @@ export default function AdminAnalytics() {
                 period === p ? 'bg-red-700 text-white' : 'bg-white text-slate-600 hover:bg-gray-100'
               }`}
             >
-              {p}d
+              {p}
             </button>
           ))}
         </div>

@@ -110,30 +110,89 @@ export default function NewPropertyPage() {
           {/* Images */}
           <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
             <h3 className="font-bold text-[#1a2e5a] border-b pb-2">Property Images</h3>
-            {images.map((img, i) => (
-              <div key={i} className="flex gap-2">
+
+            {/* Device Upload */}
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase mb-2 block">Upload from Device</label>
+              <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 hover:border-red-400 rounded-xl p-6 cursor-pointer transition-colors bg-slate-50 hover:bg-red-50 group">
                 <input
-                  type="url"
-                  className="flex-1 border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
-                  placeholder="https://images.unsplash.com/..."
-                  value={img}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
                   onChange={e => {
-                    const next = [...images];
-                    next[i] = e.target.value;
-                    setImages(next);
+                    const files = Array.from(e.target.files || []);
+                    files.forEach(file => {
+                      const reader = new FileReader();
+                      reader.onload = ev => {
+                        setImages(prev => {
+                          const filtered = prev.filter(Boolean);
+                          return [...filtered, ev.target?.result as string];
+                        });
+                      };
+                      reader.readAsDataURL(file);
+                    });
+                    e.target.value = '';
                   }}
                 />
-                {img && <img src={img} className="w-12 h-10 rounded object-cover" onError={e => (e.currentTarget.style.display = 'none')} alt="" />}
-                {images.length > 1 && (
-                  <button onClick={() => setImages(images.filter((_, j) => j !== i))} className="p-2 text-red-500 hover:bg-red-50 rounded">
+                <div className="w-12 h-12 bg-red-100 group-hover:bg-red-200 rounded-xl flex items-center justify-center mb-3 transition-colors">
+                  <Plus size={24} className="text-red-700" />
+                </div>
+                <p className="font-semibold text-slate-600 text-sm">Click to upload images</p>
+                <p className="text-xs text-slate-400 mt-1">JPG, PNG, WEBP supported. Multiple files allowed.</p>
+              </label>
+            </div>
+
+            {/* URL Input */}
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase mb-2 block">Or Add Image URLs</label>
+              {images.filter(img => !img.startsWith('data:')).map((img, i) => (
+                <div key={i} className="flex gap-2 mb-2">
+                  <input
+                    type="url"
+                    className="flex-1 border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
+                    placeholder="https://images.unsplash.com/..."
+                    value={img}
+                    onChange={e => {
+                      const allImages = [...images];
+                      const urlOnlyIdx = images.findIndex((im, idx) => !im.startsWith('data:') && images.filter((m, j) => !m.startsWith('data:') && j < idx).length === i);
+                      if (urlOnlyIdx !== -1) {
+                        allImages[urlOnlyIdx] = e.target.value;
+                        setImages(allImages);
+                      }
+                    }}
+                  />
+                  {img && <img src={img} className="w-12 h-10 rounded object-cover" onError={e => (e.currentTarget.style.display = 'none')} alt="" />}
+                  <button onClick={() => setImages(images.filter(im => im !== img))} className="p-2 text-red-500 hover:bg-red-50 rounded">
                     <X size={16} />
                   </button>
-                )}
+                </div>
+              ))}
+              <button onClick={() => setImages([...images, ''])} className="flex items-center gap-2 text-red-700 font-semibold text-sm hover:underline mt-1">
+                <Plus size={16} /> Add URL
+              </button>
+            </div>
+
+            {/* Preview Grid */}
+            {images.filter(Boolean).length > 0 && (
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase mb-2 block">Image Preview ({images.filter(Boolean).length})</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {images.filter(Boolean).map((img, i) => (
+                    <div key={i} className="relative group aspect-video">
+                      <img src={img} className="w-full h-full object-cover rounded-lg" alt={`Preview ${i + 1}`} onError={e => (e.currentTarget.parentElement!.style.display = 'none')} />
+                      <button
+                        onClick={() => setImages(images.filter((_, j) => j !== images.indexOf(img)))}
+                        className="absolute top-1 right-1 w-6 h-6 bg-red-600 text-white rounded-full items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity flex"
+                      >
+                        <X size={12} />
+                      </button>
+                      {i === 0 && <span className="absolute bottom-1 left-1 bg-red-700 text-white text-xs px-1.5 py-0.5 rounded font-semibold">Main</span>}
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-            <button onClick={() => setImages([...images, ''])} className="flex items-center gap-2 text-red-700 font-semibold text-sm hover:underline">
-              <Plus size={16} /> Add Image URL
-            </button>
+            )}
           </div>
         </div>
 

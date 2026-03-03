@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, FileText, Home, Users, MessageSquare,
-  Settings, LogOut, Menu, X, BarChart3, Bell, ChevronRight
+  Settings, LogOut, Menu, X, BarChart3, Bell, ChevronRight, ShieldCheck
 } from 'lucide-react';
 import { getFromStorage, STORAGE_KEYS } from '@/lib/data';
 
@@ -13,6 +13,7 @@ const navItems = [
   { href: '/admin/blogs', label: 'Blog Posts', icon: FileText },
   { href: '/admin/properties', label: 'Properties', icon: Home },
   { href: '/admin/agents', label: 'Agents', icon: Users },
+  { href: '/admin/admins', label: 'Admin Users', icon: ShieldCheck },
   { href: '/admin/messages', label: 'Messages', icon: MessageSquare },
   { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/admin/settings', label: 'Settings', icon: Settings },

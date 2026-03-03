@@ -1,16 +1,17 @@
-'use client';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Menu, X, Phone } from 'lucide-react';
-
+"use client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Menu, X, Phone } from "lucide-react";
+import logo from "@/assets/images/nayab logo.png";
+import Image from "next/image";
 const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/about', label: 'About' },
-  { href: '/properties', label: 'Properties' },
-  { href: '/services', label: 'Services' },
-  { href: '/agents', label: 'Agents' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/contact', label: 'Contact' },
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+  { href: "/properties", label: "Properties" },
+  { href: "/services", label: "Services" },
+  { href: "/agents", label: "Agents" },
+  { href: "/blog", label: "Blog" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export default function Navbar() {
@@ -19,8 +20,8 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -42,22 +43,21 @@ export default function Navbar() {
       </div>
 
       {/* Main nav */}
-      <nav className={`bg-[#1a2e5a] sticky top-0 z-50 transition-shadow duration-300 ${scrolled ? 'shadow-lg' : ''}`}>
+      <nav
+        className={`bg-[#1a2e5a] sticky top-0 z-50 transition-shadow duration-300 ${scrolled ? "shadow-lg" : ""}`}
+      >
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3">
-              <div className="w-14 h-14 relative">
-                {/* SVG Logo fallback representing Nayab Real Marketing */}
-                <svg viewBox="0 0 120 120" className="w-full h-full">
-                  <polygon points="60,10 10,55 20,55 20,100 50,100 50,70 70,70 70,100 100,100 100,55 110,55" fill="#c0392b"/>
-                  <rect x="42" y="25" width="16" height="16" fill="white" opacity="0.9"/>
-                  <path d="M5,60 Q60,20 115,60" stroke="#c0392b" strokeWidth="5" fill="none"/>
-                </svg>
-              </div>
-              <div>
-                <div className="text-red-400 font-extrabold text-lg leading-tight tracking-wide">NAYAB REAL</div>
-                <div className="text-white font-bold text-base tracking-widest">MARKETING</div>
+            <Link href="/" className="flex items-center">
+              <div className="relative w-64 h-16">
+                <Image
+                  src={logo}
+                  alt="Nayab Real Marketing Logo"
+                  fill
+                  className="object-contain"
+                  priority
+                />
               </div>
             </Link>
 
