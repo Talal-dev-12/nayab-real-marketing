@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { MapPin, Phone, Mail, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import Image from 'next/image';
+import logo from "@/assets/images/logo.svg";
 
 export default function Footer() {
   return (
@@ -9,8 +11,16 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="mb-4">
-              <div className="text-red-400 font-extrabold text-xl">NAYAB REAL</div>
-              <div className="text-white font-bold text-lg tracking-widest">MARKETING</div>
+              
+              <div className="relative w-64 h-16">
+                <Image
+                  src={logo}
+                  alt="Nayab Real Marketing Logo"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-6">
               Your trusted partner in real estate. We help you find the perfect property — whether you're buying, selling, or renting in Pakistan.

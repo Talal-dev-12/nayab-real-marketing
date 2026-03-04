@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X, Phone } from "lucide-react";
-import logo from "@/assets/images/nayab logo.png";
+import logo from "@/assets/images/logo.svg";
 import Image from "next/image";
 const navLinks = [
   { href: "/", label: "Home" },
