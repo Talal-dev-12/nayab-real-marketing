@@ -39,6 +39,7 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             <span>Mon - Sat: 9:00 AM - 7:00 PM</span>
           </div>
+          
         </div>
       </div>
 
