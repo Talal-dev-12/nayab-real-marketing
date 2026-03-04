@@ -1,64 +1,65 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-// Mock blog data (replace with Prisma in production)
-const blogs = [
-  {
-    id: '1',
-    title: 'Top 5 Investment Areas in Karachi',
-    slug: 'top-5-investment-areas-karachi',
-    excerpt: 'Discover the most profitable areas for real estate investment in Karachi.',
-    content: 'Full content here...',
-    category: 'Investment',
-    tags: 'karachi, investment, real estate',
-    published: true,
-    views: 1240,
-    createdAt: '2024-11-10T00:00:00Z',
-  },
-];
+import { connectDB } from '@/lib/mongodb';
+import { Blog } from '@/models/Blog';
+import { requireAuth, RouteContext } from '@/lib/auth-middleware';
+import { JwtPayload } from '@/lib/jwt';
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const category = searchParams.get('category');
-  const published = searchParams.get('published');
-
-  let filtered = [...blogs];
-  if (category) filtered = filtered.filter((b) => b.category === category);
-  if (published === 'true') filtered = filtered.filter((b) => b.published);
-
-  return NextResponse.json(filtered);
-}
-
-export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { title, slug, excerpt, content, category, tags, published } = body;
+    await connectDB();
+    const { searchParams } = new URL(req.url);
+    const category = searchParams.get('category');
+    const published = searchParams.get('published');
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const page = parseInt(searchParams.get('page') || '1');
+    const slug = searchParams.get('slug');
+    const filter: Record<string, unknown> = {};
 
-    if (!title || !content || !excerpt) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    if (slug) {
+      const blog = await Blog.findOne({ slug });
+      if (!blog) return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
+      await Blog.findByIdAndUpdate(blog._id, { $inc: { views: 1 } });
+      return NextResponse.json(blog);
     }
 
-    // In production: save to database
-    // const blog = await prisma.blog.create({
-    //   data: { title, slug, excerpt, content, category, tags, published },
-    // });
+    if (category) filter.category = category;
+    if (published !== null) filter.published = published === 'true';
 
-    const newBlog = {
-      id: Date.now().toString(),
-      title,
-      slug: slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      excerpt,
-      content,
-      category: category || 'General',
-      tags: tags || '',
-      published: published || false,
-      views: 0,
-      createdAt: new Date().toISOString(),
-    };
-
-    console.log('New blog created:', newBlog.title);
-    return NextResponse.json(newBlog, { status: 201 });
+    const skip = (page - 1) * limit;
+    const [blogs, total] = await Promise.all([
+      Blog.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Blog.countDocuments(filter),
+    ]);
+    return NextResponse.json({ blogs, total, page, pages: Math.ceil(total / limit) });
   } catch (error) {
-    console.error('Blog API error:', error);
+    console.error('GET blogs error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export const POST = requireAuth(async (req: NextRequest, _user: JwtPayload, _ctx: RouteContext) => {
+  try {
+    await connectDB();
+    const body = await req.json();
+    const { title, slug, excerpt, content, image, author, category, tags, published } = body;
+    if (!title || !content || !excerpt) {
+      return NextResponse.json({ error: 'Title, content, and excerpt are required' }, { status: 400 });
+    }
+    const generatedSlug = slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const existing = await Blog.findOne({ slug: generatedSlug });
+    if (existing) {
+      return NextResponse.json({ error: 'A blog with this slug already exists' }, { status: 409 });
+    }
+    const blog = await Blog.create({
+      title, slug: generatedSlug, excerpt, content,
+      image: image || '', author: author || 'Nayab Real Marketing',
+      category: category || 'General',
+      tags: Array.isArray(tags) ? tags : (tags ? tags.split(',').map((t: string) => t.trim()) : []),
+      published: published ?? false,
+    });
+    return NextResponse.json(blog, { status: 201 });
+  } catch (error) {
+    console.error('POST blog error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+});

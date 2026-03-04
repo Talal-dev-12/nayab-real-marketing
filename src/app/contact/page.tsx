@@ -1,26 +1,72 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle } from 'lucide-react';
-import { getFromStorage, saveToStorage, STORAGE_KEYS, defaultMessages } from '@/lib/data';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle, Loader2 } from 'lucide-react';
+
+const COOLDOWN_MS = 60_000; // 1 minute between submissions
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
+  const [honeypot, setHoneypot] = useState(''); // hidden field — bots fill this
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const lastSubmit = useRef<number>(0);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const messages = getFromStorage(STORAGE_KEYS.MESSAGES, defaultMessages);
-    const newMsg = {
-      id: Date.now().toString(),
-      ...form,
-      read: false,
-      createdAt: new Date().toISOString(),
-    };
-    saveToStorage(STORAGE_KEYS.MESSAGES, [newMsg, ...messages]);
-    setSubmitted(true);
-    setForm({ name: '', email: '', phone: '', subject: '', message: '' });
+    setError('');
+
+    // Honeypot check — real users never fill this
+    if (honeypot) return;
+
+    // Client-side cooldown to prevent double-submit / rapid resubmit
+    const now = Date.now();
+    if (now - lastSubmit.current < COOLDOWN_MS) {
+      const wait = Math.ceil((COOLDOWN_MS - (now - lastSubmit.current)) / 1000);
+      setError(`Please wait ${wait} seconds before sending another message.`);
+      return;
+    }
+
+    // Basic length guards
+    if (form.message.trim().length < 10) {
+      setError('Message is too short. Please provide more detail.');
+      return;
+    }
+    if (form.message.length > 2000) {
+      setError('Message is too long (max 2000 characters).');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Handle rate limit from server (429)
+        if (res.status === 429) {
+          setError('Too many messages sent. Please try again later.');
+        } else {
+          setError(data.error || 'Something went wrong. Please try again.');
+        }
+        return;
+      }
+
+      lastSubmit.current = Date.now();
+      setSubmitted(true);
+      setForm({ name: '', email: '', phone: '', subject: '', message: '' });
+    } catch {
+      setError('Network error. Please check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -73,12 +119,26 @@ export default function ContactPage() {
               <>
                 <h3 className="text-2xl font-bold text-[#1a2e5a] mb-6">Send Us a Message</h3>
                 <form onSubmit={handleSubmit} className="space-y-4">
+
+                  {/* Honeypot — hidden from real users, bots fill it */}
+                  <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} aria-hidden="true">
+                    <input
+                      type="text"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={honeypot}
+                      onChange={e => setHoneypot(e.target.value)}
+                    />
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-semibold text-slate-600 block mb-1">Full Name *</label>
                       <input
                         required
                         type="text"
+                        maxLength={100}
                         className="w-full border rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
                         value={form.name}
                         onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
@@ -90,6 +150,7 @@ export default function ContactPage() {
                       <input
                         required
                         type="tel"
+                        maxLength={20}
                         className="w-full border rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
                         value={form.phone}
                         onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
@@ -102,6 +163,7 @@ export default function ContactPage() {
                     <input
                       required
                       type="email"
+                      maxLength={150}
                       className="w-full border rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
                       value={form.email}
                       onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
@@ -113,6 +175,7 @@ export default function ContactPage() {
                     <input
                       required
                       type="text"
+                      maxLength={200}
                       className="w-full border rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
                       value={form.subject}
                       onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
@@ -120,18 +183,33 @@ export default function ContactPage() {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-slate-600 block mb-1">Message *</label>
+                    <label className="text-sm font-semibold text-slate-600 block mb-1">
+                      Message * <span className="text-slate-400 font-normal">({form.message.length}/2000)</span>
+                    </label>
                     <textarea
                       required
                       rows={5}
+                      maxLength={2000}
                       className="w-full border rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500 resize-none"
                       value={form.message}
                       onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
                       placeholder="Tell us about your property requirements..."
                     />
                   </div>
-                  <button type="submit" className="w-full btn-primary flex items-center justify-center gap-2 text-base">
-                    <Send size={18} /> Send Message
+
+                  {error && (
+                    <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg border border-red-200">
+                      {error}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full btn-primary flex items-center justify-center gap-2 text-base disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {loading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                    {loading ? 'Sending...' : 'Send Message'}
                   </button>
                 </form>
               </>
