@@ -7,6 +7,8 @@ export default function AboutPage() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
 
+      
+
       <div className="bg-[#1a2e5a] py-16 text-center">
         <h1 className="text-4xl font-extrabold text-white mb-2">About Us</h1>
         <p className="text-slate-400">Learn about Nayab Real Marketing and our commitment to you</p>
