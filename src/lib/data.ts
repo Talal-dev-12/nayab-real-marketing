@@ -3,7 +3,7 @@ import { Blog, Property, Agent, ContactMessage, TrafficData } from '@/types';
 // Default seed data
 export const defaultBlogs: Blog[] = [
   {
-    id: '1',
+    _id: '1',
     title: 'Top 10 Tips for Buying Your First Home in Pakistan',
     slug: 'tips-buying-first-home-pakistan',
     excerpt: 'Buying your first home is an exciting milestone. Here are the essential tips to help you navigate the real estate market in Pakistan.',
@@ -26,7 +26,7 @@ export const defaultBlogs: Blog[] = [
     views: 1245,
   },
   {
-    id: '2',
+    _id: '2',
     title: 'Karachi Real Estate Market Trends 2024',
     slug: 'karachi-real-estate-market-trends-2024',
     excerpt: 'An in-depth analysis of Karachi\'s real estate market, including price trends, hot neighborhoods, and investment opportunities.',
@@ -45,7 +45,7 @@ export const defaultBlogs: Blog[] = [
     views: 987,
   },
   {
-    id: '3',
+    _id: '3',
     title: 'How to Invest in Real Estate with Limited Capital',
     slug: 'invest-real-estate-limited-capital',
     excerpt: 'You don\'t need millions to start investing in real estate. Discover smart strategies to get started with what you have.',
@@ -67,7 +67,7 @@ export const defaultBlogs: Blog[] = [
 
 export const defaultProperties: Property[] = [
   {
-    id: '1',
+    _id: '1',
     title: '5 Marla House in DHA Phase 6',
     slug: 'house-dha-phase-6-karachi',
     description: 'Beautiful 5 marla house in the heart of DHA Phase 6. Fully furnished with modern amenities.',
@@ -87,7 +87,7 @@ export const defaultProperties: Property[] = [
     views: 342,
   },
   {
-    id: '2',
+    _id: '2',
     title: '10 Marla Corner Plot in Bahria Town',
     slug: 'corner-plot-bahria-town-karachi',
     description: 'Prime location 10 marla corner plot in Bahria Town Karachi. Ideal for construction.',
@@ -107,7 +107,7 @@ export const defaultProperties: Property[] = [
     views: 218,
   },
   {
-    id: '3',
+    _id: '3',
     title: 'Commercial Office in Clifton Block 5',
     slug: 'office-clifton-block-5-karachi',
     description: 'Fully furnished commercial office space available for rent in prime Clifton location.',
