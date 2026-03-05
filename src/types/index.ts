@@ -1,5 +1,5 @@
 export interface Blog {
-  id: string;
+  _id: string;
   title: string;
   slug: string;
   excerpt: string;
@@ -15,7 +15,7 @@ export interface Blog {
 }
 
 export interface Property {
-  id: string;
+  _id: string;
   title: string;
   slug: string;
   description: string;

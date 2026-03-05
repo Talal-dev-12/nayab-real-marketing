@@ -2,34 +2,31 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Plus, Edit, Trash2, Search, MapPin, Eye } from 'lucide-react';
-import { defaultProperties, getFromStorage, saveToStorage, STORAGE_KEYS } from '@/lib/data';
+import { api } from '@/lib/api-client';
 import type { Property } from '@/types';
 
 export default function AdminProperties() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setProperties(getFromStorage(STORAGE_KEYS.PROPERTIES, defaultProperties));
+    api.get<any>('/api/properties?limit=200')
+      .then(d => setProperties(d.properties ?? []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
-  const deleteProperty = (id: string) => {
+  const deleteProperty = async (p: Property) => {
     if (!confirm('Delete this property?')) return;
-    const updated = properties.filter(p => p.id !== id);
-    setProperties(updated);
-    saveToStorage(STORAGE_KEYS.PROPERTIES, updated);
+    await api.delete(`/api/properties/${(p as any)._id}`);
+    setProperties(ps => ps.filter(x => (x as any)._id !== (p as any)._id));
   };
 
-  const toggleFeatured = (id: string) => {
-    const updated = properties.map(p => p.id === id ? { ...p, featured: !p.featured } : p);
-    setProperties(updated);
-    saveToStorage(STORAGE_KEYS.PROPERTIES, updated);
+  const toggleFeatured = async (p: Property) => {
+    const updated = await api.put<Property>(`/api/properties/${(p as any)._id}`, { featured: !p.featured });
+    setProperties(ps => ps.map(x => (x as any)._id === (updated as any)._id ? updated : x));
   };
-
-  const filtered = properties.filter(p =>
-    p.title.toLowerCase().includes(search.toLowerCase()) ||
-    p.location.toLowerCase().includes(search.toLowerCase())
-  );
 
   const formatPrice = (price: number) => {
     if (price >= 10000000) return `${(price / 10000000).toFixed(1)} Cr`;
@@ -37,25 +34,23 @@ export default function AdminProperties() {
     return price.toLocaleString();
   };
 
+  const filtered = properties.filter(p =>
+    p.title.toLowerCase().includes(search.toLowerCase()) ||
+    p.location.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-extrabold text-[#1a2e5a]">Properties</h2>
-          <p className="text-slate-500 text-sm">{properties.length} total listings</p>
-        </div>
-        <Link href="/admin/properties/new" className="bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2">
-          <Plus size={18} /> Add Property
-        </Link>
+        <div><h2 className="text-2xl font-extrabold text-[#1a2e5a]">Properties</h2><p className="text-slate-500 text-sm">{properties.length} total listings</p></div>
+        <Link href="/admin/properties/new" className="bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2"><Plus size={18} /> Add Property</Link>
       </div>
-
       <div className="bg-white rounded-xl shadow-sm p-4">
         <div className="flex items-center gap-2 border rounded-lg px-3 py-2 max-w-sm">
           <Search size={16} className="text-slate-400" />
           <input type="text" placeholder="Search properties..." className="outline-none text-sm flex-1" onChange={e => setSearch(e.target.value)} />
         </div>
       </div>
-
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-slate-50 border-b">
@@ -70,11 +65,13 @@ export default function AdminProperties() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {filtered.map(p => (
-              <tr key={p.id} className="hover:bg-slate-50">
+            {loading ? (
+              <tr><td colSpan={7} className="text-center py-12 text-slate-400">Loading...</td></tr>
+            ) : filtered.map(p => (
+              <tr key={(p as any)._id} className="hover:bg-slate-50">
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
-                    <img src={p.images[0]} className="w-12 h-10 rounded-lg object-cover" alt="" />
+                    <img src={p.images?.[0]} className="w-12 h-10 rounded-lg object-cover" alt="" />
                     <div>
                       <p className="font-semibold text-[#1a2e5a] line-clamp-1 max-w-xs">{p.title}</p>
                       <p className="text-xs text-slate-400 flex items-center gap-1"><MapPin size={10} /> {p.city}</p>
@@ -83,43 +80,22 @@ export default function AdminProperties() {
                 </td>
                 <td className="px-5 py-4 hidden md:table-cell">
                   <span className="font-semibold text-[#1a2e5a]">PKR {formatPrice(p.price)}</span>
-                  <span className={`ml-2 text-xs px-2 py-0.5 rounded-full font-semibold ${p.priceType === 'sale' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                    {p.priceType}
-                  </span>
+                  <span className={`ml-2 text-xs px-2 py-0.5 rounded-full font-semibold ${p.priceType === 'sale' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>{p.priceType}</span>
                 </td>
-                <td className="px-5 py-4 hidden lg:table-cell">
-                  <span className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs font-semibold capitalize">{p.type}</span>
-                </td>
+                <td className="px-5 py-4 hidden lg:table-cell"><span className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs font-semibold capitalize">{p.type}</span></td>
                 <td className="px-5 py-4 hidden md:table-cell">
-                  <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                    p.status === 'available' ? 'bg-emerald-100 text-emerald-700' :
-                    p.status === 'sold' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
-                  }`}>
-                    {p.status}
-                  </span>
+                  <span className={`px-2 py-1 rounded-full text-xs font-bold ${p.status === 'available' ? 'bg-emerald-100 text-emerald-700' : p.status === 'sold' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>{p.status}</span>
                 </td>
                 <td className="px-5 py-4 hidden lg:table-cell text-slate-500">{p.views}</td>
                 <td className="px-5 py-4">
-                  <button
-                    onClick={() => toggleFeatured(p.id)}
-                    className={`px-3 py-1 rounded-full text-xs font-bold transition-colors ${
-                      p.featured ? 'bg-amber-400 text-amber-900' : 'bg-gray-100 text-gray-500 hover:bg-amber-100'
-                    }`}
-                  >
+                  <button onClick={() => toggleFeatured(p)} className={`px-3 py-1 rounded-full text-xs font-bold transition-colors ${p.featured ? 'bg-amber-400 text-amber-900' : 'bg-gray-100 text-gray-500 hover:bg-amber-100'}`}>
                     {p.featured ? '★ Featured' : '☆ Feature'}
                   </button>
                 </td>
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-2">
-                    <Link href={`/properties/${p.slug}`} target="_blank" className="p-1.5 rounded hover:bg-slate-100 text-slate-500">
-                      <Eye size={16} />
-                    </Link>
-                    <Link href={`/admin/properties/${p.id}/edit`} className="p-1.5 rounded hover:bg-blue-50 text-blue-600">
-                      <Edit size={16} />
-                    </Link>
-                    <button onClick={() => deleteProperty(p.id)} className="p-1.5 rounded hover:bg-red-50 text-red-600">
-                      <Trash2 size={16} />
-                    </button>
+                    <Link href={`/properties/${p.slug}`} target="_blank" className="p-1.5 rounded hover:bg-slate-100 text-slate-500"><Eye size={16} /></Link>
+                    <button onClick={() => deleteProperty(p)} className="p-1.5 rounded hover:bg-red-50 text-red-600"><Trash2 size={16} /></button>
                   </div>
                 </td>
               </tr>

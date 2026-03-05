@@ -1,36 +1,43 @@
-import Link from 'next/link';
-import { MapPin, Phone, Mail, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
-import Image from 'next/image';
+import Link from "next/link";
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Facebook,
+  Twitter,
+  Instagram,
+  Youtube,
+} from "lucide-react";
+import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
 
 export default function Footer() {
   return (
     <footer className="bg-[#0f1e3d] text-slate-300">
-      <div className="max-w-7xl mx-auto px-4 pt-16 pb-8">
+      <div className="max-w-7xl mx-auto px-4 pt-8 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
           <div>
             <div className="mb-4">
-              
-              <div className="relative w-64 h-16">
+              <div>
                 <Image
                   src={logo}
-                  alt="Nayab Real Marketing Logo"
-                  fill
-                  className="object-contain"
+                  alt="Nayab Real Marketing"
+                  className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto"
                   priority
                 />
               </div>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-6">
-              Your trusted partner in real estate. We help you find the perfect property — whether you're buying, selling, or renting in Pakistan.
+              Your trusted partner in real estate. We help you find the perfect
+              property — whether you're buying, selling, or renting in Pakistan.
             </p>
             <div className="flex gap-3">
               {[
-                { icon: Facebook, href: '#' },
-                { icon: Twitter, href: '#' },
-                { icon: Instagram, href: '#' },
-                { icon: Youtube, href: '#' },
+                { icon: Facebook, href: "#" },
+                { icon: Twitter, href: "#" },
+                { icon: Instagram, href: "#" },
+                { icon: Youtube, href: "#" },
               ].map(({ icon: Icon, href }, i) => (
                 <a
                   key={i}
@@ -45,17 +52,22 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-white font-bold text-base mb-5 uppercase tracking-wide">Quick Links</h3>
+            <h3 className="text-white font-bold text-base mb-5 uppercase tracking-wide">
+              Quick Links
+            </h3>
             <ul className="space-y-2">
               {[
-                { label: 'Properties for Sale', href: '/properties?type=sale' },
-                { label: 'Properties for Rent', href: '/properties?type=rent' },
-                { label: 'Our Agents', href: '/agents' },
-                { label: 'Blog & News', href: '/blog' },
-                { label: 'Contact Us', href: '/contact' },
+                { label: "Properties for Sale", href: "/properties?type=sale" },
+                { label: "Properties for Rent", href: "/properties?type=rent" },
+                { label: "Our Agents", href: "/agents" },
+                { label: "Blog & News", href: "/blog" },
+                { label: "Contact Us", href: "/contact" },
               ].map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="text-slate-400 hover:text-red-400 text-sm transition-colors flex items-center gap-2">
+                  <Link
+                    href={item.href}
+                    className="text-slate-400 hover:text-red-400 text-sm transition-colors flex items-center gap-2"
+                  >
                     <span className="text-red-700">›</span>
                     {item.label}
                   </Link>
@@ -66,17 +78,22 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <h3 className="text-white font-bold text-base mb-5 uppercase tracking-wide">Our Services</h3>
+            <h3 className="text-white font-bold text-base mb-5 uppercase tracking-wide">
+              Our Services
+            </h3>
             <ul className="space-y-2">
               {[
-                'Property Buying & Selling',
-                'Property Rentals',
-                'Investment Consulting',
-                'Property Valuation',
-                'Legal Documentation',
-                'Interior Design',
+                "Property Buying & Selling",
+                "Property Rentals",
+                "Investment Consulting",
+                "Property Valuation",
+                "Legal Documentation",
+                "Interior Design",
               ].map((s) => (
-                <li key={s} className="text-slate-400 text-sm flex items-center gap-2">
+                <li
+                  key={s}
+                  className="text-slate-400 text-sm flex items-center gap-2"
+                >
                   <span className="text-red-700">›</span>
                   {s}
                 </li>
@@ -86,11 +103,15 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="text-white font-bold text-base mb-5 uppercase tracking-wide">Contact Info</h3>
+            <h3 className="text-white font-bold text-base mb-5 uppercase tracking-wide">
+              Contact Info
+            </h3>
             <ul className="space-y-4">
               <li className="flex gap-3 text-sm">
                 <MapPin size={16} className="text-red-500 mt-0.5 shrink-0" />
-                <span className="text-slate-400">Office 301, XYZ Plaza, Shahrah-e-Faisal, Karachi, Pakistan</span>
+                <span className="text-slate-400">
+                  Office 301, XYZ Plaza, Shahrah-e-Faisal, Karachi, Pakistan
+                </span>
               </li>
               <li className="flex gap-3 text-sm">
                 <Phone size={16} className="text-red-500 shrink-0" />
@@ -107,16 +128,48 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-slate-700 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-slate-500 text-sm" suppressHydrationWarning>
-            © {new Date().getFullYear()} Nayab Real Marketing. All rights reserved.
+        <div className="border-t border-slate-700 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 mb-2">
+          <p
+            className="text-slate-500 text-sm text-center md:text-left"
+            suppressHydrationWarning
+          >
+            © {new Date().getFullYear()} Nayab Real Marketing. All rights
+            reserved.
           </p>
+
           <div className="flex gap-6 text-sm text-slate-500">
-            <Link href="/privacy-policy" className="hover:text-red-400 transition-colors">Privacy Policy</Link>
-            <Link href="/terms-of-service" className="hover:text-red-400 transition-colors">Terms of Service</Link>
-            <Link href="/admin" className="hover:text-red-400 transition-colors">Admin</Link>
+            <Link
+              href="/privacy-policy"
+              className="hover:text-red-400 transition-colors"
+            >
+              Privacy Policy
+            </Link>
+
+            <Link
+              href="/terms-of-service"
+              className="hover:text-red-400 transition-colors"
+            >
+              Terms of Service
+            </Link>
+
+            <Link
+              href="/admin"
+              className="hover:text-red-400 transition-colors"
+            >
+              Admin
+            </Link>
           </div>
         </div>
+
+        <p className="text-slate-500 text-sm text-center md:text-right">
+          Designed & developed by{" "}
+          <Link
+            href="https://nayabrealestate.com"
+            className="hover:text-red-400 transition-colors"
+          >
+            Talal Nadeem
+          </Link>
+        </p>
       </div>
     </footer>
   );

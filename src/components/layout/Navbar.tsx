@@ -39,7 +39,6 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             <span>Mon - Sat: 9:00 AM - 7:00 PM</span>
           </div>
-          
         </div>
       </div>
 
@@ -51,12 +50,11 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <div className="relative w-64 h-16">
+              <div>
                 <Image
                   src={logo}
-                  alt="Nayab Real Marketing Logo"
-                  fill
-                  className="object-contain"
+                  alt="Nayab Real Marketing"
+                  className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto"
                   priority
                 />
               </div>
