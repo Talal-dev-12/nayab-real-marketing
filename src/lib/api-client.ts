@@ -27,6 +27,21 @@ async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
   return data as T;
 }
+export async function uploadImage(file: File): Promise<string> {
+  const token = getToken(); // same as localStorage.getItem('admin_token')
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const res = await fetch('/api/upload', {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Upload failed');
+  return data.url; // returns the Cloudinary URL
+}
 
 export const api = {
   get: <T>(url: string) =>

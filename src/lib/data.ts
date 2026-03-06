@@ -131,7 +131,7 @@ export const defaultProperties: Property[] = [
 
 export const defaultAgents: Agent[] = [
   {
-    id: '1',
+    _id: '1',
     name: 'Muhammad Nayab',
     email: 'nayab@nayabrealestate.com',
     phone: '+92-300-1234567',
@@ -143,7 +143,7 @@ export const defaultAgents: Agent[] = [
     createdAt: '2023-01-01T10:00:00Z',
   },
   {
-    id: '2',
+    _id: '2',
     name: 'Sara Ahmed',
     email: 'sara@nayabrealestate.com',
     phone: '+92-321-9876543',
@@ -155,7 +155,7 @@ export const defaultAgents: Agent[] = [
     createdAt: '2023-03-15T10:00:00Z',
   },
   {
-    id: '3',
+    _id: '3',
     name: 'Ali Hassan',
     email: 'ali@nayabrealestate.com',
     phone: '+92-333-5551234',

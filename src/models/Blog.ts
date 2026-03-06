@@ -5,12 +5,17 @@ export interface IBlog extends Document {
   slug: string;
   excerpt: string;
   content: string;
-  image: string;
+  image: string;        // hero/cover image
+  images: string[];     // additional content images (up to 4)
   author: string;
   category: string;
   tags: string[];
   published: boolean;
   views: number;
+  // SEO fields
+  metaTitle: string;
+  metaDescription: string;
+  metaKeywords: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,11 +27,15 @@ const BlogSchema = new Schema<IBlog>(
     excerpt: { type: String, required: true },
     content: { type: String, required: true },
     image: { type: String, default: '' },
+    images: [{ type: String }],
     author: { type: String, default: 'Nayab Real Marketing' },
     category: { type: String, default: 'General' },
     tags: [{ type: String }],
     published: { type: Boolean, default: false },
     views: { type: Number, default: 0 },
+    metaTitle: { type: String, default: '' },
+    metaDescription: { type: String, default: '' },
+    metaKeywords: { type: String, default: '' },
   },
   { timestamps: true }
 );

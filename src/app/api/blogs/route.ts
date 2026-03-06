@@ -41,7 +41,7 @@ export const POST = requireAuth(async (req: NextRequest, _user: JwtPayload, _ctx
   try {
     await connectDB();
     const body = await req.json();
-    const { title, slug, excerpt, content, image, author, category, tags, published } = body;
+    const { title, slug, excerpt, content, image, images, author, category, tags, published, metaTitle, metaDescription, metaKeywords } = body;
     if (!title || !content || !excerpt) {
       return NextResponse.json({ error: 'Title, content, and excerpt are required' }, { status: 400 });
     }
@@ -52,10 +52,15 @@ export const POST = requireAuth(async (req: NextRequest, _user: JwtPayload, _ctx
     }
     const blog = await Blog.create({
       title, slug: generatedSlug, excerpt, content,
-      image: image || '', author: author || 'Nayab Real Marketing',
+      image: image || '',
+      images: Array.isArray(images) ? images.filter(Boolean).slice(0, 4) : [],
+      author: author || 'Nayab Real Marketing',
       category: category || 'General',
       tags: Array.isArray(tags) ? tags : (tags ? tags.split(',').map((t: string) => t.trim()) : []),
       published: published ?? false,
+      metaTitle: metaTitle || title,
+      metaDescription: metaDescription || excerpt.slice(0, 160),
+      metaKeywords: metaKeywords || '',
     });
     return NextResponse.json(blog, { status: 201 });
   } catch (error) {

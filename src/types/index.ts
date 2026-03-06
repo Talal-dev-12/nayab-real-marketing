@@ -37,7 +37,7 @@ export interface Property {
 }
 
 export interface Agent {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   phone: string;
