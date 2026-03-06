@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Calendar, User, ArrowRight } from 'lucide-react';
+import Image from 'next/image';
 
 const latestBlogs = [
   {
@@ -50,7 +51,8 @@ export default function LatestBlogs() {
             <article key={blog.id} className="card overflow-hidden group">
               {/* Image */}
               <div className="h-52 img-zoom-wrapper relative">
-                <img
+                <Image
+                rel="preload"
                   src={blog.image}
                   alt={blog.title}
                   className="w-full h-full object-cover transition-transform duration-500"

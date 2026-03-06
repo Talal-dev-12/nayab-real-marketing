@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Bed, Bath, Maximize, MapPin } from 'lucide-react';
 import { Property } from '@/types';
+import Image from 'next/image';
 
 interface PropertyCardProps {
   property: Property;
@@ -17,7 +18,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
       {/* Image */}
       <div className="relative overflow-hidden h-52">
-        <img
+        <Image rel="preload"
           src={property.images[0] || 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600'}
           alt={property.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"

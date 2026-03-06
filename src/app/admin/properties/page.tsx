@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Plus, Edit, Trash2, Search, MapPin, Eye } from 'lucide-react';
 import { api } from '@/lib/api-client';
 import type { Property } from '@/types';
+import Image from 'next/image';
 
 export default function AdminProperties() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -71,7 +72,7 @@ export default function AdminProperties() {
               <tr key={(p as any)._id} className="hover:bg-slate-50">
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
-                    <img src={p.images?.[0]} className="w-12 h-10 rounded-lg object-cover" alt="" />
+                    <Image rel="preload" src={p.images?.[0]} className="w-12 h-10 rounded-lg object-cover" alt="" />
                     <div>
                       <p className="font-semibold text-[#1a2e5a] line-clamp-1 max-w-xs">{p.title}</p>
                       <p className="text-xs text-slate-400 flex items-center gap-1"><MapPin size={10} /> {p.city}</p>

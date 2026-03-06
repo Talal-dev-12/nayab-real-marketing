@@ -1,6 +1,7 @@
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Award, Users, Home, Star, CheckCircle } from 'lucide-react';
+import Image from 'next/image';
 
 export default function AboutPage() {
   return (
@@ -36,8 +37,8 @@ export default function AboutPage() {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <img src="https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=600" alt="Office" className="rounded-2xl object-cover h-64 w-full" />
-            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600" alt="Team" className="rounded-2xl object-cover h-64 w-full mt-8" />
+            <Image  rel="preload" src="https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=600" alt="Office" className="rounded-2xl object-cover h-64 w-full" />
+            <Image rel="preload" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600" alt="Team" className="rounded-2xl object-cover h-64 w-full mt-8" />
           </div>
         </div>
       </section>

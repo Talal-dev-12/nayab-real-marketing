@@ -6,6 +6,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { ArrowLeft, MapPin, Bed, Bath, Maximize2, Tag, Phone, Mail, Heart, Share2, Eye, ChevronLeft, ChevronRight, CheckCircle2, ChevronRight as ChevronRightIcon } from 'lucide-react';
 import type { Property, Agent } from '@/types';
+import Image from 'next/image';
 
 export default function PropertyDetailPage() {
   const params = useParams();
@@ -100,7 +101,7 @@ export default function PropertyDetailPage() {
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
               <div className="relative h-[350px] md:h-[480px] group">
-                <img src={images[currentImage]} alt={property.title} className="w-full h-full object-cover" />
+                <Image rel="preload" src={images[currentImage]} alt={property.title} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
                 {images.length > 1 && (
                   <>
@@ -117,7 +118,7 @@ export default function PropertyDetailPage() {
                 <div className="flex gap-2 p-3 overflow-x-auto">
                   {images.map((img, i) => (
                     <button key={i} onClick={() => setCurrentImage(i)} className={`shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-all ${i === currentImage ? 'border-red-700' : 'border-transparent opacity-60 hover:opacity-100'}`}>
-                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      <Image rel="preload" src={img} alt="" className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
@@ -160,7 +161,7 @@ export default function PropertyDetailPage() {
                 <div className="bg-gradient-to-br from-[#0f1e3d] to-[#1a2e5a] p-5">
                   <p className="text-slate-400 text-xs uppercase tracking-wide mb-3">Listed by</p>
                   <div className="flex items-center gap-4">
-                    <img src={agent.image} alt={agent.name} className="w-14 h-14 rounded-full object-cover border-2 border-red-500" />
+                    <Image rel="preload" src={agent.image} alt={agent.name} className="w-14 h-14 rounded-full object-cover border-2 border-red-500" />
                     <div>
                       <h3 className="text-white font-extrabold text-lg">{agent.name}</h3>
                       <p className="text-red-400 text-sm">{agent.specialization}</p>

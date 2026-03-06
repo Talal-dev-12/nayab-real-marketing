@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save, Upload, X, Loader2 } from "lucide-react";
 import { api, uploadImage } from "@/lib/api-client";
+import Image from "next/image";
 
 function Field({ label, required, ...props }: any) {
   return (
@@ -184,10 +185,11 @@ export default function NewAgentPage() {
             {image ? (
               /* Preview — shows the uploaded Cloudinary image */
               <div className="relative group">
-                <img
+                <Image
                   src={image}
                   alt="Agent photo"
                   className="w-full h-48 object-cover rounded-xl"
+                  rel="preload"
                 />
                 <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center gap-2">
                   <label className="bg-white text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer hover:bg-slate-100">

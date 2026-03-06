@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Plus, Edit, Trash2, Eye, EyeOff, Search, FileText } from 'lucide-react';
 import { api } from '@/lib/api-client';
 import type { Blog } from '@/types';
+import Image from 'next/image';
 
 export default function AdminBlogs() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -61,7 +62,7 @@ export default function AdminBlogs() {
               <tr key={(blog as any)._id} className="hover:bg-slate-50 transition-colors">
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
-                    <img src={blog.image} className="w-10 h-10 rounded-lg object-cover" alt="" />
+                    <Image rel="preload" src={blog.image} className="w-10 h-10 rounded-lg object-cover" alt="" />
                     <div>
                       <p className="font-semibold text-[#1a2e5a] line-clamp-1 max-w-xs">{blog.title}</p>
                       <p className="text-xs text-slate-400">{blog.author}</p>

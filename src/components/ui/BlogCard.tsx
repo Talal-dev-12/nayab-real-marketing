@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { Calendar, User, Eye } from 'lucide-react';
 import { Blog } from '@/types';
+import Image from 'next/image';
 
 export default function BlogCard({ blog }: { blog: Blog }) {
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
       <div className="overflow-hidden h-48">
-        <img
+        <Image rel="preload"
           src={blog.image || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600'}
           alt={blog.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"

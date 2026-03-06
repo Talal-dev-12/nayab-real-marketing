@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, Plus, X, Loader2, Upload } from 'lucide-react';
 import { api, uploadImage } from '@/lib/api-client';
+import Image from 'next/image';
 
 function F({ label, ...props }: any) {
   return (
@@ -176,7 +177,7 @@ export default function NewPropertyPage() {
               <div className="grid grid-cols-3 gap-2">
                 {images.map((img, i) => (
                   <div key={i} className="relative group aspect-video">
-                    <img src={img} className="w-full h-full object-cover rounded-lg"
+                    <Image rel="preload" src={img} className="w-full h-full object-cover rounded-lg"
                       alt="" onError={e => ((e.currentTarget.parentElement as HTMLElement).style.display = 'none')} />
                     <button onClick={() => setImages(images.filter((_, j) => j !== i))}
                       className="absolute top-1 right-1 w-6 h-6 bg-red-600 text-white rounded-full items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity flex">
