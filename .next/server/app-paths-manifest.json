@@ -20,6 +20,7 @@
   "/api/admins/route": "app/api/admins/route.js",
   "/api/agents/[id]/route": "app/api/agents/[id]/route.js",
   "/api/agents/route": "app/api/agents/route.js",
+  "/api/analytics/route": "app/api/analytics/route.js",
   "/api/auth/google/callback/route": "app/api/auth/google/callback/route.js",
   "/api/auth/google/route": "app/api/auth/google/route.js",
   "/api/auth/login/route": "app/api/auth/login/route.js",

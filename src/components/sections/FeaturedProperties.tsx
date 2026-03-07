@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { Bed, Bath, Square, MapPin, ArrowRight } from 'lucide-react';
-import Image from 'next/image';
 
 const featuredProperties = [
   {
@@ -102,7 +101,7 @@ export default function FeaturedProperties() {
             <div key={property.id} className="card property-card overflow-hidden group">
               {/* Image */}
               <div className="relative h-56 img-zoom-wrapper">
-                <Image rel="preload"
+                <img
                   src={property.image}
                   alt={property.title}
                   className="property-img w-full h-full object-cover transition-transform duration-500"

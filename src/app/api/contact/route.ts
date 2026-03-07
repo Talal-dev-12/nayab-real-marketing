@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { ContactMessage } from '@/models/ContactMessage';
+import { AdminUser } from '@/models/AdminUser';
 import { requireAuth, RouteContext } from '@/lib/auth-middleware';
 import { JwtPayload } from '@/lib/jwt';
+import { sendContactNotification } from '@/lib/mailer';
 
-// --- Simple in-memory rate limiter ---
-// Tracks { timestamp[] } per IP. Resets on server restart (good enough for Next.js edge/serverless).
-// For production at scale, replace with Redis (e.g. Upstash).
+// ── Rate limiter ──
 const ipSubmits = new Map<string, number[]>();
-const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour window
-const RATE_LIMIT_MAX = 5;                      // max 5 messages per IP per hour
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+const RATE_LIMIT_MAX = 5;
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
@@ -20,64 +20,44 @@ function isRateLimited(ip: string): boolean {
 }
 
 function getClientIp(req: NextRequest): string {
-  return (
-    req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
-    req.headers.get('x-real-ip') ||
-    'unknown'
-  );
+  return req.headers.get('x-forwarded-for')?.split(',')[0].trim() || req.headers.get('x-real-ip') || 'unknown';
 }
 
-// Reject obvious spam patterns in text fields
 function looksLikeSpam(text: string): boolean {
-  const spamPatterns = [
-    /https?:\/\//gi,          // URLs in name/subject
-    /\b(viagra|casino|crypto|bitcoin|loan|prize|winner|click here)\b/gi,
-    /<[^>]+>/g,               // HTML tags
-  ];
-  return spamPatterns.some(p => p.test(text));
+  const patterns = [/https?:\/\//gi, /\b(viagra|casino|crypto|bitcoin|loan|prize|winner|click here)\b/gi, /<[^>]+>/g];
+  return patterns.some(p => p.test(text));
 }
 
 // PUBLIC: Submit contact form
 export async function POST(req: NextRequest) {
   try {
-    // Rate limit by IP
     const ip = getClientIp(req);
     if (isRateLimited(ip)) {
-      return NextResponse.json(
-        { error: 'Too many messages. Please try again later.' },
-        { status: 429 }
-      );
+      return NextResponse.json({ error: 'Too many messages. Please try again later.' }, { status: 429 });
     }
 
     await connectDB();
     const body = await req.json();
-    const { name, email, phone, subject, message } = body;
+    const { name, email, phone, subject, message, propertyTitle } = body;
 
-    // Required field validation
     if (!name || !email || !subject || !message) {
       return NextResponse.json({ error: 'Name, email, subject, and message are required' }, { status: 400 });
     }
-
-    // Length guards
     if (name.length > 100 || email.length > 150 || subject.length > 200 || message.length > 2000) {
       return NextResponse.json({ error: 'One or more fields exceed maximum length' }, { status: 400 });
     }
     if (message.trim().length < 10) {
       return NextResponse.json({ error: 'Message is too short' }, { status: 400 });
     }
-
-    // Spam content check on name and subject (not message — too aggressive)
     if (looksLikeSpam(name) || looksLikeSpam(subject)) {
-      // Silently accept but don't save — spammer gets no signal
       return NextResponse.json({ success: true, message: 'Message received' });
     }
-
-    // Basic email format check
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
     }
 
+    // Save to DB
     await ContactMessage.create({
       name: name.trim(),
       email: email.trim().toLowerCase(),
@@ -86,6 +66,26 @@ export async function POST(req: NextRequest) {
       message: message.trim(),
     });
 
+    // Send email notification to all active admins (non-blocking)
+    try {
+      const admins = await AdminUser.find({ active: true }).select('email').lean();
+      const adminEmails = (admins as any[]).map((a: any) => a.email).filter(Boolean);
+      if (adminEmails.length > 0 && process.env.SMTP_USER) {
+        await sendContactNotification({
+          to: adminEmails,
+          fromName: name.trim(),
+          fromEmail: email.trim(),
+          phone: phone?.trim(),
+          subject: subject.trim(),
+          message: message.trim(),
+          propertyTitle: propertyTitle?.trim(),
+        });
+      }
+    } catch (emailErr) {
+      // Never fail the request because of email error — just log it
+      console.error('Email notification failed:', emailErr);
+    }
+
     return NextResponse.json({ success: true, message: 'Message received' });
   } catch (error) {
     console.error('POST contact error:', error);
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// PROTECTED: Get all messages (admin only)
+// PROTECTED: Get all messages
 export const GET = requireAuth(async (req: NextRequest, _user: JwtPayload, _ctx: RouteContext) => {
   try {
     await connectDB();

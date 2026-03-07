@@ -9,7 +9,6 @@ import {
   Share2, Facebook, Twitter, Linkedin, ChevronRight,
   ChevronLeft, X, ZoomIn
 } from 'lucide-react';
-import Image from 'next/image';
 
 interface Blog {
   _id: string;
@@ -106,7 +105,7 @@ export default function BlogDetailClient() {
 
       {/* ── Hero ── */}
       <div className="relative h-[320px] sm:h-[420px] md:h-[520px] overflow-hidden">
-        <Image rel="preload" src={blog.image} alt={blog.title} className="w-full h-full object-cover" />
+        <img src={blog.image} alt={blog.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0f1e3d]/95 via-[#0f1e3d]/50 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 px-4 pb-6 md:pb-12 md:px-8 max-w-5xl mx-auto">
           {/* Breadcrumb */}
@@ -168,7 +167,7 @@ export default function BlogDetailClient() {
                       <div key={i}
                         className={`relative group cursor-pointer overflow-hidden rounded-xl ${contentImages.length === 4 && i === 0 ? 'col-span-2' : ''}`}
                         onClick={() => setLightbox({ open: true, idx: i + 1 /* +1 because cover is idx 0 */ })}>
-                        <Image rel="preload" src={img} alt={`${blog.title} – photo ${i + 1}`}
+                        <img src={img} alt={`${blog.title} – photo ${i + 1}`}
                           className={`w-full object-cover transition-transform duration-300 group-hover:scale-105 ${contentImages.length === 4 && i === 0 ? 'h-56 sm:h-72' : 'h-36 sm:h-48'}`} />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                           <ZoomIn size={24} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -240,7 +239,7 @@ export default function BlogDetailClient() {
                 <div className="space-y-4">
                   {related.map((rel: Blog) => (
                     <Link key={rel._id} href={`/blog/${rel.slug}`} className="group flex gap-3">
-                      <Image rel="preload" src={rel.image} alt={rel.title} className="w-20 h-16 object-cover rounded-lg shrink-0 group-hover:opacity-80 transition-opacity" />
+                      <img src={rel.image} alt={rel.title} className="w-20 h-16 object-cover rounded-lg shrink-0 group-hover:opacity-80 transition-opacity" />
                       <div className="min-w-0">
                         <span className="text-xs text-red-700 font-semibold">{rel.category}</span>
                         <h4 className="text-sm font-bold text-[#1a2e5a] line-clamp-2 group-hover:text-red-700 transition-colors leading-snug">{rel.title}</h4>
@@ -304,7 +303,7 @@ export default function BlogDetailClient() {
           )}
 
           <div onClick={e => e.stopPropagation()} className="max-w-4xl w-full">
-            <Image rel="preload" src={allImages[lightbox.idx]} alt={`Photo ${lightbox.idx + 1}`}
+            <img src={allImages[lightbox.idx]} alt={`Photo ${lightbox.idx + 1}`}
               className="w-full max-h-[80vh] object-contain rounded-xl" />
             <p className="text-center text-slate-400 text-sm mt-3">{lightbox.idx + 1} / {allImages.length}</p>
           </div>

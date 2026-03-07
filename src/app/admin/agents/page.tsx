@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { Plus, Trash2, Phone, Mail } from 'lucide-react';
 import { api } from '@/lib/api-client';
 import type { Agent } from '@/types';
-import Image from 'next/image';
 
 export default function AdminAgents() {
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -42,7 +41,7 @@ export default function AdminAgents() {
                 <div className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-bold ${agent.active ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
                   {agent.active ? 'Active' : 'Inactive'}
                 </div>
-                <Image rel="preload" src={agent.image} alt={agent.name} className="absolute bottom-0 left-5 translate-y-1/2 w-20 h-20 rounded-full border-4 border-white object-cover shadow-md" />
+                <img src={agent.image} alt={agent.name} className="absolute bottom-0 left-5 translate-y-1/2 w-20 h-20 rounded-full border-4 border-white object-cover shadow-md" />
               </div>
               <div className="px-5 pb-5 pt-14">
                 <h3 className="font-bold text-[#1a2e5a] text-lg">{agent.name}</h3>

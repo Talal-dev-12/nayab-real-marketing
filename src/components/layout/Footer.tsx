@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
+import { preload } from "react-dom";
 
 export default function Footer() {
   return (
@@ -25,6 +26,7 @@ export default function Footer() {
                   alt="Nayab Real Marketing"
                   className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto"
                   priority
+                  rel="preload"
                 />
               </div>
             </div>

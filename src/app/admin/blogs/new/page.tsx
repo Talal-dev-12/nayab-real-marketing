@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft, Eye, Tag, Plus, X, Image as ImageIcon, Search, Loader2, Upload } from 'lucide-react';
 import Link from 'next/link';
 import { api, uploadImage } from '@/lib/api-client';
-import Image from 'next/image';
 
 export default function NewBlogPage() {
   const router = useRouter();
@@ -147,7 +146,7 @@ export default function NewBlogPage() {
                   <label className="text-xs font-semibold text-slate-400 mb-1.5 block">Image {idx + 1}</label>
                   {form.images[idx] ? (
                     <div className="relative group">
-                      <Image rel="preload" src={form.images[idx]} alt="" className="w-full h-32 object-cover rounded-xl border-2 border-slate-200" />
+                      <img src={form.images[idx]} alt="" className="w-full h-32 object-cover rounded-xl border-2 border-slate-200" />
                       <button onClick={() => { const imgs = [...form.images]; imgs[idx] = ''; setForm(f => ({ ...f, images: imgs })); }}
                         className="absolute top-2 right-2 w-7 h-7 bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <X size={12} />
@@ -220,7 +219,7 @@ export default function NewBlogPage() {
             <label className="text-xs font-semibold text-slate-500 uppercase mb-3 block">Cover Image</label>
             {form.image ? (
               <div className="relative group">
-                <Image rel="preload" src={form.image} alt="Cover" className="w-full h-44 object-cover rounded-xl" />
+                <img src={form.image} alt="Cover" className="w-full h-44 object-cover rounded-xl" />
                 <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center gap-2">
                   <label className="bg-white text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer hover:bg-slate-100">
                     <input type="file" accept="image/*" className="hidden" onChange={handleHeroUpload} />
