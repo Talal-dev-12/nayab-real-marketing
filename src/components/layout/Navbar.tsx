@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone, Clock, Mail } from "lucide-react";
 import logo from "@/assets/images/logo.svg";
 import Image from "next/image";
 const navLinks = [
@@ -28,19 +28,41 @@ export default function Navbar() {
     <>
       {/* Top bar */}
       <div className="bg-red-700 text-white py-2 text-sm hidden md:block">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <span className="flex items-center gap-2">
-              <Phone size={14} />
-              +92-300-1234567
-            </span>
-            <span>info@nayabrealestate.com</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span>Mon - Sat: 9:00 AM - 7:00 PM</span>
-          </div>
-        </div>
-      </div>
+  <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
+    
+    <div className="flex items-center gap-6">
+      
+      {/* Phone */}
+      <span className="flex items-center gap-2">
+        <Phone size={16} />
+        <a
+          href="tel:+923212869000"
+          className="hover:text-gray-200 transition"
+        >
+          +92 321 2869000
+        </a>
+      </span>
+
+      {/* Email */}
+      <span className="flex items-center gap-2">
+        <Mail size={16} />  
+        <a
+          href="mailto:info@nayabrealestate.com"
+          className="hover:text-gray-200 transition"
+        >
+          info@nayabrealestate.com
+        </a>
+      </span>
+
+    </div>
+
+    {/* Working Hours */}
+    <div className="flex items-center gap-2">
+      <span>Mon - Thursday : 9:00 AM - 7:00 PM</span>
+    </div>
+
+  </div>
+</div>
 
       {/* Main nav */}
       <nav
@@ -52,10 +74,11 @@ export default function Navbar() {
             <Link href="/" className="flex items-center">
               <div>
                 <Image
-                  src={logo}
+                  src={logo } 
                   alt="Nayab Real Marketing"
                   className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto"
                   priority
+                  rel ="preload"
                 />
               </div>
             </Link>

@@ -12,6 +12,7 @@ import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
 import { preload } from "react-dom";
 
+
 export default function Footer() {
   return (
     <footer className="bg-[#0f1e3d] text-slate-300">
@@ -112,14 +113,27 @@ export default function Footer() {
               <li className="flex gap-3 text-sm">
                 <MapPin size={16} className="text-red-500 mt-0.5 shrink-0" />
                 <span className="text-slate-400">
-                  Office 301, XYZ Plaza, Shahrah-e-Faisal, Karachi, Pakistan
+                  <Link href="https://maps.app.goo.gl/rMSkd7VNLDXzUUnaA" className="hover:text-red-700 transition">
+                    B-22 Sector 15/A, KDA Employees Society Gulzar-e-Hijri, Scheme
+                    33 Karachi – 75330, Pakistan
+                  </Link>
                 </span>
               </li>
               <li className="flex gap-3 text-sm">
                 <Phone size={16} className="text-red-500 shrink-0" />
-                <div className="text-slate-400">
-                  <div>+92-300-1234567</div>
-                  <div>+92-21-1234567</div>
+                <div className="text-slate-400 flex flex-col">
+                  <a
+                    href="tel:+923212869000"
+                    className="hover:text-red-700 transition"
+                  >
+                    +92 321 2869000 (Office)
+                  </a>
+                  <a
+                    href="tel:+923113855950"
+                    className="hover:text-red-700 transition"
+                  >
+                    +92 311 3855950 (Personal)
+                  </a>
                 </div>
               </li>
               <li className="flex gap-3 text-sm">
