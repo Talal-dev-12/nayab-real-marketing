@@ -183,7 +183,7 @@ export default function Footer() {
             href="https://nayabrealestate.com"
             className="hover:text-red-400 transition-colors"
           >
-            Talal Nadeem
+            Nayab Marketing
           </Link>
         </p>
       </div>
