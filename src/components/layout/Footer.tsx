@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
-import { preload } from "react-dom";
 
 
 export default function Footer() {
