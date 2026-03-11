@@ -66,7 +66,7 @@ export default function AgentsPage() {
             {filtered.map(agent => (
               <div key={agent._id} className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
                 <div className="h-28 bg-gradient-to-br from-[#0f1e3d] to-[#1a2e5a] relative">
-                  <div className="absolute top-4 right-4"> 
+                  <div className="absolute top-4 right-4">
                     <div className="flex items-center gap-1 bg-red-700/90 text-white px-2 py-1 rounded-full text-xs font-semibold"><Award size={10} /> Verified</div>
                   </div>
                   <img src={agent.image} alt={agent.name} className="absolute bottom-0 left-6 translate-y-1/2 w-24 h-24 rounded-full border-4 border-white object-cover shadow-lg group-hover:scale-105 transition-transform" />

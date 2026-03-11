@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, ArrowLeft, Eye, Tag, Plus, X, Image as ImageIcon, Search, Loader2, Upload } from 'lucide-react';
+import { Save, ArrowLeft, Eye, Tag, Plus, X, Image as ImageIcon, Search, Loader2, Upload , MapPin} from 'lucide-react';
 import Link from 'next/link';
 import { api, uploadImage } from '@/lib/api-client';
 
@@ -23,6 +23,10 @@ export default function NewBlogPage() {
     metaTitle: '',
     metaDescription: '',
     metaKeywords: '',
+    areaSlug: '',
+    areaLabel: '',
+    schemeSlug: '',
+    schemeLabel: '',
   });
   const [tagInput, setTagInput] = useState('');
 
@@ -255,6 +259,37 @@ export default function NewBlogPage() {
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase mb-2 block">Author</label>
               <input type="text" className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500" value={form.author} onChange={e => setForm(f => ({ ...f, author: e.target.value }))} />
+            </div>
+          </div>
+
+
+          {/* Area & Scheme Classification */}
+          <div className="bg-white rounded-xl shadow-sm p-5 space-y-4 border-l-4 border-blue-400">
+            <div className="flex items-center gap-2 mb-1">
+              <MapPin size={16} className="text-blue-500" />
+              <label className="text-xs font-bold text-slate-600 uppercase tracking-wide">Area & Scheme Classification</label>
+              <span className="text-xs text-slate-400 font-normal">(for SEO pages)</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Area Name</label>
+                <input type="text" placeholder="e.g. Scheme 33"
+                  value={form.areaLabel}
+                  onChange={e => setForm(f => ({ ...f, areaLabel: e.target.value, areaSlug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }))}
+                  className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-400" />
+                {form.areaSlug && <p className="text-xs text-slate-400 mt-1">URL: /blogs/areas/<strong>{form.areaSlug}</strong></p>}
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Housing Scheme</label>
+                <input type="text" placeholder="e.g. DHA Karachi"
+                  value={form.schemeLabel}
+                  onChange={e => setForm(f => ({ ...f, schemeLabel: e.target.value, schemeSlug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }))}
+                  className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-400" />
+                {form.schemeSlug && <p className="text-xs text-slate-400 mt-1">URL: /blogs/schemes/<strong>{form.schemeSlug}</strong></p>}
+              </div>
+            </div>
+            <div className="bg-blue-50 rounded-lg p-3 text-xs text-blue-700">
+              💡 Pages at <code>/blogs/areas/[area]</code> and <code>/blogs/schemes/[scheme]</code> generate automatically from these values — no extra setup needed.
             </div>
           </div>
 

@@ -1,17 +1,9 @@
-"use client";
-import { useState, useRef } from "react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import {
-  MapPin,
-  Phone,
-  Mail,
-  Clock,
-  Send,
-  CheckCircle,
-  Loader2,
-} from "lucide-react";
-import Link from "next/link";
+'use client';
+import { useState, useRef } from 'react';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
 const COOLDOWN_MS = 60_000; // 1 minute between submissions
 

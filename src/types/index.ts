@@ -12,6 +12,30 @@ export interface Blog {
   createdAt: string;
   updatedAt: string;
   views: number;
+  // Area / Scheme classification
+  areaSlug?: string;
+  areaLabel?: string;
+  schemeSlug?: string;
+  schemeLabel?: string;
+  // SEO
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
+}
+
+export interface AreaSummary {
+  slug: string;
+  label: string;
+  blogCount: number;
+  schemes: SchemeSummary[];
+}
+
+export interface SchemeSummary {
+  slug: string;
+  label: string;
+  areaSlug: string;
+  areaLabel: string;
+  blogCount: number;
 }
 
 export interface Property {

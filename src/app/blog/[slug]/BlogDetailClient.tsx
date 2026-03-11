@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import {
-  ArrowLeft, Calendar, User, Eye, Tag, Clock,
+  ArrowLeft, Calendar, User, Eye, Tag, Clock, MapPin, Building2,
   Share2, Facebook, Twitter, Linkedin, ChevronRight,
   ChevronLeft, X, ZoomIn
 } from 'lucide-react';
@@ -25,6 +25,10 @@ interface Blog {
   views: number;
   metaTitle?: string;
   metaDescription?: string;
+  areaSlug?: string;
+  areaLabel?: string;
+  schemeSlug?: string;
+  schemeLabel?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -92,6 +96,24 @@ export default function BlogDetailClient() {
         <Link href="/blog" className="inline-flex items-center gap-2 bg-red-700 text-white px-6 py-3 rounded-xl font-semibold hover:bg-red-600 transition-colors">
           <ArrowLeft size={18} /> Back to Blog
         </Link>
+
+        {/* Area / Scheme breadcrumb */}
+        {(blog.areaLabel || blog.schemeLabel) && (
+          <div className="flex flex-wrap items-center gap-2 mt-3">
+            {blog.areaLabel && (
+              <Link href={`/blogs/areas/${blog.areaSlug}`}
+                className="inline-flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full border border-blue-200 transition-colors">
+                <MapPin size={11} /> {blog.areaLabel}
+              </Link>
+            )}
+            {blog.schemeLabel && (
+              <Link href={`/blogs/schemes/${blog.schemeSlug}`}
+                className="inline-flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1.5 rounded-full border border-emerald-200 transition-colors">
+                <Building2 size={11} /> {blog.schemeLabel}
+              </Link>
+            )}
+          </div>
+        )}
       </div>
       <Footer />
     </div>

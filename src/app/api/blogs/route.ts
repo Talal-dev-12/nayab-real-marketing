@@ -4,17 +4,25 @@ import { Blog } from '@/models/Blog';
 import { requireAuth, RouteContext } from '@/lib/auth-middleware';
 import { JwtPayload } from '@/lib/jwt';
 
+// ── helpers ──────────────────────────────────────────────────────────────────
+function makeSlug(text: string) {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+// PUBLIC: GET blogs (with area / scheme filtering)
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
-    const { searchParams } = new URL(req.url);
-    const category = searchParams.get('category');
-    const published = searchParams.get('published');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const page = parseInt(searchParams.get('page') || '1');
-    const slug = searchParams.get('slug');
-    const filter: Record<string, unknown> = {};
+    const sp = new URL(req.url).searchParams;
+    const slug      = sp.get('slug');
+    const category  = sp.get('category');
+    const published = sp.get('published');
+    const areaSlug  = sp.get('area');
+    const schemeSlug = sp.get('scheme');
+    const limit     = parseInt(sp.get('limit') || '50');
+    const page      = parseInt(sp.get('page') || '1');
 
+    // Single blog by slug
     if (slug) {
       const blog = await Blog.findOne({ slug });
       if (!blog) return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
@@ -22,8 +30,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(blog);
     }
 
-    if (category) filter.category = category;
+    const filter: Record<string, unknown> = {};
+    if (category)   filter.category   = category;
     if (published !== null) filter.published = published === 'true';
+    if (areaSlug)   filter.areaSlug   = areaSlug;
+    if (schemeSlug) filter.schemeSlug = schemeSlug;
 
     const skip = (page - 1) * limit;
     const [blogs, total] = await Promise.all([
@@ -37,19 +48,27 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// PROTECTED: Create blog
 export const POST = requireAuth(async (req: NextRequest, _user: JwtPayload, _ctx: RouteContext) => {
   try {
     await connectDB();
     const body = await req.json();
-    const { title, slug, excerpt, content, image, images, author, category, tags, published, metaTitle, metaDescription, metaKeywords } = body;
+    const {
+      title, slug, excerpt, content, image, images, author, category,
+      tags, published, metaTitle, metaDescription, metaKeywords,
+      areaSlug, areaLabel, schemeSlug, schemeLabel,
+    } = body;
+
     if (!title || !content || !excerpt) {
       return NextResponse.json({ error: 'Title, content, and excerpt are required' }, { status: 400 });
     }
-    const generatedSlug = slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+    const generatedSlug = slug || makeSlug(title);
     const existing = await Blog.findOne({ slug: generatedSlug });
     if (existing) {
       return NextResponse.json({ error: 'A blog with this slug already exists' }, { status: 409 });
     }
+
     const blog = await Blog.create({
       title, slug: generatedSlug, excerpt, content,
       image: image || '',
@@ -61,6 +80,11 @@ export const POST = requireAuth(async (req: NextRequest, _user: JwtPayload, _ctx
       metaTitle: metaTitle || title,
       metaDescription: metaDescription || excerpt.slice(0, 160),
       metaKeywords: metaKeywords || '',
+      // Area / scheme — normalise slugs on server
+      areaSlug:   areaSlug  ? makeSlug(areaSlug)   : '',
+      areaLabel:  areaLabel  || '',
+      schemeSlug: schemeSlug ? makeSlug(schemeSlug) : '',
+      schemeLabel: schemeLabel || '',
     });
     return NextResponse.json(blog, { status: 201 });
   } catch (error) {

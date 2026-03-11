@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import type { Property, Blog } from "@/types";
 import ExploreTools from "@/components/sections/ExploreTools";
+import ExploreLocalities from "@/components/sections/ExploreLocalities";
 
 export default function HomePage() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -136,6 +137,9 @@ export default function HomePage() {
 
       {/* ── Explore Tools ── */}
       <ExploreTools />
+
+      {/* ── Explore Areas & Schemes ── */}
+      <ExploreLocalities />
 
       <section className="py-20 max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">

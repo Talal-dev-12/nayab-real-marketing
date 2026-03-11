@@ -28,21 +28,21 @@ export default function Navbar() {
     <>
       {/* Top bar */}
       <div className="bg-red-700 text-white py-2 text-sm hidden md:block">
-  <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-    
-    <div className="flex items-center gap-6">
-      
+        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
+
+          <div className="flex items-center gap-6">
+
       {/* Phone */}
-      <span className="flex items-center gap-2">
-        <Phone size={16} />
-        <a
+            <span className="flex items-center gap-2">
+              <Phone size={16} />
+              <a
           href="tel:+923212869000"
           className="hover:text-gray-200 transition"
         >
           +92 321 2869000
         </a>
-      </span>
-
+            </span>
+            
       {/* Email */}
       <span className="flex items-center gap-2">
         <Mail size={16} />  
@@ -50,19 +50,19 @@ export default function Navbar() {
           href="mailto:info@nayabrealestate.com"
           className="hover:text-gray-200 transition"
         >
-          info@nayabrealestate.com
+info@nayabrealestate.com
         </a>
-      </span>
+</span>
 
-    </div>
+          </div>
 
     {/* Working Hours */}
-    <div className="flex items-center gap-2">
-      <span>Mon - Thursday : 9:00 AM - 7:00 PM</span>
-    </div>
+          <div className="flex items-center gap-2">
+            <span>Mon - Thursday : 9:00 AM - 7:00 PM</span>
+          </div>
 
-  </div>
-</div>
+        </div>
+      </div>
 
       {/* Main nav */}
       <nav
