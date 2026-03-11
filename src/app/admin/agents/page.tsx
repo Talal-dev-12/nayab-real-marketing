@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Plus, Trash2, Phone, Mail } from 'lucide-react';
 import { api } from '@/lib/api-client';
+import { AdminCardSkeleton } from '@/components/ui/Skeleton';
 import type { Agent } from '@/types';
 
 export default function AdminAgents() {
@@ -33,7 +34,7 @@ export default function AdminAgents() {
         <div><h2 className="text-2xl font-extrabold text-[#1a2e5a]">Agents</h2><p className="text-slate-500 text-sm">{agents.filter(a => a.active).length} active agents</p></div>
         <Link href="/admin/agents/new" className="bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2"><Plus size={18} /> Add Agent</Link>
       </div>
-      {loading ? <p className="text-slate-400 text-sm">Loading...</p> : (
+      {loading ? <AdminCardSkeleton rows={6} /> : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {agents.map(agent => (
             <div key={(agent as any)._id} className="bg-white rounded-xl shadow-sm overflow-hidden">

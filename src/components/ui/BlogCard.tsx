@@ -4,6 +4,10 @@ import { Calendar, User, Eye, MapPin, Building2 } from 'lucide-react';
 import { Blog } from '@/types';
 
 export default function BlogCard({ blog }: { blog: Blog }) {
+  // Guard against null/empty slugs — never render a link to /blogs/areas/null
+  const hasArea   = blog.areaLabel   && blog.areaSlug   && blog.areaSlug   !== 'null';
+  const hasScheme = blog.schemeLabel && blog.schemeSlug && blog.schemeSlug !== 'null';
+
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group flex flex-col">
       <div className="overflow-hidden h-48 relative">
@@ -12,17 +16,16 @@ export default function BlogCard({ blog }: { blog: Blog }) {
           alt={blog.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
-        {/* Area / Scheme overlay badges */}
-        {(blog.areaLabel || blog.schemeLabel) && (
+        {(hasArea || hasScheme) && (
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-3 py-2 flex flex-wrap gap-1.5">
-            {blog.areaLabel && (
+            {hasArea && (
               <Link href={`/blogs/areas/${blog.areaSlug}`}
                 onClick={e => e.stopPropagation()}
                 className="inline-flex items-center gap-1 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white text-xs font-semibold px-2 py-0.5 rounded-full border border-white/30 transition-colors">
                 <MapPin size={9} /> {blog.areaLabel}
               </Link>
             )}
-            {blog.schemeLabel && (
+            {hasScheme && (
               <Link href={`/blogs/schemes/${blog.schemeSlug}`}
                 onClick={e => e.stopPropagation()}
                 className="inline-flex items-center gap-1 bg-emerald-500/80 hover:bg-emerald-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full transition-colors">
@@ -50,10 +53,7 @@ export default function BlogCard({ blog }: { blog: Blog }) {
           <Link href={`/blog/${blog.slug}`}>{blog.title}</Link>
         </h3>
         <p className="text-slate-500 text-sm line-clamp-2 mb-4">{blog.excerpt}</p>
-        <Link
-          href={`/blog/${blog.slug}`}
-          className="text-red-700 font-semibold text-sm hover:underline mt-auto"
-        >
+        <Link href={`/blog/${blog.slug}`} className="text-red-700 font-semibold text-sm hover:underline mt-auto">
           Read More →
         </Link>
       </div>

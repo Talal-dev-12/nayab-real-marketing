@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { UserPlus, Eye, EyeOff, Save, Trash2, Shield, ShieldCheck, Clock, Mail, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { AdminCardSkeleton } from '@/components/ui/Skeleton';
 import { api } from '@/lib/api-client';
 
 interface AdminUser {
@@ -107,11 +108,7 @@ export default function AdminUsersPage() {
     admin: 'bg-blue-100 text-blue-700 border border-blue-200',
   };
 
-  if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <div className="w-8 h-8 border-4 border-red-700 border-t-transparent rounded-full animate-spin" />
-    </div>
-  );
+  if (loading) return <div className="space-y-5"><div className="h-10 bg-slate-200 rounded-xl animate-pulse w-48" /><AdminCardSkeleton rows={6} /></div>;
 
   return (
     <div className="space-y-6">

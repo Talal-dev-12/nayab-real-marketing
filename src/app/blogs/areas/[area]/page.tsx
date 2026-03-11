@@ -22,6 +22,9 @@ async function getAreaData(areaSlug: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { area } = await params;
+  if (area === 'null' || area === 'undefined') {
+    return { title: 'Invalid Area | Nayab Real Marketing' };
+  }
   const { areaInfo } = await getAreaData(area);
   const label = areaInfo?.label || area.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
   return {
@@ -36,6 +39,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function AreaPage({ params }: Props) {
   const { area } = await params;
+
+  // Guard: if slug is literally "null" or "undefined", show a friendly error
+  if (area === 'null' || area === 'undefined') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-3xl mx-auto px-4 py-20 text-center">
+          <MapPin size={48} className="mx-auto mb-4 text-slate-300" />
+          <h1 className="text-2xl font-bold text-slate-600 mb-2">Invalid Area Page</h1>
+          <p className="text-slate-400 mb-6">This blog has no area assigned. Please edit it in the admin panel.</p>
+          <Link href="/blogs/areas" className="text-red-600 font-semibold hover:underline">← Browse all areas</Link>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   const { blogs, areaInfo, schemes } = await getAreaData(area);
   const label = areaInfo?.label || area.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
 

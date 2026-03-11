@@ -3,18 +3,21 @@ import { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import PropertyCard from '@/components/ui/PropertyCard';
+import { PropertyCardSkeleton } from '@/components/ui/Skeleton';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import type { Property } from '@/types';
 
 export default function PropertiesPage() {
   const [properties, setProperties] = useState<Property[]>([]);
+  const [loading,    setLoading]    = useState(true);
   const [filters, setFilters] = useState({ type: 'all', priceType: 'all', city: 'all', search: '' });
 
   useEffect(() => {
+    setLoading(true);
     const params = new URLSearchParams({ status: 'available', limit: '100' });
     if (filters.priceType !== 'all') params.set('priceType', filters.priceType);
-    if (filters.type !== 'all') params.set('type', filters.type);
-    if (filters.city !== 'all') params.set('city', filters.city);
+    if (filters.type !== 'all')      params.set('type',      filters.type);
+    if (filters.city !== 'all')      params.set('city',      filters.city);
     fetch(`/api/properties?${params}`)
       .then(r => r.json()).then(d => {
         const data = d.properties ?? [];
@@ -22,7 +25,9 @@ export default function PropertiesPage() {
         setProperties(search ? data.filter((p: Property) =>
           p.title.toLowerCase().includes(search) || p.location.toLowerCase().includes(search)
         ) : data);
-      }).catch(() => {});
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [filters]);
 
   return (
@@ -33,6 +38,7 @@ export default function PropertiesPage() {
         <p className="text-slate-400">Find your perfect property from our verified listings</p>
       </div>
       <div className="max-w-7xl mx-auto px-4 py-10">
+        {/* Filters */}
         <div className="bg-white rounded-xl shadow p-5 mb-8 flex flex-wrap gap-4 items-end">
           <div className="flex-1 min-w-[200px]">
             <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Search</label>
@@ -62,9 +68,18 @@ export default function PropertiesPage() {
               <option value="Lahore">Lahore</option><option value="Islamabad">Islamabad</option>
             </select>
           </div>
-          <div className="text-sm text-slate-500"><SlidersHorizontal size={16} className="inline mr-1" />{properties.length} properties found</div>
+          <div className="text-sm text-slate-500">
+            <SlidersHorizontal size={16} className="inline mr-1" />
+            {loading ? 'Loading...' : `${properties.length} properties found`}
+          </div>
         </div>
-        {properties.length === 0 ? (
+
+        {/* Grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(6)].map((_, i) => <PropertyCardSkeleton key={i} />)}
+          </div>
+        ) : properties.length === 0 ? (
           <div className="text-center py-20 text-slate-500">
             <Search size={48} className="mx-auto mb-4 text-slate-300" />
             <p className="text-xl font-semibold">No properties found</p>

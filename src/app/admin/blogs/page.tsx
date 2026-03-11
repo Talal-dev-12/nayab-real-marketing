@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Plus, Edit, Trash2, Eye, EyeOff, Search, FileText } from 'lucide-react';
 import { api } from '@/lib/api-client';
+import { TableRowSkeleton } from '@/components/ui/Skeleton';
 import type { Blog } from '@/types';
 
 export default function AdminBlogs() {
@@ -55,9 +56,7 @@ export default function AdminBlogs() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {loading ? (
-              <tr><td colSpan={6} className="text-center py-12 text-slate-400">Loading...</td></tr>
-            ) : filtered.map(blog => (
+            {loading ? <TableRowSkeleton cols={6} rows={8} /> : filtered.map(blog => (
               <tr key={(blog as any)._id} className="hover:bg-slate-50 transition-colors">
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">

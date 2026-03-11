@@ -2,16 +2,16 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MapPin, Building2, ArrowRight } from 'lucide-react';
+import { AreaCardSkeleton, SchemeCardSkeleton } from '@/components/ui/Skeleton';
 import type { AreaSummary, SchemeSummary } from '@/types';
 
-// Colour palette cycles for cards
 const AREA_COLORS = [
-  { bg: 'bg-sky-50',     border: 'hover:border-sky-300',     icon: 'text-sky-600',     iconBg: 'bg-sky-100'     },
-  { bg: 'bg-emerald-50', border: 'hover:border-emerald-300', icon: 'text-emerald-600', iconBg: 'bg-emerald-100' },
-  { bg: 'bg-violet-50',  border: 'hover:border-violet-300',  icon: 'text-violet-600',  iconBg: 'bg-violet-100'  },
-  { bg: 'bg-amber-50',   border: 'hover:border-amber-300',   icon: 'text-amber-600',   iconBg: 'bg-amber-100'   },
-  { bg: 'bg-rose-50',    border: 'hover:border-rose-300',    icon: 'text-rose-600',    iconBg: 'bg-rose-100'    },
-  { bg: 'bg-teal-50',    border: 'hover:border-teal-300',    icon: 'text-teal-600',    iconBg: 'bg-teal-100'    },
+  { border: 'hover:border-sky-300',     icon: 'text-sky-600',     iconBg: 'bg-sky-100'     },
+  { border: 'hover:border-emerald-300', icon: 'text-emerald-600', iconBg: 'bg-emerald-100' },
+  { border: 'hover:border-violet-300',  icon: 'text-violet-600',  iconBg: 'bg-violet-100'  },
+  { border: 'hover:border-amber-300',   icon: 'text-amber-600',   iconBg: 'bg-amber-100'   },
+  { border: 'hover:border-rose-300',    icon: 'text-rose-600',    iconBg: 'bg-rose-100'    },
+  { border: 'hover:border-teal-300',    icon: 'text-teal-600',    iconBg: 'bg-teal-100'    },
 ];
 
 export default function ExploreLocalities() {
@@ -26,7 +26,41 @@ export default function ExploreLocalities() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading || (areas.length === 0 && schemes.length === 0)) return null;
+  // Show skeletons while loading
+  if (loading) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 space-y-12">
+          {/* Areas skeleton */}
+          <div>
+            <div className="flex items-end justify-between mb-6">
+              <div className="space-y-2">
+                <div className="h-3 w-28 bg-slate-200 rounded animate-pulse" />
+                <div className="h-8 w-44 bg-slate-200 rounded animate-pulse" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+              {[...Array(6)].map((_, i) => <AreaCardSkeleton key={i} />)}
+            </div>
+          </div>
+          {/* Schemes skeleton */}
+          <div>
+            <div className="flex items-end justify-between mb-6">
+              <div className="space-y-2">
+                <div className="h-3 w-32 bg-slate-200 rounded animate-pulse" />
+                <div className="h-8 w-48 bg-slate-200 rounded animate-pulse" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[...Array(8)].map((_, i) => <SchemeCardSkeleton key={i} />)}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (areas.length === 0 && schemes.length === 0) return null;
 
   return (
     <section className="py-16 bg-gray-50">
@@ -40,7 +74,7 @@ export default function ExploreLocalities() {
                 <p className="section-subtitle">Property Guides</p>
                 <h2 className="section-title">Explore Areas</h2>
               </div>
-              <Link href="/blogs/areas" className="text-sm font-semibold text-red-700 hover:underline flex items-center gap-1 hidden sm:flex">
+              <Link href="/blogs/areas" className="text-sm font-semibold text-red-700 hover:underline items-center gap-1 hidden sm:flex">
                 All Areas <ArrowRight size={14} />
               </Link>
             </div>
@@ -49,7 +83,7 @@ export default function ExploreLocalities() {
                 const c = AREA_COLORS[i % AREA_COLORS.length];
                 return (
                   <Link key={area.slug} href={`/blogs/areas/${area.slug}`}
-                    className={`group flex flex-col items-center text-center gap-3 p-4 rounded-2xl border-2 border-transparent ${c.border} ${c.bg} bg-white shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5`}>
+                    className={`group flex flex-col items-center text-center gap-3 p-4 rounded-2xl border-2 border-transparent ${c.border} bg-white shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5`}>
                     <div className={`w-12 h-12 ${c.iconBg} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                       <MapPin size={22} className={c.icon} />
                     </div>
@@ -75,7 +109,7 @@ export default function ExploreLocalities() {
                 <p className="section-subtitle">Investment Guides</p>
                 <h2 className="section-title">Housing Schemes</h2>
               </div>
-              <Link href="/blogs/schemes" className="text-sm font-semibold text-red-700 hover:underline flex items-center gap-1 hidden sm:flex">
+              <Link href="/blogs/schemes" className="text-sm font-semibold text-red-700 hover:underline items-center gap-1 hidden sm:flex">
                 All Schemes <ArrowRight size={14} />
               </Link>
             </div>

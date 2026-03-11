@@ -6,6 +6,7 @@ import Footer from '@/components/layout/Footer';
 import BlogCard from '@/components/ui/BlogCard';
 import { Search, MapPin, Building2, X, ChevronDown } from 'lucide-react';
 import type { Blog, AreaSummary, SchemeSummary } from '@/types';
+import { BlogCardSkeleton, SidebarSkeleton } from '@/components/ui/Skeleton';
 
 export default function BlogPage() {
   const [blogs,    setBlogs]    = useState<Blog[]>([]);
@@ -196,13 +197,13 @@ export default function BlogPage() {
             {/* Result count */}
             <div className="flex items-center justify-between mb-5">
               <p className="text-sm text-slate-500">
-                {loading ? 'Loading...' : `${filtered.length} article${filtered.length !== 1 ? 's' : ''} found`}
+                {loading ? <span className="h-4 w-24 bg-slate-200 rounded animate-pulse inline-block" /> : `${filtered.length} article${filtered.length !== 1 ? 's' : ''} found`}
               </p>
             </div>
 
             {loading ? (
-              <div className="flex justify-center py-20">
-                <div className="w-8 h-8 border-4 border-red-700 border-t-transparent rounded-full animate-spin" />
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => <BlogCardSkeleton key={i} />)}
               </div>
             ) : filtered.length === 0 ? (
               <div className="text-center py-20 text-slate-400">

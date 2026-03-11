@@ -4,15 +4,17 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Phone, Mail, Star, Building2, Search, Award } from 'lucide-react';
 import type { Agent } from '@/types';
+import { AgentCardSkeleton } from '@/components/ui/Skeleton';
 
 export default function AgentsPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [specialization, setSpecialization] = useState('all');
 
   useEffect(() => {
     fetch('/api/agents?active=true')
-      .then(r => r.json()).then(data => setAgents(Array.isArray(data) ? data : [])).catch(() => {});
+      .then(r => r.json()).then(data => setAgents(Array.isArray(data) ? data : [])).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   const specializations = ['all', ...Array.from(new Set(agents.map(a => a.specialization)))];
@@ -59,7 +61,11 @@ export default function AgentsPage() {
       </div>
 
       <section className="py-16 max-w-7xl mx-auto px-4">
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(6)].map((_, i) => <AgentCardSkeleton key={i} />)}
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="text-center py-20 text-slate-400">No agents found.</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

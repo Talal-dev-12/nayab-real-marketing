@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { MessageSquare, Mail, Phone, CheckCheck, Trash2 } from 'lucide-react';
+import { MessageListSkeleton } from '@/components/ui/Skeleton';
 import { api } from '@/lib/api-client';
 
 interface Msg { _id: string; name: string; email: string; phone: string; subject: string; message: string; read: boolean; createdAt: string; }
@@ -35,7 +36,7 @@ export default function AdminMessages() {
       <div><h2 className="text-2xl font-extrabold text-[#1a2e5a]">Messages</h2><p className="text-slate-500 text-sm">{unread} unread, {messages.length} total</p></div>
       <div className="bg-white rounded-xl shadow-sm overflow-hidden flex h-[calc(100vh-250px)] min-h-[500px]">
         <div className="w-full md:w-80 border-r overflow-y-auto shrink-0">
-          {loading ? <div className="text-center py-12 text-slate-400">Loading...</div> :
+          {loading ? <MessageListSkeleton /> :
            messages.length === 0 ? <div className="text-center py-12 text-slate-400"><MessageSquare size={40} className="mx-auto mb-3 opacity-30" /><p>No messages yet</p></div> :
            messages.map(msg => (
             <div key={msg._id} onClick={() => selectMsg(msg)}

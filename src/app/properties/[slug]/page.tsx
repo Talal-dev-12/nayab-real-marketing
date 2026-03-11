@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
+import { PropertyDetailSkeleton } from '@/components/ui/Skeleton';
 import Footer from '@/components/layout/Footer';
 import { ArrowLeft, MapPin, Bed, Bath, Maximize2, Tag, Phone, Mail, Heart, Share2, Eye, ChevronLeft, ChevronRight, CheckCircle2, ChevronRight as ChevronRightIcon } from 'lucide-react';
 import type { Property, Agent } from '@/types';
@@ -56,7 +57,7 @@ export default function PropertyDetailPage() {
     } catch { /* silent */ } finally { setSending(false); }
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-gray-50"><div className="w-12 h-12 border-4 border-red-700 border-t-transparent rounded-full animate-spin" /></div>;
+  if (loading) return <div className="min-h-screen bg-gray-50"><Navbar /><PropertyDetailSkeleton /><Footer /></div>;
 
   if (!property) return (
     <div className="min-h-screen bg-gray-50"><Navbar />

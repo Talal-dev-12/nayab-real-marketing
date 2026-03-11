@@ -5,6 +5,7 @@ import {
   LineChart, Line, Legend, PieChart, Pie, Cell, BarChart, Bar,
 } from 'recharts';
 import { TrendingUp, Users, Eye, MessageSquare, ArrowUpRight, RefreshCw, FileText, Home } from 'lucide-react';
+import { AnalyticsSkeleton } from '@/components/ui/Skeleton';
 import { api } from '@/lib/api-client';
 
 interface AnalyticsData {
@@ -42,14 +43,7 @@ export default function AdminAnalytics() {
 
   useEffect(() => { fetchData(period); }, [period]);
 
-  if (loading) return (
-    <div className="flex items-center justify-center h-80">
-      <div className="text-center">
-        <div className="w-10 h-10 border-4 border-red-700 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-        <p className="text-slate-500 text-sm">Loading analytics from database...</p>
-      </div>
-    </div>
-  );
+  if (loading) return <AnalyticsSkeleton />;
 
   if (!data) return (
     <div className="text-center py-20 text-slate-400">Failed to load analytics. Check your database connection.</div>
