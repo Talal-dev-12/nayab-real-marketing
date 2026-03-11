@@ -77,7 +77,10 @@ export default function AdminBlogs() {
                     <button onClick={() => togglePublish(blog)} className="p-1.5 rounded hover:bg-slate-100 text-slate-500" title={blog.published ? 'Unpublish' : 'Publish'}>
                       {blog.published ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
-                    <button onClick={() => deleteBlog(blog)} className="p-1.5 rounded hover:bg-red-50 text-red-600"><Trash2 size={16} /></button>
+                    <Link href={`/admin/blogs/${(blog as any)._id}`} className="p-1.5 rounded hover:bg-blue-50 text-blue-600" title="Edit">
+                      <Edit size={16} />
+                    </Link>
+                    <button onClick={() => deleteBlog(blog)} className="p-1.5 rounded hover:bg-red-50 text-red-600" title="Delete"><Trash2 size={16} /></button>
                   </div>
                 </td>
               </tr>

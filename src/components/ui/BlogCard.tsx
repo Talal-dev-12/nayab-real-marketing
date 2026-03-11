@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 import { Calendar, User, Eye, MapPin, Building2 } from 'lucide-react';
 import { Blog } from '@/types';
