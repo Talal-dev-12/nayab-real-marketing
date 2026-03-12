@@ -154,7 +154,6 @@ export default function PropertyDetailPage() {
               </div>
             </div>
           </div>
-
           <div className="space-y-5">
             {agent && (
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
