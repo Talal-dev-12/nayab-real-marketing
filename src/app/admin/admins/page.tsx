@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { UserPlus, Eye, EyeOff, Save, Trash2, Shield, ShieldCheck, Clock, Mail, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { AdminCardSkeleton } from '@/components/ui/Skeleton';
 import { api } from '@/lib/api-client';
@@ -27,6 +28,7 @@ export default function AdminUsersPage() {
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const currentRole = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('admin_user') || '{}').role : 'admin';
   const [showPassword, setShowPassword] = useState(false);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState('');
@@ -38,7 +40,17 @@ export default function AdminUsersPage() {
     role: 'admin' as 'admin' | 'superadmin',
   });
 
+  const router = useRouter();
+
   useEffect(() => {
+    // Page-level guard: admin cannot access this page
+    const stored = localStorage.getItem('admin_user');
+    if (stored) {
+      try {
+        const u = JSON.parse(stored);
+        if (u.role !== 'superadmin') { router.replace('/admin'); return; }
+      } catch {}
+    }
     api.get<AdminUser[]>('/api/admins')
       .then(d => setAdmins(Array.isArray(d) ? d : []))
       .catch(() => setError('Failed to load admin users'))

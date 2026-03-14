@@ -33,8 +33,8 @@ export async function GET(req: NextRequest) {
     const filter: Record<string, unknown> = {};
     if (category)   filter.category   = category;
     if (published !== null) filter.published = published === 'true';
-    if (areaSlug)   filter.areaSlug   = areaSlug;
-    if (schemeSlug) filter.schemeSlug = schemeSlug;
+    if (areaSlug   && areaSlug   !== 'null') filter.areaSlug   = areaSlug;
+    if (schemeSlug && schemeSlug !== 'null') filter.schemeSlug = schemeSlug;
 
     const skip = (page - 1) * limit;
     const [blogs, total] = await Promise.all([
@@ -49,10 +49,15 @@ export async function GET(req: NextRequest) {
 }
 
 // PROTECTED: Create blog
-export const POST = requireAuth(async (req: NextRequest, _user: JwtPayload, _ctx: RouteContext) => {
+export const POST = requireAuth(async (req: NextRequest, user: JwtPayload, _ctx: RouteContext) => {
   try {
     await connectDB();
     const body = await req.json();
+    // Writers auto-tag with their authorId
+    if (user.role === 'writer') {
+      body.authorId = user.id;
+      if (!body.author) body.author = user.name;
+    }
     const {
       title, slug, excerpt, content, image, images, author, category,
       tags, published, metaTitle, metaDescription, metaKeywords,

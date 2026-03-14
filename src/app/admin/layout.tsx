@@ -4,20 +4,22 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, FileText, Home, Users, MessageSquare,
-  Settings, LogOut, Menu, X, BarChart3, Bell, ChevronRight, ShieldCheck
+  Settings, LogOut, Menu, X, BarChart3, Bell, ChevronRight, ShieldCheck, PenTool
 } from 'lucide-react';
 
 interface AdminUser { id: string; name: string; email: string; role: string; avatar?: string; }
 
-const navItems = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/blogs', label: 'Blog Posts', icon: FileText },
-  { href: '/admin/properties', label: 'Properties', icon: Home },
-  { href: '/admin/agents', label: 'Agents', icon: Users },
-  { href: '/admin/admins', label: 'Admin Users', icon: ShieldCheck },
-  { href: '/admin/messages', label: 'Messages', icon: MessageSquare },
-  { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
-  { href: '/admin/settings', label: 'Settings', icon: Settings },
+// All nav items — superadmin sees all; admin sees all except Admins & Settings
+const ALL_NAV = [
+  { href: '/admin',            label: 'Dashboard',   icon: LayoutDashboard, roles: ['admin','superadmin'] },
+  { href: '/admin/blogs',      label: 'Blog Posts',  icon: FileText,        roles: ['admin','superadmin'] },
+  { href: '/admin/properties', label: 'Properties',  icon: Home,            roles: ['admin','superadmin'] },
+  { href: '/admin/agents',     label: 'Agents',      icon: Users,           roles: ['admin','superadmin'] },
+  { href: '/admin/writers',    label: 'Portal Users', icon: PenTool,         roles: ['admin','superadmin'] },
+  { href: '/admin/messages',   label: 'Messages',    icon: MessageSquare,   roles: ['admin','superadmin'] },
+  { href: '/admin/analytics',  label: 'Analytics',   icon: BarChart3,       roles: ['admin','superadmin'] },
+  { href: '/admin/admins',     label: 'Admin Users', icon: ShieldCheck,     roles: ['superadmin'] },
+  { href: '/admin/settings',   label: 'Settings',    icon: Settings,        roles: ['superadmin'] },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -46,6 +48,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         return res.json();
       })
       .then(data => {
+        // Redirect agents/writers to their own portals
+        if (data.user.role === 'agent') {
+          router.push('/agent');
+          return;
+        }
+        if (data.user.role === 'writer') {
+          router.push('/writer');
+          return;
+        }
         setUser(data.user);
         setAuthed(true);
       })
@@ -93,7 +104,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {navItems.map(({ href, label, icon: Icon }) => {
+          {ALL_NAV.filter(n => n.roles.includes(user?.role || '')).map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href || (href !== '/admin' && pathname.startsWith(href));
             return (
               <Link key={href} href={href} onClick={() => setSidebarOpen(false)}
@@ -135,7 +146,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </button>
             <div>
               <h1 className="font-bold text-[#1a2e5a] text-lg capitalize">
-                {navItems.find(n => n.href === pathname || (n.href !== '/admin' && pathname.startsWith(n.href)))?.label || 'Dashboard'}
+                {ALL_NAV.find(n => n.href === pathname || (n.href !== '/admin' && pathname.startsWith(n.href)))?.label || 'Dashboard'}
               </h1>
               <p className="text-xs text-slate-500">{new Date().toDateString()}</p>
             </div>

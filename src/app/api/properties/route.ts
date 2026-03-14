@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { Property } from '@/models/Property';
 import { requireAuth, RouteContext } from '@/lib/auth-middleware';
-import { JwtPayload } from '@/lib/jwt';
+import { JwtPayload, UserRole } from '@/lib/jwt';
 
 export async function GET(req: NextRequest) {
   try {
@@ -43,10 +43,13 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export const POST = requireAuth(async (req: NextRequest, _user: JwtPayload, _ctx: RouteContext) => {
+export const POST = requireAuth(async (req: NextRequest, user: JwtPayload, _ctx: RouteContext) => {
   try {
     await connectDB();
     const body = await req.json();
+    // Agents post as themselves — override agentId with their own user ID
+    const role = user.role as UserRole;
+    if (role === 'agent') body.agentId = user.id;
     const { title, slug, description, price, priceType, location, city, area, type, agentId } = body;
     if (!title || !description || !price || !priceType || !location || !city || !area || !type || !agentId) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
