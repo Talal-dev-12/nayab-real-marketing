@@ -17,7 +17,7 @@ export default function EditBlogPage() {
   const [saving, setSaving] = useState(false);
   const [preview, setPreview] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [success, setSuccess] = useState(""); 
   const [uploadingHero, setUploadingHero] = useState(false);
   const [insertingImage, setInsertingImage] = useState(false);
   const [tagInput, setTagInput] = useState("");
