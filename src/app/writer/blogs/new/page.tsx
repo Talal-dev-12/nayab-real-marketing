@@ -1,21 +1,22 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, ArrowLeft, Eye, Tag, Plus, X, Image as ImageIcon, Loader2, Upload, MapPin } from 'lucide-react';
+import { Save, ArrowLeft, Eye, Plus, X, Image as ImageIcon, Loader2, Upload, MapPin } from 'lucide-react';
 import Link from 'next/link';
 
 export default function WriterNewBlogPage() {
   const router = useRouter();
-  const [saving,       setSaving]       = useState(false);
-  const [preview,      setPreview]      = useState(false);
-  const [error,        setError]        = useState('');
-  const [uploadingHero,setUploadingHero]= useState(false);
-  const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
-  const [tagInput,     setTagInput]     = useState('');
+  const [saving,        setSaving]        = useState(false);
+  const [preview,       setPreview]       = useState(false);
+  const [error,         setError]         = useState('');
+  const [uploadingHero, setUploadingHero] = useState(false);
+  const [insertingImg,  setInsertingImg]  = useState(false);
+  const [tagInput,      setTagInput]      = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   const [form, setForm] = useState({
     title: '', excerpt: '', content: '',
-    image: '', images: ['', '', '', ''] as string[],
-    author: '', category: 'Real Estate', tags: [] as string[],
+    image: '', author: '', category: 'Real Estate', tags: [] as string[],
     published: false, metaTitle: '', metaDescription: '', metaKeywords: '',
     areaSlug: '', areaLabel: '', schemeSlug: '', schemeLabel: '',
   });
@@ -33,17 +34,32 @@ export default function WriterNewBlogPage() {
   const handleHeroUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file) return;
     setUploadingHero(true); setError('');
-    try { setForm(f => ({ ...f, image: '' })); const url = await uploadImg(file); setForm(f => ({ ...f, image: url })); }
+    try { const url = await uploadImg(file); setForm(f => ({ ...f, image: url })); }
     catch (err: any) { setError(err.message); }
     finally { setUploadingHero(false); e.target.value = ''; }
   };
 
-  const handleContentImage = async (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
+  const insertImageTag = (url: string, align: 'left' | 'center' | 'right' | 'full' = 'full') => {
+    const ta = textareaRef.current; if (!ta) return;
+    const styleMap = {
+      left:   'float: left; margin: 0 1.5rem 1rem 0; max-width: 45%;',
+      right:  'float: right; margin: 0 0 1rem 1.5rem; max-width: 45%;',
+      center: 'display: block; margin: 1.5rem auto; max-width: 80%;',
+      full:   'display: block; width: 100%; margin: 1.5rem 0;',
+    };
+    const tag = `\n<img src="${url}" alt="" style="${styleMap[align]} border-radius: 12px;" />\n`;
+    const start = ta.selectionStart; const end = ta.selectionEnd;
+    const newContent = form.content.slice(0, start) + tag + form.content.slice(end);
+    setForm(f => ({ ...f, content: newContent }));
+    setTimeout(() => { ta.focus(); const pos = start + tag.length; ta.setSelectionRange(pos, pos); }, 0);
+  };
+
+  const handleInsertUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file) return;
-    setUploadingIdx(idx); setError('');
-    try { const url = await uploadImg(file); setForm(f => { const imgs = [...f.images]; imgs[idx] = url; return { ...f, images: imgs }; }); }
+    setInsertingImg(true); setError('');
+    try { const url = await uploadImg(file); insertImageTag(url, 'full'); }
     catch (err: any) { setError(err.message); }
-    finally { setUploadingIdx(null); e.target.value = ''; }
+    finally { setInsertingImg(false); e.target.value = ''; }
   };
 
   const handleSave = async (publish?: boolean) => {
@@ -53,7 +69,7 @@ export default function WriterNewBlogPage() {
       const res = await fetch('/api/blogs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}` },
-        body: JSON.stringify({ ...form, images: form.images.filter(Boolean), published: publish ?? form.published, metaTitle: form.metaTitle || form.title, metaDescription: form.metaDescription || form.excerpt.slice(0, 160) }),
+        body: JSON.stringify({ ...form, images: [], published: publish ?? form.published, metaTitle: form.metaTitle || form.title, metaDescription: form.metaDescription || form.excerpt.slice(0, 160) }),
       });
       const d = await res.json();
       if (!res.ok) { setError(d.error || 'Failed to save'); return; }
@@ -103,42 +119,39 @@ export default function WriterNewBlogPage() {
 
           <div className="bg-white rounded-xl shadow-sm p-5">
             <label className="text-xs font-semibold text-slate-500 uppercase mb-2 block">Content (HTML supported) *</label>
+
+            {/* Image insert toolbar */}
+            {!preview && (
+              <div className="flex items-center gap-2 mb-3 p-2.5 bg-slate-50 border-2 border-slate-100 rounded-xl">
+                <ImageIcon size={14} className="text-emerald-600 shrink-0" />
+                <span className="text-xs font-semibold text-slate-500 mr-1">Insert image at cursor:</span>
+                <label className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors ${insertingImg ? 'bg-slate-200 text-slate-400' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}`}>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleInsertUpload} disabled={insertingImg} />
+                  {insertingImg ? <><Loader2 size={12} className="animate-spin" /> Uploading…</> : <><Upload size={12} /> Upload</>}
+                </label>
+                <div className="flex items-center gap-1 ml-auto">
+                  <span className="text-xs text-slate-400 mr-1">Align:</span>
+                  {(['full', 'center', 'left', 'right'] as const).map(align => (
+                    <button key={align} type="button"
+                      onClick={() => { const url = prompt('Paste image URL:'); if (url?.trim()) insertImageTag(url.trim(), align); }}
+                      className="px-2 py-1 text-xs bg-white border border-slate-200 hover:border-emerald-400 hover:text-emerald-700 rounded-lg transition-colors capitalize">
+                      {align}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {preview ? (
               <div className="prose prose-lg max-w-none min-h-[300px] border-2 rounded-xl p-4"
                 dangerouslySetInnerHTML={{ __html: form.content || '<p class="text-slate-400">Nothing to preview yet…</p>' }} />
             ) : (
-              <textarea rows={16} placeholder={`<h2>Introduction</h2>\n<p>Your content here…</p>\n<ul><li>Point one</li></ul>`}
+              <textarea ref={textareaRef} rows={20}
+                placeholder={`<h2>Introduction</h2>\n<p>Your content here…</p>\n\nImages are inserted inline using the toolbar above.`}
                 value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
                 className="w-full border-2 rounded-xl px-4 py-3 text-sm outline-none focus:border-emerald-500 resize-none font-mono" />
             )}
-          </div>
-
-          {/* Content Images */}
-          <div className="bg-white rounded-xl shadow-sm p-5">
-            <div className="flex items-center gap-2 mb-3"><ImageIcon size={16} className="text-emerald-600" /><label className="text-xs font-semibold text-slate-500 uppercase">Content Images (up to 4)</label></div>
-            <div className="grid grid-cols-2 gap-4">
-              {[0,1,2,3].map(idx => (
-                <div key={idx}>
-                  <label className="text-xs font-semibold text-slate-400 mb-1.5 block">Image {idx + 1}</label>
-                  {form.images[idx] ? (
-                    <div className="relative group">
-                      <img src={form.images[idx]} alt="" className="w-full h-32 object-cover rounded-xl border-2 border-slate-200" />
-                      <button onClick={() => { const imgs = [...form.images]; imgs[idx] = ''; setForm(f => ({ ...f, images: imgs })); }}
-                        className="absolute top-2 right-2 w-7 h-7 bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100"><X size={12} /></button>
-                    </div>
-                  ) : (
-                    <div className="space-y-1.5">
-                      <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-emerald-400 rounded-xl p-4 cursor-pointer h-20 bg-slate-50 hover:bg-emerald-50">
-                        <input type="file" accept="image/*" className="hidden" onChange={e => handleContentImage(e, idx)} disabled={uploadingIdx !== null} />
-                        {uploadingIdx === idx ? <Loader2 size={18} className="animate-spin text-emerald-600" /> : <><Plus size={18} className="text-slate-400 mb-1" /><span className="text-xs text-slate-400">Upload</span></>}
-                      </label>
-                      <input type="url" placeholder="or paste URL…" value={form.images[idx]} onChange={e => { const imgs = [...form.images]; imgs[idx] = e.target.value; setForm(f => ({ ...f, images: imgs })); }}
-                        className="w-full border rounded-lg px-2 py-1.5 text-xs outline-none focus:border-emerald-500" />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+            <p className="text-xs text-slate-400 mt-2">💡 Use the toolbar above to insert images directly into your content at any position.</p>
           </div>
 
           {/* SEO */}
@@ -248,6 +261,12 @@ export default function WriterNewBlogPage() {
               </div>
               <span className="text-sm font-semibold text-slate-700">{form.published ? 'Published (live)' : 'Draft (hidden)'}</span>
             </label>
+          </div>
+
+          {/* Image tip */}
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800 space-y-1.5">
+            <p className="font-semibold text-amber-900 flex items-center gap-1.5"><ImageIcon size={13} /> Inline image placement</p>
+            <p>Images are placed directly inside your content. Use the <strong>Insert image</strong> toolbar above the content editor to upload or paste a URL.</p>
           </div>
         </div>
       </div>

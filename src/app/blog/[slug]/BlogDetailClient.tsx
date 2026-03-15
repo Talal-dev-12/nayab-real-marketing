@@ -6,9 +6,8 @@ import Navbar from '@/components/layout/Navbar';
 import { BlogDetailSkeleton } from '@/components/ui/Skeleton';
 import Footer from '@/components/layout/Footer';
 import {
-  ArrowLeft, Calendar, User, Eye, Tag, Clock, MapPin, Building2,
-  Share2, Facebook, Twitter, Linkedin, ChevronRight,
-  ChevronLeft, X, ZoomIn
+  ArrowLeft, Calendar, User, Eye, Tag, Clock,
+  Share2, ChevronRight, ChevronLeft, X, Linkedin, Facebook
 } from 'lucide-react';
 
 interface Blog {
@@ -34,13 +33,21 @@ interface Blog {
   updatedAt: string;
 }
 
+// X (formerly Twitter) logo — lucide's Twitter icon is the old bird
+function XIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.741l7.731-8.843L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
+
 export default function BlogDetailClient() {
   const params = useParams();
   const [blog, setBlog] = useState<Blog | null>(null);
   const [related, setRelated] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [lightbox, setLightbox] = useState<{ open: boolean; idx: number }>({ open: false, idx: 0 });
 
   useEffect(() => {
     fetch(`/api/blogs?slug=${params.slug}`)
@@ -56,8 +63,9 @@ export default function BlogDetailClient() {
       }).catch(() => setLoading(false));
   }, [params.slug]);
 
-  // Close lightbox on Escape
+  // Lightbox keyboard navigation
   useEffect(() => {
+    const allImages = blog ? [blog.image, ...(blog.images || [])].filter(Boolean) : [];
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setLightbox(l => ({ ...l, open: false }));
       if (e.key === 'ArrowRight') setLightbox(l => ({ ...l, idx: (l.idx + 1) % allImages.length }));
@@ -65,7 +73,9 @@ export default function BlogDetailClient() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  });
+  }, [blog]);
+
+  const [lightbox, setLightbox] = useState<{ open: boolean; idx: number }>({ open: false, idx: 0 });
 
   const allImages = blog ? [blog.image, ...(blog.images || [])].filter(Boolean) : [];
   const readingTime = blog ? Math.max(1, Math.ceil(blog.content.replace(/<[^>]+>/g, '').split(' ').length / 200)) : 0;
@@ -75,7 +85,7 @@ export default function BlogDetailClient() {
     const title = encodeURIComponent(blog?.title || '');
     const links: Record<string, string> = {
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
-      twitter: `https://twitter.com/intent/tweet?url=${url}&text=${title}`,
+      x:        `https://twitter.com/intent/tweet?url=${url}&text=${title}`,
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
     };
     window.open(links[platform], '_blank');
@@ -89,7 +99,7 @@ export default function BlogDetailClient() {
     </div>
   );
 
- if (!blog) return (
+  if (!blog) return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <div className="max-w-3xl mx-auto px-4 py-32 text-center">
@@ -103,7 +113,6 @@ export default function BlogDetailClient() {
       <Footer />
     </div>
   );
-  const contentImages = (blog.images || []).filter(Boolean);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -114,7 +123,6 @@ export default function BlogDetailClient() {
         <img src={blog.image} alt={blog.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0f1e3d]/95 via-[#0f1e3d]/50 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 px-4 pb-6 md:pb-12 md:px-8 max-w-5xl mx-auto">
-          {/* Breadcrumb */}
           <div className="flex items-center gap-1.5 text-slate-300 text-xs sm:text-sm mb-3 flex-wrap">
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
             <ChevronRight size={13} />
@@ -128,7 +136,6 @@ export default function BlogDetailClient() {
           <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white leading-tight mb-3">
             {blog.title}
           </h1>
-          {/* Meta row */}
           <div className="flex flex-wrap items-center gap-3 text-slate-300 text-xs sm:text-sm">
             <div className="flex items-center gap-1.5"><User size={13} /><span>{blog.author}</span></div>
             <div className="flex items-center gap-1.5"><Calendar size={13} /><span>{new Date(blog.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span></div>
@@ -150,7 +157,7 @@ export default function BlogDetailClient() {
                 {blog.excerpt}
               </p>
 
-              {/* Content */}
+              {/* Content — images are embedded inline by the author */}
               <div
                 className="prose prose-base sm:prose-lg max-w-none
                   prose-headings:text-[#1a2e5a] prose-headings:font-extrabold
@@ -163,26 +170,6 @@ export default function BlogDetailClient() {
                 style={{ lineHeight: '1.85', color: '#374151' }}
                 dangerouslySetInnerHTML={{ __html: blog.content }}
               />
-
-              {/* ── Content image gallery ── */}
-              {contentImages.length > 0 && (
-                <div className="mt-10 pt-8 border-t border-gray-100">
-                  <h3 className="text-lg font-extrabold text-[#1a2e5a] mb-4">Photo Gallery</h3>
-                  <div className={`grid gap-3 ${contentImages.length === 1 ? 'grid-cols-1' : contentImages.length === 2 ? 'grid-cols-2' : contentImages.length === 3 ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2'}`}>
-                    {contentImages.map((img, i) => (
-                      <div key={i}
-                        className={`relative group cursor-pointer overflow-hidden rounded-xl ${contentImages.length === 4 && i === 0 ? 'col-span-2' : ''}`}
-                        onClick={() => setLightbox({ open: true, idx: i + 1 /* +1 because cover is idx 0 */ })}>
-                        <img src={img} alt={`${blog.title} – photo ${i + 1}`}
-                          className={`w-full object-cover transition-transform duration-300 group-hover:scale-105 ${contentImages.length === 4 && i === 0 ? 'h-56 sm:h-72' : 'h-36 sm:h-48'}`} />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                          <ZoomIn size={24} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               {/* Tags */}
               {blog.tags?.length > 0 && (
@@ -200,16 +187,20 @@ export default function BlogDetailClient() {
               <div className="mt-8 pt-8 border-t border-gray-100">
                 <p className="font-bold text-[#1a2e5a] mb-3 text-sm sm:text-base">Share this article</p>
                 <div className="flex flex-wrap items-center gap-2">
-                  <button onClick={() => share('facebook')} className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors">
+                  <button onClick={() => share('facebook')}
+                    className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors">
                     <Facebook size={14} /> Facebook
                   </button>
-                  <button onClick={() => share('twitter')} className="flex items-center gap-1.5 bg-sky-400 hover:bg-sky-500 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors">
-                    <Twitter size={14} /> Twitter
-                  </button>
-                  <button onClick={() => share('linkedin')} className="flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors">
+                  <button onClick={() => share('linkedin')}
+                    className="flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors">
                     <Linkedin size={14} /> LinkedIn
                   </button>
-                  <button onClick={() => { navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                  <button onClick={() => share('x')}
+                    className="flex items-center gap-1.5 bg-black hover:bg-neutral-800 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors">
+                    <XIcon size={18} />
+                  </button>
+                  <button
+                    onClick={() => { navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
                     className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors">
                     <Share2 size={14} /> {copied ? 'Copied!' : 'Copy Link'}
                   </button>
@@ -238,7 +229,6 @@ export default function BlogDetailClient() {
 
           {/* ── Sidebar ── */}
           <aside className="w-full lg:w-72 xl:w-80 shrink-0 space-y-5">
-            {/* Related */}
             {related.length > 0 && (
               <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
                 <h3 className="font-extrabold text-[#1a2e5a] text-lg mb-5 pb-3 border-b">Related Articles</h3>
@@ -257,7 +247,6 @@ export default function BlogDetailClient() {
               </div>
             )}
 
-            {/* CTA */}
             <div className="bg-gradient-to-br from-red-700 to-red-800 rounded-2xl p-5 sm:p-6 text-white">
               <h3 className="font-extrabold text-xl mb-2">Looking for a Property?</h3>
               <p className="text-red-100 text-sm mb-5 leading-relaxed">Our expert agents are ready to help you find your dream property in Pakistan.</p>
@@ -266,17 +255,15 @@ export default function BlogDetailClient() {
               </Link>
             </div>
 
-            {/* Article info */}
             <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
               <h3 className="font-extrabold text-[#1a2e5a] text-base mb-4">Article Info</h3>
               <div className="space-y-2.5 text-sm">
                 {[
                   { label: 'Published', value: new Date(blog.createdAt).toLocaleDateString() },
-                  { label: 'Updated', value: new Date(blog.updatedAt).toLocaleDateString() },
-                  { label: 'Category', value: blog.category },
+                  { label: 'Updated',   value: new Date(blog.updatedAt).toLocaleDateString() },
+                  { label: 'Category',  value: blog.category },
                   { label: 'Reading Time', value: `${readingTime} min` },
-                  { label: 'Views', value: blog.views?.toLocaleString() },
-                  { label: 'Photos', value: `${allImages.length}` },
+                  { label: 'Views',     value: blog.views?.toLocaleString() },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex justify-between py-1.5 border-b border-gray-50 last:border-0">
                     <span className="text-slate-500">{label}</span>
@@ -293,8 +280,10 @@ export default function BlogDetailClient() {
       {lightbox.open && allImages.length > 0 && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
           onClick={() => setLightbox(l => ({ ...l, open: false }))}>
-          <button className="absolute top-4 right-4 text-white hover:text-red-400 z-10" onClick={() => setLightbox(l => ({ ...l, open: false }))}><X size={28} /></button>
-
+          <button className="absolute top-4 right-4 text-white hover:text-red-400 z-10"
+            onClick={() => setLightbox(l => ({ ...l, open: false }))}>
+            <X size={28} />
+          </button>
           {allImages.length > 1 && (
             <>
               <button onClick={e => { e.stopPropagation(); setLightbox(l => ({ ...l, idx: (l.idx - 1 + allImages.length) % allImages.length })); }}
@@ -307,7 +296,6 @@ export default function BlogDetailClient() {
               </button>
             </>
           )}
-
           <div onClick={e => e.stopPropagation()} className="max-w-4xl w-full">
             <img src={allImages[lightbox.idx]} alt={`Photo ${lightbox.idx + 1}`}
               className="w-full max-h-[80vh] object-contain rounded-xl" />
