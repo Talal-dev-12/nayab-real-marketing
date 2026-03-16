@@ -153,6 +153,9 @@ export default function Navbar() {
               </Link>
             ))}
 
+{/* 
+            Lae Le */}
+
             {/* Mobile CTA */}
             <div className="p-4">
               <Link
