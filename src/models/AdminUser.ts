@@ -5,7 +5,7 @@ export interface IAdminUser extends Document {
   name: string;
   email: string;
   password?: string;
-  role: 'admin' | 'superadmin' | 'agent' | 'writer';
+  role: 'admin' | 'superadmin' | 'agent' | 'writer' | 'seller';
   googleId?: string;
   avatar?: string;
   active: boolean;
@@ -20,7 +20,7 @@ const AdminUserSchema = new Schema<IAdminUser>(
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, select: false }, // hidden by default
-    role: { type: String, enum: ['admin', 'superadmin', 'agent', 'writer'], default: 'admin' },
+    role: { type: String, enum: ['admin', 'superadmin', 'agent', 'writer', 'seller'], default: 'admin' },
     googleId: { type: String, sparse: true },
     avatar: { type: String },
     active: { type: Boolean, default: true },
