@@ -7,46 +7,52 @@ import { LayoutDashboard, Home, Plus, LogOut, Menu, X, Building2, ChevronRight }
 interface PortalUser { id: string; name: string; email: string; role: string; }
 
 const NAV = [
-  { href: '/agent',                label: 'Dashboard',         icon: LayoutDashboard },
-  { href: '/agent/properties',     label: 'My Properties',     icon: Home            },
-  { href: '/agent/properties/new', label: 'Add Property',      icon: Plus            },
+  { href: '/agent',                label: 'Dashboard',    icon: LayoutDashboard },
+  { href: '/agent/properties',     label: 'My Properties', icon: Home            },
+  { href: '/agent/properties/new', label: 'Add Property',  icon: Plus            },
 ];
 
 export default function AgentLayout({ children }: { children: React.ReactNode }) {
-  const pathname  = usePathname();
-  const router    = useRouter();
+  const pathname = usePathname();
+  const router   = useRouter();
   const [open,    setOpen]    = useState(false);
   const [user,    setUser]    = useState<PortalUser | null>(null);
   const [authed,  setAuthed]  = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (pathname === '/agent/login') { setLoading(false); return; }
-    const token = localStorage.getItem('agent_token');
-    const stored = localStorage.getItem('agent_user');
-    if (!token) { router.push('/agent/login'); return; }
+    // Read from unified key first, then legacy agent key
+    const token  = localStorage.getItem('auth_token') ?? localStorage.getItem('agent_token');
+    const stored = localStorage.getItem('auth_user')  ?? localStorage.getItem('agent_user');
+
+    if (!token) { router.push('/sign-in'); return; }
     if (stored) { try { setUser(JSON.parse(stored)); } catch {} }
 
     fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
       .then(d => {
-        if (d.user.role !== 'agent') throw new Error('Not an agent');
-        setUser(d.user); setAuthed(true);
+        if (d.user.role !== 'agent') {
+          router.push('/sign-in');
+          return;
+        }
+        setUser(d.user);
+        setAuthed(true);
       })
       .catch(() => {
-        localStorage.removeItem('agent_token'); localStorage.removeItem('agent_user');
-        router.push('/agent/login');
+        ['auth_token','auth_user','agent_token','agent_user'].forEach(k => localStorage.removeItem(k));
+        router.push('/sign-in');
       })
       .finally(() => setLoading(false));
   }, [pathname]);
 
-  const logout = () => {
-    localStorage.removeItem('agent_token'); localStorage.removeItem('agent_user');
-    router.push('/agent/login');
+  const logout = async () => {
+    try { await fetch('/api/auth/logout', { method: 'POST' }); } catch { /* ignore */ }
+    ['auth_token','auth_user','admin_token','admin_user','agent_token','agent_user','writer_token','writer_user']
+      .forEach(k => localStorage.removeItem(k));
+    router.push('/sign-in');
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-900"><div className="text-white">Loading...</div></div>;
-  if (pathname === '/agent/login') return <>{children}</>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-900"><div className="text-white">Loading…</div></div>;
   if (!authed) return null;
 
   const initials = user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'A';

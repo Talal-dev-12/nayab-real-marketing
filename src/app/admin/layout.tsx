@@ -11,79 +11,74 @@ interface AdminUser { id: string; name: string; email: string; role: string; ava
 
 // All nav items — superadmin sees all; admin sees all except Admins & Settings
 const ALL_NAV = [
-  { href: '/admin',            label: 'Dashboard',   icon: LayoutDashboard, roles: ['admin','superadmin'] },
-  { href: '/admin/blogs',      label: 'Blog Posts',  icon: FileText,        roles: ['admin','superadmin'] },
-  { href: '/admin/properties', label: 'Properties',  icon: Home,            roles: ['admin','superadmin'] },
-  { href: '/admin/agents',     label: 'Agents',      icon: Users,           roles: ['admin','superadmin'] },
+  { href: '/admin',            label: 'Dashboard',    icon: LayoutDashboard, roles: ['admin','superadmin'] },
+  { href: '/admin/blogs',      label: 'Blog Posts',   icon: FileText,        roles: ['admin','superadmin'] },
+  { href: '/admin/properties', label: 'Properties',   icon: Home,            roles: ['admin','superadmin'] },
+  { href: '/admin/agents',     label: 'Agents',       icon: Users,           roles: ['admin','superadmin'] },
   { href: '/admin/writers',    label: 'Portal Users', icon: PenTool,         roles: ['admin','superadmin'] },
-  { href: '/admin/messages',   label: 'Messages',    icon: MessageSquare,   roles: ['admin','superadmin'] },
-  { href: '/admin/analytics',  label: 'Analytics',   icon: BarChart3,       roles: ['admin','superadmin'] },
-  { href: '/admin/admins',     label: 'Admin Users', icon: ShieldCheck,     roles: ['superadmin'] },
-  { href: '/admin/settings',   label: 'Settings',    icon: Settings,        roles: ['superadmin'] },
+  { href: '/admin/messages',   label: 'Messages',     icon: MessageSquare,   roles: ['admin','superadmin'] },
+  { href: '/admin/analytics',  label: 'Analytics',    icon: BarChart3,       roles: ['admin','superadmin'] },
+  { href: '/admin/admins',     label: 'Admin Users',  icon: ShieldCheck,     roles: ['superadmin'] },
+  { href: '/admin/settings',   label: 'Settings',     icon: Settings,        roles: ['superadmin'] },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
+  const router   = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [authed, setAuthed] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<AdminUser | null>(null);
+  const [authed,      setAuthed]      = useState(false);
+  const [loading,     setLoading]     = useState(true);
+  const [user,        setUser]        = useState<AdminUser | null>(null);
 
   useEffect(() => {
-    if (pathname === '/admin/login') { setLoading(false); return; }
-
-    const token = localStorage.getItem('admin_token');
-    const storedUser = localStorage.getItem('admin_user');
+    // Read token from unified key first, fall back to legacy key
+    const token      = localStorage.getItem('auth_token') ?? localStorage.getItem('admin_token');
+    const storedUser = localStorage.getItem('auth_user')  ?? localStorage.getItem('admin_user');
 
     if (!token) {
-      router.push('/admin/login');
+      router.push('/sign-in');
       return;
     }
 
-    // Verify token with server
+    // Verify with server
     fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
       .then(res => {
         if (!res.ok) throw new Error('Unauthorized');
         return res.json();
       })
       .then(data => {
-        // Redirect agents/writers to their own portals
-        if (data.user.role === 'agent') {
-          router.push('/agent');
-          return;
-        }
-        if (data.user.role === 'writer') {
-          router.push('/writer');
+        const role = data.user.role;
+        // Only admin/superadmin belong in this panel
+        if (role !== 'admin' && role !== 'superadmin') {
+          // Writers/agents/sellers go to their own dashboard
+          router.push('/dashboard');
           return;
         }
         setUser(data.user);
         setAuthed(true);
       })
       .catch(() => {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('auth_user');
         localStorage.removeItem('admin_token');
         localStorage.removeItem('admin_user');
-        router.push('/admin/login');
+        router.push('/sign-in');
       })
       .finally(() => setLoading(false));
 
-    // Optimistically show from localStorage while validating
     if (storedUser) {
       try { setUser(JSON.parse(storedUser)); } catch { /* ignore */ }
     }
   }, [pathname]);
 
   const handleLogout = async () => {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-    } catch { /* ignore */ }
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('admin_user');
-    router.push('/admin/login');
+    try { await fetch('/api/auth/logout', { method: 'POST' }); } catch { /* ignore */ }
+    ['auth_token','auth_user','admin_token','admin_user','agent_token','agent_user','writer_token','writer_user']
+      .forEach(k => localStorage.removeItem(k));
+    router.push('/sign-in');
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-900"><div className="text-white">Loading...</div></div>;
-  if (pathname === '/admin/login') return <>{children}</>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-900"><div className="text-white">Loading…</div></div>;
   if (!authed) return null;
 
   const initials = user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'A';

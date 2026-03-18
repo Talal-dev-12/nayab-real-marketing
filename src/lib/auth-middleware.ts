@@ -7,8 +7,12 @@ export type RouteContext = { params: Promise<Record<string, string>> };
 export function getTokenFromRequest(req: NextRequest): string | null {
   const authHeader = req.headers.get('authorization');
   if (authHeader?.startsWith('Bearer ')) return authHeader.slice(7);
-  const cookie = req.cookies.get('admin_token');
-  return cookie?.value ?? null;
+  // Accept new unified cookie OR legacy cookie — whichever is present
+  return (
+    req.cookies.get('auth_token')?.value ??
+    req.cookies.get('admin_token')?.value ??
+    null
+  );
 }
 
 // Any authenticated role

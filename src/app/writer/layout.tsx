@@ -13,40 +13,46 @@ const NAV = [
 ];
 
 export default function WriterLayout({ children }: { children: React.ReactNode }) {
-  const pathname  = usePathname();
-  const router    = useRouter();
+  const pathname = usePathname();
+  const router   = useRouter();
   const [open,    setOpen]    = useState(false);
   const [user,    setUser]    = useState<PortalUser | null>(null);
   const [authed,  setAuthed]  = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (pathname === '/writer/login') { setLoading(false); return; }
-    const token  = localStorage.getItem('writer_token');
-    const stored = localStorage.getItem('writer_user');
-    if (!token) { router.push('/writer/login'); return; }
+    // Read from unified key first, then legacy writer key
+    const token  = localStorage.getItem('auth_token')  ?? localStorage.getItem('writer_token');
+    const stored = localStorage.getItem('auth_user')   ?? localStorage.getItem('writer_user');
+
+    if (!token) { router.push('/sign-in'); return; }
     if (stored) { try { setUser(JSON.parse(stored)); } catch {} }
 
     fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
       .then(d => {
-        if (d.user.role !== 'writer') throw new Error('Not a writer');
-        setUser(d.user); setAuthed(true);
+        if (d.user.role !== 'writer') {
+          router.push('/sign-in');
+          return;
+        }
+        setUser(d.user);
+        setAuthed(true);
       })
       .catch(() => {
-        localStorage.removeItem('writer_token'); localStorage.removeItem('writer_user');
-        router.push('/writer/login');
+        ['auth_token','auth_user','writer_token','writer_user'].forEach(k => localStorage.removeItem(k));
+        router.push('/sign-in');
       })
       .finally(() => setLoading(false));
   }, [pathname]);
 
-  const logout = () => {
-    localStorage.removeItem('writer_token'); localStorage.removeItem('writer_user');
-    router.push('/writer/login');
+  const logout = async () => {
+    try { await fetch('/api/auth/logout', { method: 'POST' }); } catch { /* ignore */ }
+    ['auth_token','auth_user','admin_token','admin_user','agent_token','agent_user','writer_token','writer_user']
+      .forEach(k => localStorage.removeItem(k));
+    router.push('/sign-in');
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-900"><div className="text-white">Loading...</div></div>;
-  if (pathname === '/writer/login') return <>{children}</>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-900"><div className="text-white">Loading…</div></div>;
   if (!authed) return null;
 
   const initials = user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'W';
