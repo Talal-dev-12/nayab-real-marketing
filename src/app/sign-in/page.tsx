@@ -18,7 +18,6 @@ const ERROR_MESSAGES: Record<string, string> = {
 function SignInForm() {
   const router       = useRouter();
   const searchParams = useSearchParams();
-
   const [form,          setForm]          = useState({ email: '', password: '' });
   const [showPass,      setShowPass]      = useState(false);
   const [error,         setError]         = useState('');
