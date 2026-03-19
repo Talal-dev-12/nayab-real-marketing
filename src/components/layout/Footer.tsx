@@ -168,7 +168,7 @@ export default function Footer() {
             </Link>
 
             <Link
-              href="/admin"
+              href="/dashboard"
               className="hover:text-red-400 transition-colors"
             >
               Admin
@@ -179,7 +179,7 @@ export default function Footer() {
         <p className="text-slate-500 text-sm text-center md:text-right">
           Designed & developed by{" "}
           <Link
-            href="https://nayabrealestate.com"
+            href="https://nayabrealmarketing.com"
             className="hover:text-red-400 transition-colors"
           >
             Nayab Marketing

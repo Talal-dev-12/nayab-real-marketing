@@ -11,15 +11,15 @@ interface AdminUser { id: string; name: string; email: string; role: string; ava
 
 // All nav items — superadmin sees all; admin sees all except Admins & Settings
 const ALL_NAV = [
-  { href: '/admin',            label: 'Dashboard',    icon: LayoutDashboard, roles: ['admin','superadmin'] },
-  { href: '/admin/blogs',      label: 'Blog Posts',   icon: FileText,        roles: ['admin','superadmin'] },
-  { href: '/admin/properties', label: 'Properties',   icon: Home,            roles: ['admin','superadmin'] },
-  { href: '/admin/agents',     label: 'Agents',       icon: Users,           roles: ['admin','superadmin'] },
-  { href: '/admin/writers',    label: 'Portal Users', icon: PenTool,         roles: ['admin','superadmin'] },
-  { href: '/admin/messages',   label: 'Messages',     icon: MessageSquare,   roles: ['admin','superadmin'] },
-  { href: '/admin/analytics',  label: 'Analytics',    icon: BarChart3,       roles: ['admin','superadmin'] },
-  { href: '/admin/admins',     label: 'Admin Users',  icon: ShieldCheck,     roles: ['superadmin'] },
-  { href: '/admin/settings',   label: 'Settings',     icon: Settings,        roles: ['superadmin'] },
+  { href: '/dashboard',            label: 'Dashboard',    icon: LayoutDashboard, roles: ['admin','superadmin'] },
+  { href: '/dashboard/blogs',      label: 'Blog Posts',   icon: FileText,        roles: ['admin','superadmin'] },
+  { href: '/dashboard/properties', label: 'Properties',   icon: Home,            roles: ['admin','superadmin'] },
+  { href: '/dashboard/agents',     label: 'Agents',       icon: Users,           roles: ['admin','superadmin'] },
+  { href: '/dashboard/writers',    label: 'Portal Users', icon: PenTool,         roles: ['admin','superadmin'] },
+  { href: '/dashboard/messages',   label: 'Messages',     icon: MessageSquare,   roles: ['admin','superadmin'] },
+  { href: '/dashboard/analytics',  label: 'Analytics',    icon: BarChart3,       roles: ['admin','superadmin'] },
+  { href: '/dashboard/admins',     label: 'Admin Users',  icon: ShieldCheck,     roles: ['superadmin'] },
+  { href: '/dashboard/settings',   label: 'Settings',     icon: Settings,        roles: ['superadmin'] },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -92,7 +92,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Home size={20} className="text-white" />
             </div>
             <div>
-              <div className="text-red-400 font-bold text-sm">NAYAB REAL</div>
+              <Link href="/">
+                <div className="text-red-400 font-bold text-sm">NAYAB REAL</div>
+              </Link>
               <div className="text-white text-xs">Admin Panel</div>
             </div>
           </div>
