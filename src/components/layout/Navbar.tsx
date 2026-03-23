@@ -172,11 +172,7 @@ export default function Navbar() {
                       <div className="px-4 py-3 bg-slate-50 border-b border-slate-100">
                         <p className="text-sm font-semibold text-slate-800 truncate">{authUser.name}</p>
                         <p className="text-xs text-slate-500 truncate">{authUser.email}</p>
-                        <span className="inline-block mt-1 text-xs bg-red-100 text-red-700 font-semibold px-2 py-0.5 rounded-full capitalize">
-                          {authUser.role}
-                        </span>
                       </div>
-
                       {hasDashboard && (
                         <Link
                           href="/dashboard"
