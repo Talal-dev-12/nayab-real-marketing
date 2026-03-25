@@ -60,7 +60,7 @@ export default function NewAgentPage() {
         image: image || `https://ui-avatars.com/api/?name=${encodeURIComponent(form.name)}&background=1a2e5a&color=fff&size=400`,
         properties: 0,
       });
-      router.push('/admin/agents');
+      router.push('/dashboard/agents');
     } catch (e: any) {
       setError(e.message || 'Failed to save agent');
     } finally {

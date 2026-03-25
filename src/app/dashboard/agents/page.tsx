@@ -121,7 +121,7 @@ export default function AdminAgents() {
           <h2 className="text-2xl font-extrabold text-[#1a2e5a]">Agents</h2>
           <p className="text-slate-500 text-sm">{activeCount} active · {agents.length} total</p>
         </div>
-        <Link href="/admin/agents/new" className="bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2 transition-colors">
+        <Link href="/dashboard/agents/new" className="bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2 transition-colors">
           <Plus size={18} /> Add Agent
         </Link>
       </div>

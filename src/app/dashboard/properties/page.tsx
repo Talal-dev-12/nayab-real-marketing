@@ -44,7 +44,7 @@ export default function AdminProperties() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div><h2 className="text-2xl font-extrabold text-[#1a2e5a]">Properties</h2><p className="text-slate-500 text-sm">{properties.length} total listings</p></div>
-        <Link href="/admin/properties/new" className="bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2"><Plus size={18} /> Add Property</Link>
+        <Link href="/dashboard/properties/new" className="bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2"><Plus size={18} /> Add Property</Link>
       </div>
       <div className="bg-white rounded-xl shadow-sm p-4">
         <div className="flex items-center gap-2 border rounded-lg px-3 py-2 max-w-sm">
