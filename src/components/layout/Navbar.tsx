@@ -2,24 +2,35 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, Phone, Mail, LogIn, LogOut, User, ChevronDown, LayoutDashboard } from "lucide-react";
+import {
+  Menu,
+  X,
+  Phone,
+  Mail,
+  LogIn,
+  LogOut,
+  User,
+  ChevronDown,
+  LayoutDashboard,
+} from "lucide-react";
 import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
+import Button  from "../ui/Button";
 
 const navLinks = [
-  { href: "/",           label: "Home"       },
-  { href: "/about",      label: "About"      },
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
   { href: "/properties", label: "Properties" },
-  { href: "/services",   label: "Services"   },
-  { href: "/agents",     label: "Agents"     },
-  { href: "/blog",       label: "Blog"       },
-  { href: "/contact",    label: "Contact"    },
+  { href: "/services", label: "Services" },
+  { href: "/agents", label: "Agents" },
+  { href: "/blog", label: "Blog" },
+  { href: "/contact", label: "Contact" },
 ];
 
 interface AuthUser {
-  name:   string;
-  email:  string;
-  role:   string;
+  name: string;
+  email: string;
+  role: string;
   avatar?: string;
 }
 
@@ -27,27 +38,32 @@ interface AuthUser {
 const DASHBOARD_ROLES = ["admin", "superadmin", "writer", "agent", "seller"];
 
 export default function Navbar() {
-  const [mobileOpen,   setMobileOpen]   = useState(false);
-  const [scrolled,     setScrolled]     = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [authUser,     setAuthUser]     = useState<AuthUser | null>(null);
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
 
   const pathname = usePathname();
-  const router   = useRouter();
+  const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // ── Scroll shadow ─────────────────────────────────────────────────────────
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50); 
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // ── Read auth state from localStorage ────────────────────────────────────
   useEffect(() => {
-    const raw = localStorage.getItem("auth_user") ?? localStorage.getItem("admin_user");
+    const raw =
+      localStorage.getItem("auth_user") ?? localStorage.getItem("admin_user");
     if (raw) {
-      try { setAuthUser(JSON.parse(raw)); } catch { /* ignore */ }
+      try {
+        setAuthUser(JSON.parse(raw));
+      } catch {
+        /* ignore */
+      }
     } else {
       setAuthUser(null);
     }
@@ -56,7 +72,10 @@ export default function Navbar() {
   // ── Close dropdown when clicking outside ─────────────────────────────────
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     };
@@ -66,17 +85,34 @@ export default function Navbar() {
 
   // ── Logout ────────────────────────────────────────────────────────────────
   const handleLogout = async () => {
-    try { await fetch("/api/auth/logout", { method: "POST" }); } catch { /* ignore */ }
-    ["auth_token","auth_user","admin_token","admin_user","agent_token","agent_user","writer_token","writer_user"]
-      .forEach(k => localStorage.removeItem(k));
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      /* ignore */
+    }
+    [
+      "auth_token",
+      "auth_user",
+      "admin_token",
+      "admin_user",
+      "agent_token",
+      "agent_user",
+      "writer_token",
+      "writer_user",
+    ].forEach((k) => localStorage.removeItem(k));
     setAuthUser(null);
     setDropdownOpen(false);
     setMobileOpen(false);
     router.push("/");
   };
 
-  const initials = authUser?.name
-    ?.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2) || "U";
+  const initials =
+    authUser?.name
+      ?.split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2) || "U";
 
   const hasDashboard = authUser && DASHBOARD_ROLES.includes(authUser.role);
 
@@ -88,13 +124,19 @@ export default function Navbar() {
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-2">
               <Phone size={16} />
-              <a href="tel:+923212869000" className="hover:text-gray-200 transition">
+              <a
+                href="tel:+923212869000"
+                className="hover:text-gray-200 transition"
+              >
                 +92 321 2869000
               </a>
             </span>
             <span className="flex items-center gap-2">
               <Mail size={16} />
-              <a href="mailto:info@nayabrealestate.com" className="hover:text-gray-200 transition">
+              <a
+                href="mailto:info@nayabrealestate.com"
+                className="hover:text-gray-200 transition"
+              >
                 info@nayabrealestate.com
               </a>
             </span>
@@ -104,10 +146,11 @@ export default function Navbar() {
       </div>
 
       {/* ── Main Navbar ─────────────────────────────────────────────────── */}
-      <nav className={`bg-[#1a2e5a] sticky top-0 z-50 transition-all duration-300 ${scrolled ? "shadow-xl" : ""}`}>
+      <nav
+        className={`bg-[#1a2e5a] sticky top-0 z-50 transition-all duration-300 ${scrolled ? "shadow-xl" : ""}`}
+      >
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-20">
-
             {/* Logo */}
             <Link href="/" className="flex items-center">
               <Image
@@ -122,7 +165,6 @@ export default function Navbar() {
 
             {/* ── Desktop Menu ─────────────────────────────────────────── */}
             <div className="hidden lg:flex items-center gap-1">
-
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -139,7 +181,7 @@ export default function Navbar() {
 
               {/* CTA */}
               <Link
-                href="/contact"
+                href={authUser ? "/contact" : "/sign-in"}
                 className="ml-4 bg-red-700 hover:bg-red-600 text-white px-5 py-2 rounded font-semibold text-sm transition-colors"
               >
                 Get Free Consultation
@@ -149,12 +191,16 @@ export default function Navbar() {
               {authUser ? (
                 /* Logged-in user avatar + dropdown */
                 <div className="relative ml-3" ref={dropdownRef}>
-                  <button
-                    onClick={() => setDropdownOpen(o => !o)}
+                  <button 
+                     onClick={() => setDropdownOpen((o) => !o)}
                     className="flex items-center gap-2 bg-white/10 hover:bg-white/20 transition-colors rounded-full pl-1 pr-3 py-1"
                   >
                     {authUser.avatar ? (
-                      <img src={authUser.avatar} alt={authUser.name} className="w-8 h-8 rounded-full object-cover" />
+                      <img
+                        src={authUser.avatar}
+                        alt={authUser.name}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
                     ) : (
                       <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
                         {initials}
@@ -163,15 +209,22 @@ export default function Navbar() {
                     <span className="text-white text-sm font-medium max-w-[100px] truncate">
                       {authUser.name.split(" ")[0]}
                     </span>
-                    <ChevronDown size={14} className={`text-slate-300 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+                    <ChevronDown
+                      size={14}
+                      className={`text-slate-300 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+                    />
                   </button>
 
                   {dropdownOpen && (
                     <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50">
                       {/* User info */}
                       <div className="px-4 py-3 bg-slate-50 border-b border-slate-100">
-                        <p className="text-sm font-semibold text-slate-800 truncate">{authUser.name}</p>
-                        <p className="text-xs text-slate-500 truncate">{authUser.email}</p>
+                        <p className="text-sm font-semibold text-slate-800 truncate">
+                          {authUser.name}
+                        </p>
+                        <p className="text-xs text-slate-500 truncate">
+                          {authUser.email}
+                        </p>
                       </div>
                       {hasDashboard && (
                         <Link
@@ -179,7 +232,10 @@ export default function Navbar() {
                           onClick={() => setDropdownOpen(false)}
                           className="flex items-center gap-2 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
                         >
-                          <LayoutDashboard size={15} className="text-slate-400" />
+                          <LayoutDashboard
+                            size={15}
+                            className="text-slate-400"
+                          />
                           Dashboard
                         </Link>
                       )}
@@ -213,21 +269,21 @@ export default function Navbar() {
                   Sign In
                 </Link>
               )}
-
             </div>
 
             {/* Mobile Menu Button */}
-            <button className="lg:hidden text-white" onClick={() => setMobileOpen(!mobileOpen)}>
+            <button
+              className="lg:hidden text-white"
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
               {mobileOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
-
           </div>
         </div>
 
         {/* ── Mobile Menu ──────────────────────────────────────────────── */}
         {mobileOpen && (
           <div className="lg:hidden bg-[#0f1e3d] border-t border-slate-700">
-
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -249,15 +305,23 @@ export default function Navbar() {
                 {/* User info strip */}
                 <div className="flex items-center gap-3 mb-3 px-2">
                   {authUser.avatar ? (
-                    <img src={authUser.avatar} alt={authUser.name} className="w-10 h-10 rounded-full object-cover" />
+                    <img
+                      src={authUser.avatar}
+                      alt={authUser.name}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
                   ) : (
                     <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
                       {initials}
                     </div>
                   )}
                   <div className="min-w-0">
-                    <p className="text-white text-sm font-semibold truncate">{authUser.name}</p>
-                    <p className="text-slate-400 text-xs truncate">{authUser.email}</p>
+                    <p className="text-white text-sm font-semibold truncate">
+                      {authUser.name}
+                    </p>
+                    <p className="text-slate-400 text-xs truncate">
+                      {authUser.email}
+                    </p>
                   </div>
                 </div>
 
@@ -300,14 +364,13 @@ export default function Navbar() {
             {/* Mobile CTA */}
             <div className="p-4">
               <Link
-                href="/contact"
+                href={authUser ? "/contact" : "/sign-up"}
                 className="block text-center bg-red-700 hover:bg-red-600 text-white py-3 rounded font-semibold transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 Get Free Consultation
               </Link>
             </div>
-
           </div>
         )}
       </nav>

@@ -35,7 +35,7 @@ export default function AdminBlogs() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div><h2 className="text-2xl font-extrabold text-[#1a2e5a]">Blog Posts</h2><p className="text-slate-500 text-sm">{blogs.length} total posts</p></div>
-        <Link href="/admin/blogs/new" className="bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2"><Plus size={18} /> New Post</Link>
+        <Link href="/dashboard/blogs/new" className="bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2"><Plus size={18} /> New Post</Link>
       </div>
       <div className="bg-white rounded-xl shadow-sm p-4 flex gap-3">
         <div className="flex items-center gap-2 border rounded-lg px-3 py-2 flex-1">
@@ -76,7 +76,7 @@ export default function AdminBlogs() {
                     <button onClick={() => togglePublish(blog)} className="p-1.5 rounded hover:bg-slate-100 text-slate-500" title={blog.published ? 'Unpublish' : 'Publish'}>
                       {blog.published ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
-                    <Link href={`/admin/blogs/${(blog as any)._id}`} className="p-1.5 rounded hover:bg-blue-50 text-blue-600" title="Edit">
+                    <Link href={`/dashboard/blogs/${(blog as any)._id}`} className="p-1.5 rounded hover:bg-blue-50 text-blue-600" title="Edit">
                       <Edit size={16} />
                     </Link>
                     <button onClick={() => deleteBlog(blog)} className="p-1.5 rounded hover:bg-red-50 text-red-600" title="Delete"><Trash2 size={16} /></button>

@@ -66,7 +66,7 @@ export default function NewPropertyPage() {
         bathrooms: Number(form.bathrooms) || 0,
         images,
       });
-      router.push('/admin/properties');
+      router.push('/dashboard/properties');
     } catch (e: any) { setError(e.message || 'Failed to save property'); } finally { setSaving(false); }
   };
 
