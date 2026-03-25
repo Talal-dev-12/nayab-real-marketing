@@ -8,101 +8,79 @@ import { Search, SlidersHorizontal, MapPin, X } from "lucide-react";
 import type { Property } from "@/types";
 
 const POPULAR_AREAS = [
-  "Clifton",
-  "DHA",
-  "Gulshan",
-  "Johar",
-  "Bahria Town",
-  "PECHS",
-  "North Nazimabad",
-  "Gulberg",
-  "F-7 Islamabad",
-  "Blue Area",
+  "Clifton", "DHA", "Gulshan", "Johar", "Bahria Town",
+  "PECHS", "North Nazimabad", "Gulberg", "F-7 Islamabad", "Blue Area",
 ];
 
 export default function PropertiesPage() {
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading,    setLoading]    = useState(true);
-  const [page,       setPage]       = useState(1);
-  const [lastPage,   setLastPage]   = useState(1);
-  const [total,      setTotal]      = useState(0);
-  const [searchInput, setSearchInput] = useState("");
+  const [properties,      setProperties]      = useState<Property[]>([]);
+  const [loading,         setLoading]         = useState(true);
+  const [page,            setPage]            = useState(1);
+  const [lastPage,        setLastPage]        = useState(1);
+  const [total,           setTotal]           = useState(0);
+  const [searchInput,     setSearchInput]     = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [filters, setFilters] = useState({
-    type:      "all",
-    priceType: "all",
-    city:      "all",
-    search:    "",           // ← only updates on button click / suggestion pick
+  const [filters,         setFilters]         = useState({
+    type: "all", priceType: "all", city: "all", search: "",
   });
 
   const searchRef = useRef<HTMLDivElement>(null);
 
-  // Close suggestions when clicking outside
+  // Close suggestions on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node))
         setShowSuggestions(false);
-      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Reset page on filter change
-  useEffect(() => {
-    setPage(1);
-  }, [filters]);
+  // Reset to page 1 on filter change
+  useEffect(() => { setPage(1); }, [filters]);
 
   // Fetch from API
   useEffect(() => {
     setLoading(true);
-
     const params = new URLSearchParams({
       status: "available",
       page:   page.toString(),
       limit:  "12",
     });
-
     if (filters.priceType !== "all") params.set("priceType", filters.priceType);
     if (filters.type      !== "all") params.set("type",      filters.type);
     if (filters.city      !== "all") params.set("city",      filters.city);
-    if (filters.search)              params.set("search",    filters.search); // ✅ server-side search
+    if (filters.search)              params.set("search",    filters.search);
 
     fetch(`/api/properties?${params}`)
       .then((r) => r.json())
       .then((d) => {
         setProperties(d.properties ?? []);
         setLastPage(d.pages || 1);
-        setTotal(d.total || 0);
+        setTotal(d.total  || 0);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [filters, page]);
 
-  // Trigger search
-  const handleSearch = () => {
+  const triggerSearch = () => {
     setShowSuggestions(false);
     setFilters((f) => ({ ...f, search: searchInput.trim() }));
   };
 
-  // Pick a suggestion
-  const handleSuggestion = (area: string) => {
+  const pickSuggestion = (area: string) => {
     setSearchInput(area);
     setShowSuggestions(false);
     setFilters((f) => ({ ...f, search: area }));
   };
 
-  // Clear search
-  const handleClear = () => {
+  const clearSearch = () => {
     setSearchInput("");
     setFilters((f) => ({ ...f, search: "" }));
   };
 
-  // Filtered suggestions based on what's typed
   const suggestions = searchInput.trim()
-    ? POPULAR_AREAS.filter((a) =>
-        a.toLowerCase().includes(searchInput.toLowerCase())
-      )
+    ? POPULAR_AREAS.filter((a) => a.toLowerCase().includes(searchInput.toLowerCase()))
     : POPULAR_AREAS;
 
   return (
@@ -116,10 +94,10 @@ export default function PropertiesPage() {
 
       <div className="max-w-7xl mx-auto px-4 py-10">
 
-        {/* Filters */}
+        {/* ── Filters ─────────────────────────────────────────────────────── */}
         <div className="bg-white rounded-xl shadow p-5 mb-8 flex flex-wrap gap-4 items-end">
 
-          {/* Search with suggestions */}
+          {/* Search */}
           <div className="flex-1 min-w-[260px]" ref={searchRef}>
             <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">
               Search
@@ -130,32 +108,23 @@ export default function PropertiesPage() {
                 <Search size={16} className="text-red-600 ml-3 flex-shrink-0" />
                 <input
                   type="text"
+                  value={searchInput}
                   placeholder="Search by area, title or location..."
                   className="outline-none text-sm flex-1 px-2 py-2.5"
-                  value={searchInput}
-                  onChange={(e) => {
-                    setSearchInput(e.target.value);
-                    setShowSuggestions(true);
-                  }}
+                  onChange={(e) => { setSearchInput(e.target.value); setShowSuggestions(true); }}
                   onFocus={() => setShowSuggestions(true)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && triggerSearch()}
                 />
-                {/* Clear button */}
                 {searchInput && (
-                  <button
-                    onClick={handleClear}
-                    className="text-slate-400 hover:text-slate-600 px-2 transition-colors"
-                  >
+                  <button onClick={clearSearch} className="text-slate-400 hover:text-slate-600 px-2">
                     <X size={14} />
                   </button>
                 )}
-                {/* Search button */}
                 <button
-                  onClick={handleSearch}
-                  className="bg-red-700 hover:bg-red-600 text-white px-4 py-2.5 text-sm font-semibold transition-colors flex items-center gap-1.5"
+                  onClick={triggerSearch}
+                  className="bg-red-700 hover:bg-red-600 text-white px-4 py-2.5 text-sm font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap"
                 >
-                  <Search size={14} />
-                  Search
+                  <Search size={14} /> Search
                 </button>
               </div>
 
@@ -168,8 +137,8 @@ export default function PropertiesPage() {
                   {suggestions.map((area) => (
                     <button
                       key={area}
-                      onClick={() => handleSuggestion(area)}
-                      className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-slate-700 hover:bg-red-50 hover:text-red-700 transition-colors text-left"
+                      onClick={() => pickSuggestion(area)}
+                      className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-slate-700 hover:bg-red-50 hover:text-red-700 transition-colors"
                     >
                       <MapPin size={14} className="text-red-400 flex-shrink-0" />
                       {area}
@@ -178,27 +147,11 @@ export default function PropertiesPage() {
                 </div>
               )}
             </div>
-
-            {/* Active search tag */}
-            {filters.search && (
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs text-slate-500">Showing results for:</span>
-                <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 text-xs font-semibold px-2.5 py-1 rounded-full">
-                  <MapPin size={10} />
-                  {filters.search}
-                  <button onClick={handleClear} className="ml-1 hover:text-red-900">
-                    <X size={10} />
-                  </button>
-                </span>
-              </div>
-            )}
           </div>
 
           {/* Listing Type */}
           <div>
-            <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">
-              Listing Type
-            </label>
+            <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Listing Type</label>
             <select
               className="border rounded-lg px-3 py-2.5 text-sm outline-none"
               onChange={(e) => setFilters((f) => ({ ...f, priceType: e.target.value }))}
@@ -211,9 +164,7 @@ export default function PropertiesPage() {
 
           {/* Property Type */}
           <div>
-            <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">
-              Property Type
-            </label>
+            <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Property Type</label>
             <select
               className="border rounded-lg px-3 py-2.5 text-sm outline-none"
               onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value }))}
@@ -228,9 +179,7 @@ export default function PropertiesPage() {
 
           {/* City */}
           <div>
-            <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">
-              City
-            </label>
+            <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">City</label>
             <select
               className="border rounded-lg px-3 py-2.5 text-sm outline-none"
               onChange={(e) => setFilters((f) => ({ ...f, city: e.target.value }))}
@@ -249,7 +198,7 @@ export default function PropertiesPage() {
           </div>
         </div>
 
-        {/* Grid */}
+        {/* ── Grid ────────────────────────────────────────────────────────── */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[...Array(6)].map((_, i) => <PropertyCardSkeleton key={i} />)}
@@ -260,10 +209,7 @@ export default function PropertiesPage() {
             <p className="text-xl font-semibold">No properties found</p>
             <p className="text-sm mt-2">Try a different area or adjust your filters</p>
             {filters.search && (
-              <button
-                onClick={handleClear}
-                className="mt-4 text-sm text-red-700 font-semibold hover:underline"
-              >
+              <button onClick={clearSearch} className="mt-4 text-sm text-red-700 font-semibold hover:underline">
                 Clear search
               </button>
             )}
@@ -274,7 +220,7 @@ export default function PropertiesPage() {
           </div>
         )}
 
-        {/* Pagination */}
+        {/* ── Pagination ──────────────────────────────────────────────────── */}
         {!loading && lastPage > 1 && (
           <div className="flex items-center justify-center gap-2 mt-10">
             <button
@@ -289,9 +235,7 @@ export default function PropertiesPage() {
                 key={num}
                 onClick={() => setPage(num)}
                 className={`w-9 h-9 rounded-lg text-sm font-bold transition-colors ${
-                  page === num
-                    ? "bg-red-700 text-white"
-                    : "border text-slate-600 hover:bg-slate-100"
+                  page === num ? "bg-red-700 text-white" : "border text-slate-600 hover:bg-slate-100"
                 }`}
               >
                 {num}
