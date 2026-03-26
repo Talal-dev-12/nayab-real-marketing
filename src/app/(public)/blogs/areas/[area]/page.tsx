@@ -1,0 +1,156 @@
+import { Metadata } from 'next';
+import Link from 'next/link';
+   
+  
+import BlogCard from '@/components/ui/BlogCard';
+import { MapPin, Building2, ArrowLeft, FileText } from 'lucide-react';
+
+interface Props { params: Promise<{ area: string }> }
+
+async function getAreaData(areaSlug: string) {
+  const base = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  const [blogsRes, taxRes] = await Promise.all([
+    fetch(`${base}/api/blogs?published=true&area=${areaSlug}&limit=100`, { cache: 'no-store' }),
+    fetch(`${base}/api/blogs/taxonomy`, { cache: 'no-store' }),
+  ]);
+  const blogsData = await blogsRes.json();
+  const tax = await taxRes.json();
+  const areaInfo = (tax.areas || []).find((a: any) => a.slug === areaSlug);
+  const schemes = (tax.schemes || []).filter((s: any) => s.areaSlug === areaSlug);
+  return { blogs: blogsData.blogs ?? [], areaInfo, schemes };
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { area } = await params;
+  if (area === 'null' || area === 'undefined') {
+    return { title: 'Invalid Area | Nayab Real Marketing' };
+  }
+  const { areaInfo } = await getAreaData(area);
+  const label = areaInfo?.label || area.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+  return {
+    title: `${label} Karachi Property Guides | Nayab Real Marketing`,
+    description: `Explore property trends, investment opportunities and housing schemes in ${label}, Karachi. Latest articles and market insights.`,
+    openGraph: {
+      title: `${label} Property Guides — Nayab Real Marketing`,
+      description: `Investment insights and property updates for ${label}, Karachi.`,
+    },
+  };
+}
+
+export default async function AreaPage({ params }: Props) {
+  const { area } = await params;
+
+  // Guard: if slug is literally "null" or "undefined", show a friendly error
+  if (area === 'null' || area === 'undefined') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        
+        <div className="max-w-3xl mx-auto px-4 py-20 text-center">
+          <MapPin size={48} className="mx-auto mb-4 text-slate-300" />
+          <h1 className="text-2xl font-bold text-slate-600 mb-2">Invalid Area Page</h1>
+          <p className="text-slate-400 mb-6">This blog has no area assigned. Please edit it in the admin panel.</p>
+          <Link href="/blogs/areas" className="text-red-600 font-semibold hover:underline">← Browse all areas</Link>
+        </div>
+     
+      </div>
+    );
+  }
+
+  const { blogs, areaInfo, schemes } = await getAreaData(area);
+  const label = areaInfo?.label || area.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      
+
+      {/* Hero */}
+      <div className="primary-gradient py-16">
+        <div className="max-w-5xl mx-auto px-4">
+          <nav className="flex items-center gap-2 text-xs text-slate-400 mb-4">
+            <Link href="/" className="hover:text-white">Home</Link>
+            <span>/</span>
+            <Link href="/blog" className="hover:text-white">Blog</Link>
+            <span>/</span>
+            <Link href="/blogs/areas" className="hover:text-white">Areas</Link>
+            <span>/</span>
+            <span className="text-white">{label}</span>
+          </nav>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-12 h-12 bg-red-600/20 border border-red-500/30 rounded-xl flex items-center justify-center">
+              <MapPin size={22} className="text-red-400" />
+            </div>
+            <div>
+              <h1 className="text-3xl md:text-4xl font-extrabold text-white">{label}</h1>
+              <p className="text-slate-400 text-sm">{blogs.length} article{blogs.length !== 1 ? 's' : ''} · Karachi</p>
+            </div>
+          </div>
+          <p className="text-slate-300 max-w-2xl mt-2">
+            Property investment guides, market insights and development news for {label}, Karachi.
+          </p>
+
+          {/* Scheme pills */}
+          {schemes.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-5">
+              {schemes.map((s: any) => (
+                <Link key={s.slug} href={`/blogs/schemes/${s.slug}`}
+                  className="inline-flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-full border border-white/20 transition-colors">
+                  <Building2 size={11} /> {s.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-4 py-12">
+
+        {/* Schemes section */}
+        {schemes.length > 0 && (
+          <div className="mb-10">
+            <h2 className="font-extrabold text-[#1a2e5a] text-xl mb-4 flex items-center gap-2">
+              <Building2 size={18} className="text-red-600" /> Housing Schemes in {label}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {schemes.map((s: any) => (
+                <Link key={s.slug} href={`/blogs/schemes/${s.slug}`}
+                  className="group bg-white rounded-xl border-2 border-transparent hover:border-red-200 shadow-sm p-4 flex items-center gap-3 transition-all hover:shadow-md">
+                  <div className="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center group-hover:bg-red-100 shrink-0">
+                    <Building2 size={16} className="text-red-600" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-[#1a2e5a] text-sm truncate group-hover:text-red-700">{s.label}</p>
+                    <p className="text-xs text-slate-400">{s.blogCount} article{s.blogCount !== 1 ? 's' : ''}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Articles */}
+        <div>
+          <h2 className="font-extrabold text-[#1a2e5a] text-xl mb-5 flex items-center gap-2">
+            <FileText size={18} className="text-red-600" /> All Articles for {label}
+          </h2>
+          {blogs.length === 0 ? (
+            <div className="text-center py-20 text-slate-400">
+              <p>No articles published for this area yet.</p>
+              <Link href="/blog" className="text-red-600 text-sm font-semibold mt-2 inline-block hover:underline">Browse all articles →</Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {blogs.map((b: any) => <BlogCard key={b._id} blog={b} />)}
+            </div>
+          )}
+        </div>
+
+        {/* Back link */}
+        <div className="mt-10">
+          <Link href="/blogs/areas" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-red-600 font-semibold">
+            <ArrowLeft size={15} /> All Areas
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

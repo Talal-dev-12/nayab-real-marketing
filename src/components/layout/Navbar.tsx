@@ -137,11 +137,11 @@ export default function Navbar() {
                 href="mailto:info@nayabrealestate.com"
                 className="hover:text-gray-200 transition"
               >
-                info@nayabrealestate.com
+                info@nayabrealmarketing.com
               </a>
             </span>
           </div>
-          <span>Mon - Thursday : 9:00 AM - 7:00 PM</span>
+          <span>Mon - Thursday : 11:00 AM - 7:00 PM</span>
         </div>
       </div>
 
