@@ -46,7 +46,7 @@ export default function LoanCalculator() {
           </p>
         </div>
       </div>
-      
+       
       <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-2xl shadow-sm p-6 space-y-5">

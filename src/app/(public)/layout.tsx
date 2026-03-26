@@ -3,6 +3,7 @@ import "../globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
+
 export const metadata: Metadata = {
   title:
     "Nayab Real Marketing | Properties for Sale in Karachi | Plots & Houses",
