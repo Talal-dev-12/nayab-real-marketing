@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import "../globals.css";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title:
@@ -20,7 +22,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://nayabrealmarketing.com/og-image.jpg",
+        url: "https://nayab-real-marketing.vercel.app/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Nayab Real Marketing",
@@ -72,7 +74,11 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body suppressHydrationWarning>{children}</body>
+      <body suppressHydrationWarning>
+        <Navbar />
+        {children}
+           <Footer />
+           </body>
     </html>
   );
 }

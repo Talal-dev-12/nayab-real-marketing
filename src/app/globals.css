@@ -61,6 +61,9 @@ body {
   @apply bg-red-700 text-white;
 }
 
+.primary-gradient {
+  background: linear-gradient(to bottom, #1a2e5a, #0f172a);
+}
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
