@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: process.env.NEXT_PUBLIC_BASE_URL,
   },
+  icons: {
+    icon: "/favicon.ico",
+  },
   openGraph: {
     title: "Nayab Real Marketing | Properties in Karachi",
     description:
