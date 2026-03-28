@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 export const metadata: Metadata = {
   title:
     "Nayab Real Marketing | Properties for Sale in Karachi | Plots & Houses",
@@ -83,6 +84,7 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <Analytics />
+        <SpeedInsights />
         {children}
       </body>
     </html>
