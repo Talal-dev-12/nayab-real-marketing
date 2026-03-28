@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 export const metadata: Metadata = {
-
   title:
     "Nayab Real Marketing | Properties for Sale in Karachi | Plots & Houses",
   description:
@@ -26,7 +25,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg`,
+        url: "https://nayabrealmarketing.com/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Nayab Real Marketing",
@@ -60,7 +59,10 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin=""
         />
-        <meta property="og:image" content="https://nayabrealmarketing.com/og-image.jpg" />
+        <meta
+          property="og:image"
+          content="https://nayabrealmarketing.com/og-image.jpg"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -79,7 +81,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body suppressHydrationWarning><Analytics />{children}</body>
+      <body suppressHydrationWarning>
+        <Analytics />
+        {children}
+      </body>
     </html>
   );
 }
