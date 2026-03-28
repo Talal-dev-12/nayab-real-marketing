@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 export const metadata: Metadata = {
+
   title:
     "Nayab Real Marketing | Properties for Sale in Karachi | Plots & Houses",
   description:
@@ -59,6 +60,7 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin=""
         />
+        <meta property="og:image" content="https://nayabrealmarketing.com/og-image.jpg" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
