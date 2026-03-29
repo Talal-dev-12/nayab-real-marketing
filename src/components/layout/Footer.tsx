@@ -36,10 +36,10 @@ export default function Footer() {
             </p>
             <div className="flex gap-3">
               {[
-                { icon: Facebook, href: "#" },
-                { icon: Twitter, href: "#" },
-                { icon: Instagram, href: "#" },
-                { icon: Youtube, href: "#" },
+                { icon: Facebook, href: "https://www.facebook.com/nayabrealmarketing" },
+                { icon: Twitter, href: "https://twitter.com/nayabrealmarketing" },
+                { icon: Instagram, href: "https://www.instagram.com/nayabrealmarketing" },
+                { icon: Youtube, href: "https://www.youtube.com/channel/UC_Xt5Q5X5Q5X5Q5X5Q5X5Q5" },
               ].map(({ icon: Icon, href }, i) => (
                 <a
                   key={i}
