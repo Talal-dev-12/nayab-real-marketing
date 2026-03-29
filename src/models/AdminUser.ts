@@ -10,6 +10,7 @@ export interface IAdminUser extends Document {
   avatar?: string;
   active: boolean;
   lastLogin?: Date;
+  savedProperties: string[];
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;

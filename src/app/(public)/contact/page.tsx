@@ -1,9 +1,16 @@
-'use client';
-import { useState, useRef } from 'react';
-   
-  
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle, Loader2 } from 'lucide-react';
-import Link from 'next/link';
+"use client";
+import { useState, useRef } from "react";
+
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
+  Send,
+  CheckCircle,
+  Loader2,
+} from "lucide-react";
+import Link from "next/link";
 
 const COOLDOWN_MS = 60_000; // 1 minute between submissions
 
@@ -339,6 +346,23 @@ export default function ContactPage() {
             )}
           </div>
         </div>
+          {/* Google Maps */}
+          <div className=" w-full lg:mt-0">
+            <h2 className="text-2xl font-extrabold text-[#1a2e5a] mb-4">
+              Find Us
+            </h2>
+            <div className="rounded-2xl overflow-hidden shadow-md border border-slate-200 h-96">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4535.701240947959!2d67.114488!3d24.9573671!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb34709058d9b51%3A0xf7362cb4ee87fca!2sNAYAB%20REAL%20MARKETING!5e1!3m2!1sen!2s!4v1774802864171!5m2!1sen!2s"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+          </div>
       </div>
     </div>
   );

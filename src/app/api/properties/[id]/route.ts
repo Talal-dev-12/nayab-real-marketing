@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { Property } from '@/models/Property';
 import { requireAuth, RouteContext } from '@/lib/auth-middleware';
-import { JwtPayload, UserRole } from '@/lib/jwt';
+import { JwtPayload } from '@/lib/jwt';
+import { can } from '@/lib/rbac';
 
 export async function GET(_req: NextRequest, ctx: RouteContext) {
   try {
@@ -23,13 +24,23 @@ export const PUT = requireAuth(async (req: NextRequest, user: JwtPayload, ctx: R
     const property = await Property.findById(id);
     if (!property) return NextResponse.json({ error: 'Property not found' }, { status: 404 });
 
-    // Agents can only edit their own properties
-    const role = user.role as UserRole;
-    if (role === 'agent' && property.agentId !== user.id) {
-      return NextResponse.json({ error: 'Forbidden - not your property' }, { status: 403 });
+    // Ownership check: sellers can only edit their own submissions
+    if (user.role === 'seller' && property.submittedBy !== user.id) {
+      return NextResponse.json({ error: 'Forbidden – not your listing' }, { status: 403 });
+    }
+    // Agents can only edit properties assigned to them
+    if (user.role === 'agent' && property.agentId !== user.id) {
+      return NextResponse.json({ error: 'Forbidden – not your property' }, { status: 403 });
     }
 
     const body = await req.json();
+
+    // Sellers cannot change featured status or agentId
+    if (user.role === 'seller') {
+      delete body.featured;
+      delete body.agentId;
+    }
+
     const updated = await Property.findByIdAndUpdate(id, body, { new: true, runValidators: true });
     return NextResponse.json(updated);
   } catch (error) {
@@ -45,10 +56,10 @@ export const DELETE = requireAuth(async (_req: NextRequest, user: JwtPayload, ct
     const property = await Property.findById(id);
     if (!property) return NextResponse.json({ error: 'Property not found' }, { status: 404 });
 
-    // Agents can only delete their own properties
-    const role = user.role as UserRole;
-    if (role === 'agent' && property.agentId !== user.id) {
-      return NextResponse.json({ error: 'Forbidden - not your property' }, { status: 403 });
+    // Only admins/superadmin can delete any property
+    // Sellers cannot delete — they should contact admin
+    if (!can(user.role, 'deleteAnyProperty')) {
+      return NextResponse.json({ error: 'Forbidden – only admins can delete listings' }, { status: 403 });
     }
 
     await Property.findByIdAndDelete(id);

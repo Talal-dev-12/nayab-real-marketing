@@ -1,11 +1,170 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
-import { Home, FileText, Users, MessageSquare, TrendingUp, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, PieChart, Pie, Cell, Legend,
+} from 'recharts';
+import { Home, FileText, Users, MessageSquare, TrendingUp, ArrowUpRight, Plus, Send } from 'lucide-react';
 import { api } from '@/lib/api-client';
+import { can } from '@/lib/rbac';
+import type { UserRole } from '@/lib/jwt';
 
-export default function AdminDashboard() {
+// ── Hook: read current user from localStorage (already verified by layout) ───
+function useCurrentUser() {
+  const [user, setUser] = useState<{ id: string; name: string; role: UserRole } | null>(null);
+  useEffect(() => {
+    const raw = localStorage.getItem('auth_user') ?? localStorage.getItem('admin_user');
+    if (raw) try { setUser(JSON.parse(raw)); } catch { /* ignore */ }
+  }, []);
+  return user;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SELLER dashboard — shows only their own submitted properties
+// ─────────────────────────────────────────────────────────────────────────────
+function SellerDashboard({ userId }: { userId: string }) {
+  const [properties, setProperties] = useState<any[]>([]);
+
+  useEffect(() => {
+    api.get<any>(`/api/properties?submittedBy=${userId}&limit=200`)
+      .then(d => setProperties(d.properties ?? []))
+      .catch(() => {});
+  }, [userId]);
+
+  const available = properties.filter(p => p.status === 'available').length;
+  const sold      = properties.filter(p => p.status === 'sold').length;
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        {[
+          { label: 'My Listings',      value: properties.length, icon: Home,        color: 'bg-[#1a2e5a]' },
+          { label: 'Available',        value: available,          icon: TrendingUp,  color: 'bg-emerald-500' },
+          { label: 'Sold / Rented',    value: sold,               icon: ArrowUpRight, color: 'bg-amber-500' },
+        ].map(({ label, value, icon: Icon, color }) => (
+          <div key={label} className="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
+            <div className={`${color} w-14 h-14 rounded-xl flex items-center justify-center shrink-0`}>
+              <Icon size={24} className="text-white" />
+            </div>
+            <div>
+              <p className="text-slate-500 text-sm">{label}</p>
+              <p className="text-3xl font-extrabold text-[#1a2e5a]">{value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-bold text-[#1a2e5a] text-lg">My Recent Listings</h2>
+          <Link href="/dashboard/properties/new"
+            className="bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2">
+            <Plus size={16} /> Add Property
+          </Link>
+        </div>
+        <div className="space-y-3">
+          {properties.slice(0, 5).map(p => (
+            <div key={p._id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 border border-slate-100">
+              <img src={p.images?.[0]} className="w-12 h-10 rounded-lg object-cover" alt="" />
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-sm text-[#1a2e5a] truncate">{p.title}</p>
+                <p className="text-xs text-slate-400">{p.city} · PKR {(p.price / 100000).toFixed(0)} Lac</p>
+              </div>
+              <span className={`text-xs font-bold px-2 py-1 rounded-full ${p.status === 'available' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                {p.status}
+              </span>
+            </div>
+          ))}
+          {properties.length === 0 && (
+            <div className="text-center py-10 text-slate-400">
+              <Home size={32} className="mx-auto mb-3 text-slate-300" />
+              <p className="text-sm">No properties yet.</p>
+              <Link href="/dashboard/properties/new" className="text-red-700 font-semibold text-sm hover:underline mt-1 inline-block">
+                Add your first listing →
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WRITER dashboard — shows their own blogs
+// ─────────────────────────────────────────────────────────────────────────────
+function WriterDashboard({ userId }: { userId: string }) {
+  const [blogs, setBlogs] = useState<any[]>([]);
+
+  useEffect(() => {
+    api.get<any>(`/api/blogs?authorId=${userId}&limit=200`)
+      .then(d => setBlogs(d.blogs ?? []))
+      .catch(() => {});
+  }, [userId]);
+
+  const published = blogs.filter(b => b.published).length;
+  const drafts    = blogs.filter(b => !b.published).length;
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        {[
+          { label: 'Total Articles',  value: blogs.length, icon: FileText,     color: 'bg-[#1a2e5a]'  },
+          { label: 'Published',       value: published,     icon: TrendingUp,   color: 'bg-emerald-500' },
+          { label: 'Drafts',          value: drafts,        icon: FileText,     color: 'bg-amber-500'  },
+        ].map(({ label, value, icon: Icon, color }) => (
+          <div key={label} className="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
+            <div className={`${color} w-14 h-14 rounded-xl flex items-center justify-center shrink-0`}>
+              <Icon size={24} className="text-white" />
+            </div>
+            <div>
+              <p className="text-slate-500 text-sm">{label}</p>
+              <p className="text-3xl font-extrabold text-[#1a2e5a]">{value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-bold text-[#1a2e5a] text-lg">My Recent Articles</h2>
+          <Link href="/dashboard/blogs/new"
+            className="bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2">
+            <Plus size={16} /> New Article
+          </Link>
+        </div>
+        <div className="space-y-3">
+          {blogs.slice(0, 5).map(b => (
+            <div key={b._id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 border border-slate-100">
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-sm text-[#1a2e5a] truncate">{b.title}</p>
+                <p className="text-xs text-slate-400">{b.category}</p>
+              </div>
+              <span className={`text-xs font-bold px-2 py-1 rounded-full ${b.published ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                {b.published ? 'Published' : 'Draft'}
+              </span>
+            </div>
+          ))}
+          {blogs.length === 0 && (
+            <div className="text-center py-10 text-slate-400">
+              <FileText size={32} className="mx-auto mb-3 text-slate-300" />
+              <p className="text-sm">No articles yet.</p>
+              <Link href="/dashboard/blogs/new" className="text-red-700 font-semibold text-sm hover:underline mt-1 inline-block">
+                Write your first article →
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ADMIN / SUPERADMIN dashboard — full stats
+// ─────────────────────────────────────────────────────────────────────────────
+function AdminDashboard() {
   const [stats, setStats] = useState({ properties: 0, blogs: 0, agents: 0, unreadMessages: 0 });
   const [trafficData] = useState(() => {
     const d = []; const now = new Date();
@@ -26,9 +185,9 @@ export default function AdminDashboard() {
       api.get<any>('/api/contact'),
     ]).then(([props, blogs, agents, messages]) => {
       const properties = props.properties ?? [];
-      const blogList = blogs.blogs ?? [];
-      const agentList = Array.isArray(agents) ? agents : [];
-      const msgList = Array.isArray(messages) ? messages : [];
+      const blogList   = blogs.blogs ?? [];
+      const agentList  = Array.isArray(agents) ? agents : [];
+      const msgList    = Array.isArray(messages) ? messages : [];
       setStats({
         properties: properties.length,
         blogs: blogList.filter((b: any) => b.published).length,
@@ -48,20 +207,14 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {[
-          { label: 'Total Properties', value: stats.properties, icon: Home, color: 'bg-blue-500', change: '+5%', up: true },
-          { label: 'Published Blogs', value: stats.blogs, icon: FileText, color: 'bg-red-600', change: '+12%', up: true },
-          { label: 'Active Agents', value: stats.agents, icon: Users, color: 'bg-emerald-500', change: '+2%', up: true },
-          { label: 'Unread Messages', value: stats.unreadMessages, icon: MessageSquare, color: 'bg-amber-500', change: stats.unreadMessages > 0 ? 'New!' : '0 new', up: false },
-        ].map(({ label, value, icon: Icon, color, change, up }) => (
+          { label: 'Total Properties', value: stats.properties,      icon: Home,          color: 'bg-blue-500'   },
+          { label: 'Published Blogs',  value: stats.blogs,           icon: FileText,      color: 'bg-red-600'    },
+          { label: 'Active Agents',    value: stats.agents,          icon: Users,         color: 'bg-emerald-500' },
+          { label: 'Unread Messages',  value: stats.unreadMessages,  icon: MessageSquare, color: 'bg-amber-500'  },
+        ].map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4 hover:shadow-md transition-shadow">
             <div className={`${color} w-14 h-14 rounded-xl flex items-center justify-center shrink-0`}><Icon size={24} className="text-white" /></div>
-            <div className="flex-1">
-              <p className="text-slate-500 text-sm">{label}</p>
-              <p className="text-3xl font-extrabold text-[#1a2e5a]">{value}</p>
-              <p className={`text-xs flex items-center gap-1 mt-1 ${up ? 'text-emerald-600' : 'text-amber-600'}`}>
-                {up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}{change}
-              </p>
-            </div>
+            <div><p className="text-slate-500 text-sm">{label}</p><p className="text-3xl font-extrabold text-[#1a2e5a]">{value}</p></div>
           </div>
         ))}
       </div>
@@ -76,14 +229,15 @@ export default function AdminDashboard() {
             <AreaChart data={trafficData}>
               <defs>
                 <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#c0392b" stopOpacity={0.2} /><stop offset="95%" stopColor="#c0392b" stopOpacity={0} />
+                  <stop offset="5%"  stopColor="#c0392b" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#c0392b" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={v => v.slice(5)} />
               <YAxis tick={{ fontSize: 11 }} />
               <Tooltip />
-              <Area type="monotone" dataKey="visitors" stroke="#c0392b" fill="url(#colorVisitors)" strokeWidth={2} name="Visitors" />
+              <Area type="monotone" dataKey="visitors"  stroke="#c0392b" fill="url(#colorVisitors)" strokeWidth={2} name="Visitors" />
               <Area type="monotone" dataKey="pageViews" stroke="#1a2e5a" fill="none" strokeWidth={2} strokeDasharray="4 4" name="Page Views" />
             </AreaChart>
           </ResponsiveContainer>
@@ -105,7 +259,12 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-xl shadow-sm p-6">
           <h2 className="font-bold text-[#1a2e5a] text-lg mb-4">Quick Actions</h2>
           <div className="grid grid-cols-2 gap-3">
-            {[{ label: 'New Blog Post', href: '/admin/blogs/new', icon: FileText, color: 'bg-red-700' }, { label: 'Add Property', href: '/admin/properties/new', icon: Home, color: 'bg-[#1a2e5a]' }, { label: 'Add Agent', href: '/admin/agents/new', icon: Users, color: 'bg-emerald-600' }, { label: 'View Analytics', href: '/admin/analytics', icon: TrendingUp, color: 'bg-amber-500' }].map(({ label, href, icon: Icon, color }) => (
+            {[
+              { label: 'New Blog Post',   href: '/dashboard/blogs/new',       icon: FileText,      color: 'bg-red-700'    },
+              { label: 'Add Property',    href: '/dashboard/properties/new',  icon: Home,          color: 'bg-[#1a2e5a]'  },
+              { label: 'Add Agent',       href: '/dashboard/agents/new',      icon: Users,         color: 'bg-emerald-600' },
+              { label: 'Inquiries',       href: '/dashboard/inquiries',       icon: TrendingUp,    color: 'bg-amber-500'  },
+            ].map(({ label, href, icon: Icon, color }) => (
               <Link key={href} href={href} className={`${color} hover:opacity-90 text-white rounded-xl p-4 flex items-center gap-3 transition-opacity`}>
                 <Icon size={20} /><span className="font-semibold text-sm">{label}</span>
               </Link>
@@ -115,11 +274,11 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-bold text-[#1a2e5a] text-lg">Recent Messages</h2>
-            <Link href="/admin/messages" className="text-red-700 text-sm font-semibold hover:underline">View All</Link>
+            <Link href="/dashboard/messages" className="text-red-700 text-sm font-semibold hover:underline">View All</Link>
           </div>
           <div className="space-y-3">
             {recentMessages.map((msg: any) => (
-              <div key={msg._id ?? msg.id} className={`flex items-start gap-3 p-3 rounded-lg ${msg.read ? 'bg-gray-50' : 'bg-red-50'}`}>
+              <div key={msg._id} className={`flex items-start gap-3 p-3 rounded-lg ${msg.read ? 'bg-gray-50' : 'bg-red-50'}`}>
                 <div className="w-8 h-8 bg-[#1a2e5a] rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0">{msg.name[0]}</div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm text-[#1a2e5a] truncate">{msg.name}</p>
@@ -133,4 +292,16 @@ export default function AdminDashboard() {
       </div>
     </div>
   );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ROOT — picks the right dashboard by role
+// ─────────────────────────────────────────────────────────────────────────────
+export default function DashboardPage() {
+  const user = useCurrentUser();
+  if (!user) return null;
+
+  if (user.role === 'seller') return <SellerDashboard userId={user.id} />;
+  if (user.role === 'writer') return <WriterDashboard userId={user.id} />;
+  return <AdminDashboard />;
 }

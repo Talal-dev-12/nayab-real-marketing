@@ -34,6 +34,7 @@ export const ALL_NAV: NavItem[] = [
   { href: '/dashboard/agents',         label: 'Agents',       icon: 'Users',           roles: ['admin','superadmin'] },
   { href: '/dashboard/writers',        label: 'Portal Users', icon: 'PenTool',         roles: ['admin','superadmin'] },
   { href: '/dashboard/messages',       label: 'Messages',     icon: 'MessageSquare',   roles: ['admin','superadmin'] },
+  { href: '/dashboard/inquiries',      label: 'Inquiries',    icon: 'Send',            roles: ['admin','superadmin'] },
   { href: '/dashboard/analytics',      label: 'Analytics',    icon: 'BarChart3',       roles: ['admin','superadmin'] },
 
   // Superadmin-only

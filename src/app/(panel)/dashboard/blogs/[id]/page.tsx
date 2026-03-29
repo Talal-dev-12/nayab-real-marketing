@@ -7,11 +7,20 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { api, uploadImage } from "@/lib/api-client";
+import { can } from "@/lib/rbac";
+import type { UserRole } from "@/lib/jwt";
 
 export default function EditBlogPage() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
+  const [currentUser, setCurrentUser] = useState<{ id: string; role: UserRole } | null>(null);
+
+  // Read auth user once
+  useEffect(() => {
+    const raw = localStorage.getItem("auth_user") ?? localStorage.getItem("admin_user");
+    if (raw) try { setCurrentUser(JSON.parse(raw)); } catch { /* ignore */ }
+  }, []);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -47,6 +56,14 @@ export default function EditBlogPage() {
     api
       .get<any>(`/api/blogs/${id}`)
       .then((blog) => {
+        // Writers can only edit their own blogs
+        const raw = localStorage.getItem("auth_user") ?? localStorage.getItem("admin_user");
+        const viewer = raw ? JSON.parse(raw) : null;
+        if (viewer?.role === "writer" && blog.authorId !== viewer.id) {
+          setError("You do not have permission to edit this article.");
+          setLoading(false);
+          return;
+        }
         setForm({
           title: blog.title || "",
           excerpt: blog.excerpt || "",
@@ -170,7 +187,7 @@ export default function EditBlogPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Link href="/admin/blogs" className="p-2 rounded-lg hover:bg-white text-slate-500">
+          <Link href="/dashboard/blogs" className="p-2 rounded-lg hover:bg-white text-slate-500">
             <ArrowLeft size={20} />
           </Link>
           <div>
@@ -187,6 +204,7 @@ export default function EditBlogPage() {
             className="px-4 py-2 border border-[#1a2e5a] text-[#1a2e5a] rounded-lg text-sm font-medium hover:bg-[#1a2e5a] hover:text-white transition-colors disabled:opacity-50">
             Save Draft
           </button>
+          {/* Writers can publish their own drafts; admins always can */}
           <button onClick={() => handleSave(true)} disabled={saving || !form.title}
             className="flex items-center gap-2 bg-red-700 hover:bg-red-600 text-white px-5 py-2 rounded-lg text-sm font-semibold disabled:opacity-50">
             <Save size={16} /> {saving ? "Saving..." : "Publish"}

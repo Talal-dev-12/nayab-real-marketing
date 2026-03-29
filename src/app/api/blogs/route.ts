@@ -30,7 +30,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(blog);
     }
 
+    const authorId  = sp.get('authorId') || '';
     const filter: Record<string, unknown> = {};
+    if (authorId) filter.authorId = authorId;   // writer "my blogs" scoping
     if (category)   filter.category   = category;
     if (published !== null) filter.published = published === 'true';
     if (areaSlug   && areaSlug   !== 'null') filter.areaSlug   = areaSlug;

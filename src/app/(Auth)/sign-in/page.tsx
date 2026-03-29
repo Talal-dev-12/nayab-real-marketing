@@ -63,7 +63,9 @@ function SignInForm() {
         localStorage.setItem('auth_user',  JSON.stringify(data.user));
       }
 
-      router.push(data.redirectTo ?? '/');
+      // Honour ?redirect= param (e.g. from property detail page)
+      const redirectTo = searchParams.get('redirect') || data.redirectTo || '/';
+      router.push(redirectTo);
     } catch {
       setError('Network error. Please try again.');
     } finally {

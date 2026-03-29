@@ -90,3 +90,27 @@ export interface ContactMessage {
   read: boolean;
   createdAt: string;
 }
+
+export interface Inquiry {
+  _id:           string;
+  userId:        string;
+  userName:      string;
+  userEmail:     string;
+  propertyId:    string;
+  propertyTitle: string;
+  propertySlug:  string;
+  message:       string;
+  phone?:        string;
+  read:          boolean;
+  createdAt:     string;
+}
+
+export interface UserProfile {
+  _id:             string;
+  name:            string;
+  email:           string;
+  role:            string;
+  avatar?:         string;
+  savedProperties: string[];
+  createdAt:       string;
+}

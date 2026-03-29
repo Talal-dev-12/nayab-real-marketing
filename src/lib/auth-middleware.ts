@@ -106,3 +106,22 @@ export function requireWriterOrAdmin(
     }
   };
 }
+
+// Seller or admin/superadmin
+export function requireSellerOrAdmin(
+  handler: (req: NextRequest, user: JwtPayload, ctx: RouteContext) => Promise<NextResponse>
+) {
+  return async (req: NextRequest, ctx: RouteContext): Promise<NextResponse> => {
+    const token = getTokenFromRequest(req);
+    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    try {
+      const user = verifyToken(token);
+      if (!['seller', 'admin', 'superadmin'].includes(user.role)) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+      return handler(req, user, ctx);
+    } catch {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  };
+}

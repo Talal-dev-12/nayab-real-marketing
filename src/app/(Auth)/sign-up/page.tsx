@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { Eye, EyeOff, AlertCircle, Home, Chrome, User, Mail, Lock, CheckCircle2 } from 'lucide-react';
 
@@ -12,6 +13,7 @@ const PASSWORD_RULES = [
 
 export default function SignUpPage() {
   const router = useRouter();
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
 
   const [form,          setForm]          = useState({ name: '', email: '', password: '', confirm: '' });
   const [showPass,      setShowPass]      = useState(false);
@@ -57,7 +59,9 @@ export default function SignUpPage() {
       }
 
       // New public users always go to homepage
-      router.push('/');
+      // Honour ?redirect= if present (e.g. came from a property page)
+      const redirectTo = searchParams?.get('redirect') || '/';
+      router.push(redirectTo);
     } catch {
       setError('Network error. Please try again.');
     } finally {

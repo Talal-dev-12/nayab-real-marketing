@@ -10,7 +10,7 @@ export const GET = requireAdmin(async (_req: NextRequest, user: JwtPayload, _ctx
     await connectDB();
     const filter = user.role === 'superadmin'
       ? {}
-      : { role: { $in: ['agent', 'writer'] } };
+      : { role: { $in: ['agent', 'writer', 'seller'] } };
     const admins = await AdminUser.find(filter).select('-password').sort({ createdAt: -1 });
     return NextResponse.json(admins);
   } catch (error) {
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     // Admin cannot create admin or superadmin accounts
     if (user.role === 'admin' && (role === 'admin' || role === 'superadmin')) {
-      return NextResponse.json({ error: 'Admins can only create agent or writer accounts' }, { status: 403 });
+      return NextResponse.json({ error: 'Admins can only create agent, writer, or seller accounts' }, { status: 403 });
     }
 
     const existing = await AdminUser.findOne({ email: email.toLowerCase() });

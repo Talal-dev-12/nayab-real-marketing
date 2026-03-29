@@ -28,7 +28,7 @@ export default function AdminUsersPage() {
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const currentRole = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('admin_user') || '{}').role : 'admin';
+  // role read in useEffect below
   const [showPassword, setShowPassword] = useState(false);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState('');
@@ -44,11 +44,11 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     // Page-level guard: admin cannot access this page
-    const stored = localStorage.getItem('admin_user');
+    const stored = localStorage.getItem('auth_user') ?? localStorage.getItem('admin_user');
     if (stored) {
       try {
         const u = JSON.parse(stored);
-        if (u.role !== 'superadmin') { router.replace('/admin'); return; }
+        if (u.role !== 'superadmin') { router.replace('/dashboard'); return; }
       } catch {}
     }
     api.get<AdminUser[]>('/api/admins')

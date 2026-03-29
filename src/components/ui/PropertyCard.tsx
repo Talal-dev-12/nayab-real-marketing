@@ -1,15 +1,44 @@
+'use client';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Bed, Bath, Maximize, MapPin } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Bed, Bath, Maximize, MapPin, Heart } from 'lucide-react';
 import { Property } from '@/types';
+import { savedApi } from '@/lib/api-client';
 
 interface PropertyCardProps {
   property: Property;
+  initialSaved?: boolean;
 }
 
-export default function PropertyCard({ property }: PropertyCardProps) {
+export default function PropertyCard({ property, initialSaved = false }: PropertyCardProps) {
+  const router = useRouter();
+  const [saved,   setSaved]   = useState(initialSaved);
+  const [saving,  setSaving]  = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const raw = localStorage.getItem('auth_user') ?? localStorage.getItem('admin_user');
+    setIsLoggedIn(!!raw);
+  }, []);
+
+  const handleSave = async (e: React.MouseEvent) => {
+    e.preventDefault(); // don't navigate to property
+    e.stopPropagation();
+    if (!isLoggedIn) {
+      router.push(`/sign-in?redirect=/properties/${property.slug}`);
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await savedApi.toggle((property as any)._id);
+      setSaved((res as any).saved);
+    } catch { /* silent */ } finally { setSaving(false); }
+  };
+
   const formatPrice = (price: number) => {
     if (price >= 10000000) return `${(price / 10000000).toFixed(1)} Crore`;
-    if (price >= 100000) return `${(price / 100000).toFixed(1)} Lac`;
+    if (price >= 100000)   return `${(price / 100000).toFixed(1)} Lac`;
     return price.toLocaleString();
   };
 
@@ -23,12 +52,19 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
         <div className="absolute top-3 left-3">
-          <span className={`px-3 py-1 rounded text-xs font-bold text-white uppercase ${
-            property.priceType === 'sale' ? 'bg-red-700' : 'bg-blue-600'
-          }`}>
+          <span className={`px-3 py-1 rounded text-xs font-bold text-white uppercase ${property.priceType === 'sale' ? 'bg-red-700' : 'bg-blue-600'}`}>
             For {property.priceType === 'sale' ? 'Sale' : 'Rent'}
           </span>
         </div>
+        {/* Save button */}
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          title={isLoggedIn ? (saved ? 'Remove from saved' : 'Save property') : 'Sign in to save'}
+          className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors disabled:opacity-60 ${saved ? 'bg-red-600 text-white' : 'bg-white/90 text-slate-600 hover:bg-red-50'}`}
+        >
+          <Heart size={14} fill={saved ? 'white' : 'none'} />
+        </button>
         <div className="absolute bottom-3 right-3 bg-[#1a2e5a] text-white px-3 py-1 rounded font-bold text-sm">
           PKR {formatPrice(property.price)}
           {property.priceType === 'rent' && <span className="text-xs font-normal">/{property.rentPeriod}</span>}
