@@ -12,7 +12,7 @@ const tools = [
     color: 'text-sky-500',
     hoverBorder: 'hover:border-sky-300',
     icon: (
-      <svg viewBox="0 0 64 64" fill="none" className="w-10 h-10">
+      <svg viewBox="0 0 64 64" fill="none" className="w-7 h-7 sm:w-10 sm:h-10">
         <rect x="8" y="8" width="48" height="48" rx="8" fill="currentColor" opacity="0.15"/>
         <path d="M16 48 L16 24 L32 12 L48 24 L48 48 Z" stroke="currentColor" strokeWidth="3" fill="none" strokeLinejoin="round"/>
         <rect x="24" y="34" width="16" height="14" rx="2" stroke="currentColor" strokeWidth="2.5" fill="none"/>
@@ -29,7 +29,7 @@ const tools = [
     color: 'text-emerald-500',
     hoverBorder: 'hover:border-emerald-300',
     icon: (
-      <svg viewBox="0 0 64 64" fill="none" className="w-10 h-10">
+      <svg viewBox="0 0 64 64" fill="none" className="w-7 h-7 sm:w-10 sm:h-10">
         <rect x="10" y="10" width="44" height="44" rx="6" stroke="currentColor" strokeWidth="3" fill="none"/>
         <rect x="16" y="28" width="10" height="8" rx="1.5" fill="currentColor" opacity="0.4"/>
         <rect x="29" y="22" width="10" height="14" rx="1.5" fill="currentColor" opacity="0.6"/>
@@ -48,7 +48,7 @@ const tools = [
     color: 'text-violet-500',
     hoverBorder: 'hover:border-violet-300',
     icon: (
-      <svg viewBox="0 0 64 64" fill="none" className="w-10 h-10">
+      <svg viewBox="0 0 64 64" fill="none" className="w-7 h-7 sm:w-10 sm:h-10">
         <rect x="8" y="8" width="22" height="22" rx="4" stroke="currentColor" strokeWidth="3" fill="none"/>
         <rect x="34" y="8" width="22" height="22" rx="4" stroke="currentColor" strokeWidth="3" fill="none"/>
         <rect x="8" y="34" width="22" height="22" rx="4" stroke="currentColor" strokeWidth="3" fill="none"/>
@@ -66,7 +66,7 @@ const tools = [
     color: 'text-rose-500',
     hoverBorder: 'hover:border-rose-300',
     icon: (
-      <svg viewBox="0 0 64 64" fill="none" className="w-10 h-10">
+      <svg viewBox="0 0 64 64" fill="none" className="w-7 h-7 sm:w-10 sm:h-10">
         <path d="M10 48 L22 32 L32 38 L46 20 L54 26" stroke="currentColor" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round"/>
         <path d="M46 20 L54 20 L54 28" stroke="currentColor" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round"/>
         <path d="M10 52 L54 52" stroke="currentColor" strokeWidth="2" opacity="0.3" strokeLinecap="round"/>
@@ -82,7 +82,7 @@ const tools = [
     color: 'text-teal-500',
     hoverBorder: 'hover:border-teal-300',
     icon: (
-      <svg viewBox="0 0 64 64" fill="none" className="w-10 h-10">
+      <svg viewBox="0 0 64 64" fill="none" className="w-7 h-7 sm:w-10 sm:h-10">
         <path d="M32 8 C20 8 12 18 12 28 C12 42 32 56 32 56 C32 56 52 42 52 28 C52 18 44 8 32 8Z" stroke="currentColor" strokeWidth="3" fill="none"/>
         <circle cx="32" cy="28" r="7" fill="currentColor" opacity="0.4"/>
         <circle cx="32" cy="28" r="3" fill="currentColor"/>
@@ -98,7 +98,7 @@ const tools = [
     color: 'text-amber-500',
     hoverBorder: 'hover:border-amber-300',
     icon: (
-      <svg viewBox="0 0 64 64" fill="none" className="w-10 h-10">
+      <svg viewBox="0 0 64 64" fill="none" className="w-7 h-7 sm:w-10 sm:h-10">
         <path d="M12 48 L12 30 L24 22 L24 48" stroke="currentColor" strokeWidth="3" strokeLinejoin="round" fill="none"/>
         <path d="M24 48 L24 18 L36 10 L36 48" stroke="currentColor" strokeWidth="3" strokeLinejoin="round" fill="none"/>
         <path d="M36 48 L36 24 L48 16 L48 48" stroke="currentColor" strokeWidth="3" strokeLinejoin="round" fill="none"/>
@@ -115,7 +115,7 @@ const tools = [
     color: 'text-orange-500',
     hoverBorder: 'hover:border-orange-300',
     icon: (
-      <svg viewBox="0 0 64 64" fill="none" className="w-10 h-10">
+      <svg viewBox="0 0 64 64" fill="none" className="w-7 h-7 sm:w-10 sm:h-10">
         <path d="M32 8 L56 24 L56 56 L8 56 L8 24 Z" stroke="currentColor" strokeWidth="3" strokeLinejoin="round" fill="none"/>
         <rect x="22" y="38" width="10" height="18" rx="1" fill="currentColor" opacity="0.4"/>
         <rect x="36" y="30" width="10" height="26" rx="1" fill="currentColor" opacity="0.6"/>
@@ -133,7 +133,7 @@ const tools = [
     color: 'text-indigo-500',
     hoverBorder: 'hover:border-indigo-300',
     icon: (
-      <svg viewBox="0 0 64 64" fill="none" className="w-10 h-10">
+      <svg viewBox="0 0 64 64" fill="none" className="w-7 h-7 sm:w-10 sm:h-10">
         <circle cx="28" cy="28" r="16" stroke="currentColor" strokeWidth="3" fill="none"/>
         <path d="M40 40 L54 54" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round"/>
         <circle cx="28" cy="28" r="6" fill="currentColor" opacity="0.3"/>
@@ -149,37 +149,76 @@ export default function ExploreTools() {
   return (
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4">
+
         {/* Heading */}
         <div className="mb-10">
-          <h2 className="text-2xl font-extrabold text-[#1a2e5a]">Explore More on Nayab Real</h2>
-          <p className="text-slate-500 text-sm mt-1">Tools and resources to help you make smarter property decisions</p>
+          <h2 className="text-2xl font-extrabold text-[#1a2e5a]">
+            Explore More on Nayab Real
+          </h2>
+          <p className="text-slate-500 text-sm mt-1">
+            Tools and resources to help you make smarter property decisions
+          </p>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        {/* Grid:
+            mobile  → 2 cols, card stacks vertically (icon on top, text below)
+            sm(640) → 3 cols, card goes horizontal (icon left, text right)
+            lg      → 4 cols, horizontal
+        */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {tools.map((tool, i) => (
             <Link
               key={i}
               href={tool.href}
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
-              className={`group flex items-center gap-4 p-4 rounded-2xl border-2 border-transparent bg-white shadow-sm transition-all duration-200 ${tool.hoverBorder} hover:shadow-md hover:-translate-y-0.5`}
+              className={`
+                group
+                flex flex-col sm:flex-row
+                items-center sm:items-center
+                gap-3
+                p-3 sm:p-4
+                rounded-2xl border-2 border-transparent
+                ${tool.bg}
+                shadow-sm
+                transition-all duration-200
+                ${tool.hoverBorder}
+                hover:shadow-md hover:-translate-y-0.5
+              `}
             >
               {/* Icon box */}
-              <div className={`${tool.iconBg} ${tool.color} rounded-xl p-3 shrink-0 transition-transform duration-200 ${hovered === i ? 'scale-110' : ''}`}>
+              <div
+                className={`
+                  ${tool.iconBg} ${tool.color}
+                  rounded-xl p-2 sm:p-3
+                  shrink-0
+                  transition-transform duration-200
+                  ${hovered === i ? 'scale-110' : ''}
+                `}
+              >
                 {tool.icon}
               </div>
 
-              {/* Text */}
-              <div className="min-w-0">
-                <h3 className="font-bold text-[#1a2e5a] text-sm leading-snug whitespace-pre-line group-hover:text-red-700 transition-colors">
+              {/* Text — centred on mobile, left-aligned on sm+ */}
+              <div className="min-w-0 text-center sm:text-left">
+                <h3
+                  className="
+                    font-bold text-[#1a2e5a]
+                    text-xs sm:text-sm
+                    leading-snug whitespace-pre-line
+                    group-hover:text-red-700 transition-colors
+                  "
+                >
                   {tool.title}
                 </h3>
-                <p className="text-slate-400 text-xs mt-0.5 leading-snug">{tool.desc}</p>
+                <p className="text-slate-400 text-[10px] sm:text-xs mt-0.5 leading-snug">
+                  {tool.desc}
+                </p>
               </div>
             </Link>
           ))}
         </div>
+
       </div>
     </section>
   );

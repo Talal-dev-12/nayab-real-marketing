@@ -158,8 +158,8 @@ export default function Navbar() {
                 alt="Nayab Real Marketing"
                 width={200}
                 height={60}
-                priority
                 className="w-[130px] sm:w-[150px] md:w-[170px] lg:w-[190px] h-auto"
+                loading="eager"
               />
             </Link>
 
