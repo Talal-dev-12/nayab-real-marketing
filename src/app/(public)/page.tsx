@@ -32,10 +32,10 @@ import ExploreLocalities from "@/components/sections/ExploreLocalities";
    Hero background images
 ───────────────────────────────────────────── */
 const HERO_IMAGES = [
-  "https://images.unsplash.com/photo-1759323050124-eb669cec0b72?q=80&w=3864&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1759323049966-8ae3fc89c0ce?w=2400&auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1546560497-f83676a877cc?q=80&w=2370&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?q=80&w=2831&auto=format&fit=crop",
+  "/heroImages/1.avif",
+  "/heroImages/2.avif",
+  "/heroImages/3.avif",
+  "/heroImages/4.avif",
 ];
 
 const SLIDE_INTERVAL = 7000; // ms
@@ -52,8 +52,8 @@ function useHeroCrossfade(images: string[], interval: number) {
     const timer = setInterval(() => {
       setFading(true);
       setTimeout(() => {
-        setCurrent((c) => (c + 1) % images.length);
-        setNext((c) => (c + 2) % images.length);
+       setCurrent((c) => (c + 1) % images.length);
+setNext((c) => (c + 2) % images.length);
         setFading(false);
       }, 1000); // match CSS transition duration
     }, interval);
