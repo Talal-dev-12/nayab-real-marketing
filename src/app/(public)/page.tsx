@@ -356,14 +356,6 @@ export default function HomePage() {
                   Handpicked premium properties across Pakistan's top cities.
                 </p>
               </div>
-              {!propsLoading && (
-                <Link
-                  href="/properties"
-                  className="btn-primary inline-flex items-center gap-2 shrink-0"
-                >
-                  View All Properties →
-                </Link>
-              )}
             </div>
 
             {/* Carousel wrapper */}
@@ -384,7 +376,7 @@ export default function HomePage() {
                 ref={carouselRef}
                 className="prop-carousel"
                 onScroll={updateScrollState}
-              >
+                >
                 {propsLoading
                   ? [...Array(6)].map((_, i) => (
                       <div key={i} style={{ flex: "0 0 340px" }}>
@@ -392,13 +384,14 @@ export default function HomePage() {
                       </div>
                     ))
                   : properties.map((p) => (
-                      <div
-                        key={p._id}
-                        className="transition-transform duration-300 hover:-translate-y-1"
-                      >
+                    <div
+                    key={p._id}
+                    className="transition-transform duration-300 hover:-translate-y-1"
+                    >
                         <PropertyCard property={p} />
                       </div>
                     ))}
+             
               </div>
 
               {/* Right arrow */}
@@ -417,6 +410,16 @@ export default function HomePage() {
             <p className="text-center text-xs text-slate-400 mt-4 sm:hidden">
               ← Swipe to explore →
             </p>
+             <div className="text-center mt-10">
+             {!propsLoading && (
+                <Link
+                  href="/properties"
+                  className="btn-primary inline-flex items-center gap-2"
+                >
+                  View All Properties →
+                </Link>
+              )}
+              </div>
           </div>
         </section>
 
