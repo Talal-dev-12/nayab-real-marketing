@@ -10,8 +10,6 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
-
-
 export default function Footer() {
   return (
     <footer className="bg-[#0f1e3d] text-slate-300">
@@ -158,23 +156,14 @@ export default function Footer() {
             >
               Privacy Policy
             </Link>
-
             <Link
               href="/terms-of-service"
               className="hover:text-red-400 transition-colors"
             >
               Terms of Service
             </Link>
-
-            <Link
-              href="/dashboard"
-              className="hover:text-red-400 transition-colors"
-            >
-              Admin
-            </Link>
           </div>
         </div>
-
         <p className="text-slate-500 text-sm text-center md:text-right">
           Designed & developed by{" "}
           <Link
