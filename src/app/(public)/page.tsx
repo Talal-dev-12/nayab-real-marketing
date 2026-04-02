@@ -322,8 +322,8 @@ export default function HomePage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-white">
               {[
                 { icon: Home,   value: "2,500+", label: "Total Properties" },
-                { icon: Users,  value: "1,200+", label: "Happy Clients" },
-                { icon: Award,  value: "14+",    label: "Years Experience" },
+                { icon: Users,  value: "200+", label: "Happy Clients" },
+                { icon: Award,  value: "18+",    label: "Years Experience" },
                 { icon: MapPin, value: "8",       label: "Cities Covered" },
               ].map(({ icon: Icon, value, label }) => (
                 <div key={label} className="flex flex-col items-center gap-2">
