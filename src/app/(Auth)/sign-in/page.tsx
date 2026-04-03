@@ -88,11 +88,10 @@ function SignInForm() {
             <div className="w-16 h-16 bg-red-700 rounded-xl flex items-center justify-center group-hover:bg-red-600 transition-colors">
               <Home size={30} className="text-white" />
             </div>
-            <h1 className="text-2xl font-extrabold text-[#1a2e5a] tracking-tight">NAYAB REAL</h1>
+            <span className="font-extrabold text-2xl tracking-tight text-[#1a2e5a]">NAYAB REAL MARKETING</span>
           </Link>
           <p className="text-slate-500 text-sm mt-1">Sign in to your account</p>
         </div>
-
         {/* Google */}
         <button
           onClick={handleGoogle}
@@ -102,7 +101,6 @@ function SignInForm() {
           <Chrome size={18} className="text-blue-500" />
           {googleLoading ? 'Redirecting to Google…' : 'Continue with Google'}
         </button>
-
         <div className="relative mb-5">
           <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200" /></div>
           <div className="relative flex justify-center text-xs"><span className="bg-white px-3 text-slate-400">or sign in with email</span></div>
@@ -171,11 +169,14 @@ function SignInForm() {
             Create one
           </Link>
         </p>
+
+       <div className="mt-4 border-t pt-4 text-center">
+          <p className="text-xs text-slate-400 mb-2">Want to list your properties? <Link href="/sign-up/seller" className="text-red-500 font-semibold hover:underline">Create a Seller Account</Link> </p>
+        </div>
       </div>
     </div>
   );
 }
-
 export default function SignInPage() {
   return (
     <Suspense fallback={

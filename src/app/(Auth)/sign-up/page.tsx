@@ -239,6 +239,11 @@ export default function SignUpPage() {
             Sign in
           </Link>
         </p>
+
+        <div className="mt-4 border-t pt-4 text-center">
+          <p className="text-xs text-slate-400 mb-2">Want to list your properties? <Link href="/sign-up/seller" className="text-red-500 font-semibold hover:underline">Create a Seller Account</Link> </p>
+          
+        </div>
       </div>
     </div>
   );

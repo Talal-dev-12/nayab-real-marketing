@@ -214,9 +214,7 @@ export default function HomePage() {
               backgroundImage: `url(${HERO_IMAGES[current]})`,
               opacity: fading ? 0 : 1,
             }}
-            rel="preload"
           />
-
           {/* Background layer B (next — always visible beneath) */}
           <div
             className="hero-bg"

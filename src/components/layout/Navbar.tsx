@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
-import Button  from "../ui/Button";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -181,10 +180,10 @@ export default function Navbar() {
 
               {/* CTA */}
               <Link
-                href={authUser ? "/contact" : "/sign-in"}
+                href={authUser ? "/dashboard" : "/sign-up/seller"}
                 className="ml-4 bg-red-700 hover:bg-red-600 text-white px-5 py-2 rounded font-semibold text-sm transition-colors"
               >
-                Get Free Consultation
+               Want to Sell? 
               </Link>
 
               {/* ── Auth area ── */}
@@ -364,11 +363,11 @@ export default function Navbar() {
             {/* Mobile CTA */}
             <div className="p-4">
               <Link
-                href={authUser ? "/contact" : "/sign-up"}
+                href={authUser ? "/dashboard" : "/sign-up/seller"}
                 className="block text-center bg-red-700 hover:bg-red-600 text-white py-3 rounded font-semibold transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
-                Get Free Consultation
+                Want to Sell?
               </Link>
             </div>
           </div>

@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, Trash2, Search, MapPin, Eye } from 'lucide-react';
+import { Plus, Trash2, Search, MapPin, Eye, Pencil } from 'lucide-react';
 import { api } from '@/lib/api-client';
 import { TableRowSkeleton } from '@/components/ui/Skeleton';
 import { can } from '@/lib/rbac';
@@ -135,6 +135,7 @@ export default function DashboardProperties() {
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-2">
                     <Link href={`/properties/${p.slug}`} target="_blank" className="p-1.5 rounded hover:bg-slate-100 text-slate-500"><Eye size={16} /></Link>
+                    <Link href={`/dashboard/properties/${(p as any)._id}/edit`} className="p-1.5 rounded hover:bg-blue-50 text-blue-600"><Pencil size={16} /></Link>
                     {canDelete && (
                       <button onClick={() => deleteProperty(p)} className="p-1.5 rounded hover:bg-red-50 text-red-600"><Trash2 size={16} /></button>
                     )}
