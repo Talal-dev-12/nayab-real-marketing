@@ -205,7 +205,7 @@ export default function HomePage() {
       <div className="min-h-screen bg-gray-50">
 
         {/* ══════════════ HERO ══════════════ */}
-        <section className="relative min-h-[92vh] flex items-center overflow-hidden">
+        <section className="relative min-h-[91vh] lg:min-h-[90vh] xl:min-h-[88vh] flex items-center overflow-hidden">
 
           {/* Background layer A (current) */}
           <div

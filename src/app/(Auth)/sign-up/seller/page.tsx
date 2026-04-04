@@ -77,7 +77,7 @@ export default function SellerSignUpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f1e3d] to-[#1a2e5a] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-2xl shadow-2xl overflow-hidden">
 
         {/* ── Left panel — benefits ────────────────────────────────── */}
