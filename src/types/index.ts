@@ -49,13 +49,17 @@ export interface Property {
   location: string;
   city: string;
   area: number;
+  areaUnit?: 'sqft' | 'sqyd' | 'marla' | 'kanal';
   bedrooms: number;
   bathrooms: number;
-  type: 'residential' | 'commercial' | 'office' | 'plot';
+  type: 'residential' | 'commercial' | 'office' | 'plot' | 'shop';
   status: 'available' | 'sold' | 'rented';
   images: string[];
   featured: boolean;
   agentId: string;
+  submittedBy?: string;
+  approvalStatus?: 'pending' | 'approved' | 'rejected';
+  rejectionNote?: string;
   createdAt: string;
   views: number;
 }

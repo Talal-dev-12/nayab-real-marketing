@@ -86,11 +86,11 @@ const PERMISSIONS: Record<UserRole, RolePermissions> = {
     markFeatured:        true,
   },
   seller: {
-    manageAllProperties: false, submitOwnProperties: true,
-    featureProperties:   false, deleteAnyProperty:   false,
-    manageAllBlogs:      false, writeOwnBlogs:       false,
-    publishAnyBlog:      false, manageUsers:         false,
-    manageSettings:      false, assignAgent:         false,
+    manageAllProperties: false, submitOwnProperties:  true,
+    featureProperties:   false, deleteAnyProperty:    false,  // API handles own-listing delete separately
+    manageAllBlogs:      false, writeOwnBlogs:        false,
+    publishAnyBlog:      false, manageUsers:          false,
+    manageSettings:      false, assignAgent:          false,
     markFeatured:        false,
   },
   writer: {

@@ -5,14 +5,14 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from 'recharts';
-import { Home, FileText, Users, MessageSquare, TrendingUp, ArrowUpRight, Plus, Send } from 'lucide-react';
+import { Home, FileText, Users, MessageSquare, TrendingUp, ArrowUpRight, Plus, Send, MailWarning, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { api } from '@/lib/api-client';
 import { can } from '@/lib/rbac';
 import type { UserRole } from '@/lib/jwt';
 
 // ── Hook: read current user from localStorage (already verified by layout) ───
 function useCurrentUser() {
-  const [user, setUser] = useState<{ id: string; name: string; role: UserRole } | null>(null);
+  const [user, setUser] = useState<{ id: string; name: string; role: UserRole; emailVerified?: boolean } | null>(null);
   useEffect(() => {
     const raw = localStorage.getItem('auth_user') ?? localStorage.getItem('admin_user');
     if (raw) try { setUser(JSON.parse(raw)); } catch { /* ignore */ }
@@ -23,8 +23,10 @@ function useCurrentUser() {
 // ─────────────────────────────────────────────────────────────────────────────
 // SELLER dashboard — shows only their own submitted properties
 // ─────────────────────────────────────────────────────────────────────────────
-function SellerDashboard({ userId }: { userId: string }) {
+function SellerDashboard({ userId, emailVerified }: { userId: string; emailVerified?: boolean }) {
   const [properties, setProperties] = useState<any[]>([]);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMsg, setResendMsg] = useState('');
 
   useEffect(() => {
     api.get<any>(`/api/properties?submittedBy=${userId}&limit=200`)
@@ -34,22 +36,55 @@ function SellerDashboard({ userId }: { userId: string }) {
 
   const available = properties.filter(p => p.status === 'available').length;
   const sold      = properties.filter(p => p.status === 'sold').length;
+  const pending   = properties.filter(p => p.approvalStatus === 'pending').length;
+  const rejected  = properties.filter(p => p.approvalStatus === 'rejected').length;
+
+  const handleResendVerification = async () => {
+    setResendLoading(true);
+    try {
+      await api.post('/api/auth/resend-verification', {});
+      setResendMsg('Verification email sent! Check your inbox.');
+    } catch {
+      setResendMsg('Failed to send. Please try again.');
+    } finally { setResendLoading(false); }
+  };
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+
+      {/* Email verification banner */}
+      {!emailVerified && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl px-5 py-4 flex items-start gap-4">
+          <MailWarning size={22} className="text-amber-600 shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-amber-800 text-sm">Please verify your email address</p>
+            <p className="text-amber-700 text-xs mt-0.5">
+              We sent a verification link when you registered. Check your inbox (and spam folder).
+              Verified accounts get priority listing reviews.
+            </p>
+            {resendMsg && <p className="text-xs mt-1 text-amber-900 font-medium">{resendMsg}</p>}
+          </div>
+          <button onClick={handleResendVerification} disabled={resendLoading}
+            className="shrink-0 text-xs bg-amber-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-amber-500 disabled:opacity-60 transition-colors">
+            {resendLoading ? 'Sending...' : 'Resend Email'}
+          </button>
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: 'My Listings',      value: properties.length, icon: Home,        color: 'bg-[#1a2e5a]' },
-          { label: 'Available',        value: available,          icon: TrendingUp,  color: 'bg-emerald-500' },
-          { label: 'Sold / Rented',    value: sold,               icon: ArrowUpRight, color: 'bg-amber-500' },
+          { label: 'Total Listings', value: properties.length, icon: Home,        color: 'bg-[#1a2e5a]' },
+          { label: 'Available',      value: available,          icon: TrendingUp,  color: 'bg-emerald-500' },
+          { label: 'Pending Review', value: pending,            icon: Clock,       color: 'bg-amber-500' },
+          { label: 'Sold / Rented',  value: sold,               icon: ArrowUpRight, color: 'bg-blue-500' },
         ].map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
-            <div className={`${color} w-14 h-14 rounded-xl flex items-center justify-center shrink-0`}>
-              <Icon size={24} className="text-white" />
+            <div className={`${color} w-12 h-12 rounded-xl flex items-center justify-center shrink-0`}>
+              <Icon size={20} className="text-white" />
             </div>
             <div>
-              <p className="text-slate-500 text-sm">{label}</p>
-              <p className="text-3xl font-extrabold text-[#1a2e5a]">{value}</p>
+              <p className="text-slate-500 text-xs">{label}</p>
+              <p className="text-2xl font-extrabold text-[#1a2e5a]">{value}</p>
             </div>
           </div>
         ))}
@@ -71,9 +106,17 @@ function SellerDashboard({ userId }: { userId: string }) {
                 <p className="font-semibold text-sm text-[#1a2e5a] truncate">{p.title}</p>
                 <p className="text-xs text-slate-400">{p.city} · PKR {(p.price / 100000).toFixed(0)} Lac</p>
               </div>
-              <span className={`text-xs font-bold px-2 py-1 rounded-full ${p.status === 'available' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-                {p.status}
-              </span>
+              <div className="flex flex-col items-end gap-1">
+                <span className={`text-xs font-bold px-2 py-1 rounded-full ${p.status === 'available' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                  {p.status}
+                </span>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                  p.approvalStatus === 'approved' ? 'bg-emerald-50 text-emerald-600' :
+                  p.approvalStatus === 'rejected' ? 'bg-red-50 text-red-600' :
+                  'bg-amber-50 text-amber-600'}`}>
+                  {p.approvalStatus || 'pending'}
+                </span>
+              </div>
             </div>
           ))}
           {properties.length === 0 && (
@@ -301,7 +344,7 @@ export default function DashboardPage() {
   const user = useCurrentUser();
   if (!user) return null;
 
-  if (user.role === 'seller') return <SellerDashboard userId={user.id} />;
+  if (user.role === 'seller') return <SellerDashboard userId={user.id} emailVerified={user.emailVerified} />;
   if (user.role === 'writer') return <WriterDashboard userId={user.id} />;
   return <AdminDashboard />;
 }

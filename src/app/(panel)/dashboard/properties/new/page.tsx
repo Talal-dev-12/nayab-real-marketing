@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { ArrowLeft, Save, X, Loader2, Upload } from 'lucide-react';
 import { api, uploadImage } from '@/lib/api-client';
 import { can } from '@/lib/rbac';
+import { AREA_UNITS, toSqft } from '@/lib/areaUtils';
 import type { UserRole } from '@/lib/jwt';
+import type { AreaUnit } from '@/lib/areaUtils';
 
 function F({ label, ...props }: any) {
   return (
@@ -16,19 +18,18 @@ function F({ label, ...props }: any) {
   );
 }
 
-// Read current user role from localStorage (already verified by layout)
-function useRole(): UserRole | null {
-  const [role, setRole] = useState<UserRole | null>(null);
+function useCurrentUser() {
+  const [user, setUser] = useState<{ id: string; role: UserRole } | null>(null);
   useEffect(() => {
     const raw = localStorage.getItem('auth_user') ?? localStorage.getItem('admin_user');
-    if (raw) try { setRole(JSON.parse(raw).role); } catch { /* ignore */ }
+    if (raw) try { setUser(JSON.parse(raw)); } catch { /* ignore */ }
   }, []);
-  return role;
+  return user;
 }
 
 export default function NewPropertyPage() {
-  const router    = useRouter();
-  const role      = useRole();
+  const router      = useRouter();
+  const currentUser = useCurrentUser();
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error,     setError]     = useState('');
@@ -37,16 +38,16 @@ export default function NewPropertyPage() {
   const [urlInput,  setUrlInput]  = useState('');
   const [form, setForm] = useState({
     title: '', description: '', price: '', priceType: 'sale', rentPeriod: 'month',
-    location: '', city: 'Karachi', area: '', bedrooms: '', bathrooms: '',
+    location: '', city: 'Karachi', areaValue: '', areaUnit: 'sqft' as AreaUnit,
+    bedrooms: '', bathrooms: '',
     type: 'residential', status: 'available', featured: false, agentId: '',
   });
 
-  // Only admins need to pick an agent
   useEffect(() => {
-    if (role && can(role, 'assignAgent')) {
+    if (currentUser && can(currentUser.role, 'assignAgent')) {
       api.get<any[]>('/api/agents?active=true').then(d => setAgents(Array.isArray(d) ? d : [])).catch(() => {});
     }
-  }, [role]);
+  }, [currentUser]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -66,18 +67,20 @@ export default function NewPropertyPage() {
   };
 
   const handleSave = async () => {
-    // Sellers don't pick an agent — backend uses their user ID
+    const role = currentUser?.role;
     const needsAgent = role && can(role, 'assignAgent');
-    if (!form.title || !form.price || !form.location || !form.area || (needsAgent && !form.agentId)) {
+    if (!form.title || !form.price || !form.location || !form.areaValue || (needsAgent && !form.agentId)) {
       setError(needsAgent ? 'Please fill in all required fields including an agent.' : 'Please fill in all required fields.');
       return;
     }
     setSaving(true); setError('');
     try {
+      const areaInSqft = toSqft(Number(form.areaValue), form.areaUnit);
       await api.post('/api/properties', {
         ...form,
+        area:      areaInSqft,
+        areaUnit:  form.areaUnit,
         price:     Number(form.price),
-        area:      Number(form.area),
         bedrooms:  Number(form.bedrooms)  || 0,
         bathrooms: Number(form.bathrooms) || 0,
         images,
@@ -87,9 +90,10 @@ export default function NewPropertyPage() {
     finally { setSaving(false); }
   };
 
-  if (!role) return null;
-
-  const isSeller = role === 'seller';
+  if (!currentUser) return null;
+  const role        = currentUser.role;
+  const isSeller    = role === 'seller';
+  const needsBedBath = form.type !== 'plot' && form.type !== 'shop';
 
   return (
     <div className="max-w-4xl">
@@ -104,10 +108,9 @@ export default function NewPropertyPage() {
         </button>
       </div>
 
-      {/* Seller info banner */}
       {isSeller && (
         <div className="mb-5 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800">
-          <strong>Seller submission:</strong> Your listing will be reviewed by our team before going live.
+          <strong>Seller submission:</strong> Your listing will be reviewed before going live. You&apos;ll receive an email once approved.
         </div>
       )}
 
@@ -115,8 +118,6 @@ export default function NewPropertyPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-5">
-
-          {/* Basic Info */}
           <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
             <h3 className="font-bold text-[#1a2e5a] border-b pb-2">Basic Information</h3>
             <F label="Property Title *" placeholder="e.g. 5 Marla House in DHA Phase 6"
@@ -137,8 +138,6 @@ export default function NewPropertyPage() {
                 <option>Rawalpindi</option><option>Faisalabad</option>
               </select>
             </div>
-
-            {/* Agent picker — only for admin/superadmin */}
             {can(role, 'assignAgent') && (
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Assign Agent *</label>
@@ -151,7 +150,6 @@ export default function NewPropertyPage() {
             )}
           </div>
 
-          {/* Property Details */}
           <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
             <h3 className="font-bold text-[#1a2e5a] border-b pb-2">Property Details</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -163,11 +161,27 @@ export default function NewPropertyPage() {
                   <option value="commercial">Commercial</option>
                   <option value="office">Office</option>
                   <option value="plot">Plot</option>
+                  <option value="shop">Shop</option>
                 </select>
               </div>
-              <F label="Area (sqft) *" type="number" placeholder="1125"
-                value={form.area} onChange={(e: any) => setForm(f => ({ ...f, area: e.target.value }))} />
-              {form.type !== 'plot' && (
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Area *</label>
+                <div className="flex gap-2">
+                  <input type="number" placeholder="e.g. 5"
+                    className="flex-1 border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
+                    value={form.areaValue} onChange={e => setForm(f => ({ ...f, areaValue: e.target.value }))} />
+                  <select className="border-2 rounded-lg px-2 py-2.5 text-sm outline-none focus:border-red-500 bg-white"
+                    value={form.areaUnit} onChange={e => setForm(f => ({ ...f, areaUnit: e.target.value as AreaUnit }))}>
+                    {AREA_UNITS.map(u => <option key={u.value} value={u.value}>{u.abbr}</option>)}
+                  </select>
+                </div>
+                {form.areaValue && (
+                  <p className="text-xs text-slate-400 mt-1">
+                    = {toSqft(Number(form.areaValue), form.areaUnit).toFixed(0)} sqft stored
+                  </p>
+                )}
+              </div>
+              {needsBedBath && (
                 <>
                   <F label="Bedrooms" type="number" placeholder="3"
                     value={form.bedrooms} onChange={(e: any) => setForm(f => ({ ...f, bedrooms: e.target.value }))} />
@@ -178,16 +192,14 @@ export default function NewPropertyPage() {
             </div>
           </div>
 
-          {/* Images */}
           <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
             <h3 className="font-bold text-[#1a2e5a] border-b pb-2">Property Images</h3>
-            <label className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-6 cursor-pointer transition-colors ${uploading ? 'border-red-400 bg-red-50' : 'border-slate-300 hover:border-red-400 bg-slate-50 hover:bg-red-50'}`}>
+            <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 hover:border-red-400 bg-slate-50 hover:bg-red-50 rounded-xl p-6 cursor-pointer transition-colors">
               <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} disabled={uploading} />
-              {uploading ? (
-                <><Loader2 size={24} className="text-red-700 animate-spin mb-2" /><p className="text-sm text-slate-500">Uploading to Cloudinary...</p></>
-              ) : (
-                <><Upload size={24} className="text-slate-400 mb-2" /><p className="font-semibold text-slate-600 text-sm">Click to upload images</p><p className="text-xs text-slate-400 mt-1">JPG, PNG, WEBP</p></>
-              )}
+              {uploading
+                ? <><Loader2 size={24} className="text-red-700 animate-spin mb-2" /><p className="text-sm text-slate-500">Uploading...</p></>
+                : <><Upload size={24} className="text-slate-400 mb-2" /><p className="font-semibold text-slate-600 text-sm">Click to upload images</p><p className="text-xs text-slate-400 mt-1">JPG, PNG, WEBP</p></>
+              }
             </label>
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase mb-2 block">Or Add Image URL</label>
@@ -216,7 +228,6 @@ export default function NewPropertyPage() {
           </div>
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-5">
           <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
             <h3 className="font-bold text-[#1a2e5a] border-b pb-2">Pricing</h3>
@@ -251,8 +262,6 @@ export default function NewPropertyPage() {
                 <option value="rented">Rented</option>
               </select>
             </div>
-
-            {/* Featured checkbox — admin/superadmin only */}
             {can(role, 'markFeatured') && (
               <label className="flex items-center gap-3 cursor-pointer">
                 <input type="checkbox" checked={form.featured}
@@ -264,7 +273,7 @@ export default function NewPropertyPage() {
           </div>
 
           <div className="bg-slate-50 rounded-xl p-4 text-xs text-slate-500">
-            <p className="font-semibold text-slate-700 mb-2">Images: {images.length} uploaded</p>
+            <p className="font-semibold text-slate-700 mb-1">Images: {images.length} uploaded</p>
             <p>First image will be used as the main cover.</p>
           </div>
         </div>

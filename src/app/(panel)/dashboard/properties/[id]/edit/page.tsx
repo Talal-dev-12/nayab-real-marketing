@@ -2,10 +2,12 @@
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, X, Loader2, Upload } from 'lucide-react';
+import { ArrowLeft, Save, X, Loader2, Upload, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { api, uploadImage } from '@/lib/api-client';
 import { can } from '@/lib/rbac';
+import { AREA_UNITS, toSqft, fromSqft, formatArea } from '@/lib/areaUtils';
 import type { UserRole } from '@/lib/jwt';
+import type { AreaUnit } from '@/lib/areaUtils';
 
 function F({ label, ...props }: any) {
   return (
@@ -25,9 +27,15 @@ function useCurrentUser() {
   return user;
 }
 
+const APPROVAL_BADGE: Record<string, { label: string; cls: string; icon: any }> = {
+  pending:  { label: 'Pending Review', cls: 'bg-amber-100 text-amber-700',  icon: Clock        },
+  approved: { label: 'Approved',       cls: 'bg-emerald-100 text-emerald-700', icon: CheckCircle },
+  rejected: { label: 'Rejected',       cls: 'bg-red-100 text-red-700',      icon: XCircle      },
+};
+
 export default function EditPropertyPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id }    = use(params);
-  const router    = useRouter();
+  const { id }      = use(params);
+  const router      = useRouter();
   const currentUser = useCurrentUser();
 
   const [saving,    setSaving]    = useState(false);
@@ -37,40 +45,48 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
   const [agents,    setAgents]    = useState<any[]>([]);
   const [images,    setImages]    = useState<string[]>([]);
   const [urlInput,  setUrlInput]  = useState('');
+  const [rejectionNote, setRejectionNote] = useState('');
+  const [showRejectModal, setShowRejectModal] = useState(false);
   const [form, setForm] = useState({
     title: '', description: '', price: '', priceType: 'sale', rentPeriod: 'month',
-    location: '', city: 'Karachi', area: '', bedrooms: '', bathrooms: '',
+    location: '', city: 'Karachi', areaValue: '', areaUnit: 'sqft' as AreaUnit,
+    bedrooms: '', bathrooms: '',
     type: 'residential', status: 'available', featured: false, agentId: '',
+    approvalStatus: 'pending',
   });
 
-  // Load property data
   useEffect(() => {
     if (!id) return;
     api.get<any>(`/api/properties/${id}`)
       .then(p => {
+        // Display area in original unit if known, else sqft
+        const unit = (p.areaUnit as AreaUnit) || 'sqft';
+        const displayVal = fromSqft(p.area || 0, unit);
         setForm({
-          title:       p.title       || '',
-          description: p.description || '',
-          price:       String(p.price || ''),
-          priceType:   p.priceType   || 'sale',
-          rentPeriod:  p.rentPeriod  || 'month',
-          location:    p.location    || '',
-          city:        p.city        || 'Karachi',
-          area:        String(p.area || ''),
-          bedrooms:    String(p.bedrooms  || ''),
-          bathrooms:   String(p.bathrooms || ''),
-          type:        p.type        || 'residential',
-          status:      p.status      || 'available',
-          featured:    p.featured    || false,
-          agentId:     p.agentId     || '',
+          title:          p.title       || '',
+          description:    p.description || '',
+          price:          String(p.price || ''),
+          priceType:      p.priceType   || 'sale',
+          rentPeriod:     p.rentPeriod  || 'month',
+          location:       p.location    || '',
+          city:           p.city        || 'Karachi',
+          areaValue:      String(parseFloat(displayVal.toFixed(4))),
+          areaUnit:       unit,
+          bedrooms:       String(p.bedrooms  || ''),
+          bathrooms:      String(p.bathrooms || ''),
+          type:           p.type        || 'residential',
+          status:         p.status      || 'available',
+          featured:       p.featured    || false,
+          agentId:        p.agentId     || '',
+          approvalStatus: p.approvalStatus || 'approved',
         });
         setImages(p.images || []);
+        setRejectionNote(p.rejectionNote || '');
       })
-      .catch(() => setError('Could not load property. It may not exist or you lack access.'))
+      .catch(() => setError('Could not load property.'))
       .finally(() => setFetching(false));
   }, [id]);
 
-  // Load agents if admin
   useEffect(() => {
     if (currentUser && can(currentUser.role, 'assignAgent')) {
       api.get<any[]>('/api/agents?active=true').then(d => setAgents(Array.isArray(d) ? d : [])).catch(() => {});
@@ -94,17 +110,20 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
     if (url) { setImages(prev => [...prev, url]); setUrlInput(''); }
   };
 
-  const handleSave = async () => {
-    if (!form.title || !form.price || !form.location || !form.area) {
+  const handleSave = async (overrides?: Record<string, any>) => {
+    if (!form.title || !form.price || !form.location || !form.areaValue) {
       setError('Please fill in all required fields.');
       return;
     }
     setSaving(true); setError('');
     try {
+      const areaInSqft = toSqft(Number(form.areaValue), form.areaUnit);
       await api.put(`/api/properties/${id}`, {
         ...form,
+        ...overrides,
+        area:      areaInSqft,
+        areaUnit:  form.areaUnit,
         price:     Number(form.price),
-        area:      Number(form.area),
         bedrooms:  Number(form.bedrooms)  || 0,
         bathrooms: Number(form.bathrooms) || 0,
         images,
@@ -115,9 +134,21 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
     } finally { setSaving(false); }
   };
 
+  const handleApprove = () => handleSave({ approvalStatus: 'approved', rejectionNote: '' });
+
+  const handleReject = async () => {
+    if (!rejectionNote.trim()) { setError('Please enter a rejection reason.'); return; }
+    setShowRejectModal(false);
+    await handleSave({ approvalStatus: 'rejected', rejectionNote });
+  };
+
   if (!currentUser) return null;
-  const role      = currentUser.role;
-  const isSeller  = role === 'seller';
+  const role         = currentUser.role;
+  const isSeller     = role === 'seller';
+  const isAdmin      = can(role, 'manageAllProperties');
+  const needsBedBath = form.type !== 'plot' && form.type !== 'shop';
+  const badge        = APPROVAL_BADGE[form.approvalStatus] || APPROVAL_BADGE.pending;
+  const BadgeIcon    = badge.icon;
 
   if (fetching) return (
     <div className="flex items-center justify-center py-20">
@@ -127,34 +158,69 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="max-w-4xl">
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Link href="/dashboard/properties" className="p-2 rounded-lg hover:bg-white text-slate-500">
             <ArrowLeft size={20} />
           </Link>
-          <h2 className="text-2xl font-extrabold text-[#1a2e5a]">Edit Property</h2>
+          <div>
+            <h2 className="text-2xl font-extrabold text-[#1a2e5a]">Edit Property</h2>
+            <div className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full mt-1 ${badge.cls}`}>
+              <BadgeIcon size={12} /> {badge.label}
+            </div>
+          </div>
         </div>
-        <button onClick={handleSave} disabled={saving || uploading}
-          className="flex items-center gap-2 bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm disabled:opacity-60 transition-colors">
-          <Save size={16} /> {saving ? 'Saving...' : 'Save Changes'}
-        </button>
+        <div className="flex items-center gap-2">
+          {isAdmin && form.approvalStatus === 'pending' && (
+            <>
+              <button onClick={handleApprove} disabled={saving}
+                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-lg font-semibold text-sm disabled:opacity-60 transition-colors">
+                <CheckCircle size={16} /> Approve
+              </button>
+              <button onClick={() => setShowRejectModal(true)} disabled={saving}
+                className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white px-4 py-2.5 rounded-lg font-semibold text-sm disabled:opacity-60 transition-colors">
+                <XCircle size={16} /> Reject
+              </button>
+            </>
+          )}
+          {isAdmin && form.approvalStatus === 'approved' && (
+            <button onClick={() => setShowRejectModal(true)} disabled={saving}
+              className="flex items-center gap-2 border border-red-300 text-red-600 hover:bg-red-50 px-4 py-2.5 rounded-lg font-semibold text-sm disabled:opacity-60 transition-colors">
+              <XCircle size={16} /> Revoke Approval
+            </button>
+          )}
+          {isAdmin && form.approvalStatus === 'rejected' && (
+            <button onClick={handleApprove} disabled={saving}
+              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-lg font-semibold text-sm disabled:opacity-60 transition-colors">
+              <CheckCircle size={16} /> Approve Now
+            </button>
+          )}
+          <button onClick={() => handleSave()} disabled={saving || uploading}
+            className="flex items-center gap-2 bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm disabled:opacity-60 transition-colors">
+            <Save size={16} /> {saving ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
       </div>
 
-      {/* Seller info banner */}
-      {isSeller && (
-        <div className="mb-5 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800">
-          <strong>Note:</strong> Any changes will be visible immediately on the public listing.
+      {/* Rejection note (visible to seller when rejected) */}
+      {form.approvalStatus === 'rejected' && rejectionNote && (
+        <div className="mb-5 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-800">
+          <strong>Admin note:</strong> {rejectionNote}
+          {isSeller && <p className="mt-1 text-red-700">Please fix the issues above and save to resubmit.</p>}
         </div>
       )}
 
-      {error && (
-        <div className="mb-4 bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm border border-red-200">{error}</div>
+      {isSeller && form.approvalStatus === 'pending' && (
+        <div className="mb-5 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800">
+          Your listing is awaiting admin review. You can still edit it — changes will keep it in review.
+        </div>
       )}
+
+      {error && <div className="mb-4 bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm border border-red-200">{error}</div>}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-5">
-
-          {/* Basic Info */}
           <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
             <h3 className="font-bold text-[#1a2e5a] border-b pb-2">Basic Information</h3>
             <F label="Property Title *" placeholder="e.g. 5 Marla House in DHA Phase 6"
@@ -175,8 +241,6 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
                 <option>Rawalpindi</option><option>Faisalabad</option>
               </select>
             </div>
-
-            {/* Agent picker — only for admin/superadmin */}
             {can(role, 'assignAgent') && (
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Assign Agent</label>
@@ -189,7 +253,6 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
             )}
           </div>
 
-          {/* Property Details */}
           <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
             <h3 className="font-bold text-[#1a2e5a] border-b pb-2">Property Details</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -201,11 +264,27 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
                   <option value="commercial">Commercial</option>
                   <option value="office">Office</option>
                   <option value="plot">Plot</option>
+                  <option value="shop">Shop</option>
                 </select>
               </div>
-              <F label="Area (sqft) *" type="number" placeholder="1125"
-                value={form.area} onChange={(e: any) => setForm(f => ({ ...f, area: e.target.value }))} />
-              {form.type !== 'plot' && (
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Area *</label>
+                <div className="flex gap-2">
+                  <input type="number" placeholder="e.g. 5"
+                    className="flex-1 border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
+                    value={form.areaValue} onChange={e => setForm(f => ({ ...f, areaValue: e.target.value }))} />
+                  <select className="border-2 rounded-lg px-2 py-2.5 text-sm outline-none focus:border-red-500 bg-white"
+                    value={form.areaUnit} onChange={e => setForm(f => ({ ...f, areaUnit: e.target.value as AreaUnit }))}>
+                    {AREA_UNITS.map(u => <option key={u.value} value={u.value}>{u.abbr}</option>)}
+                  </select>
+                </div>
+                {form.areaValue && (
+                  <p className="text-xs text-slate-400 mt-1">
+                    = {toSqft(Number(form.areaValue), form.areaUnit).toFixed(0)} sqft
+                  </p>
+                )}
+              </div>
+              {needsBedBath && (
                 <>
                   <F label="Bedrooms" type="number" placeholder="3"
                     value={form.bedrooms} onChange={(e: any) => setForm(f => ({ ...f, bedrooms: e.target.value }))} />
@@ -216,16 +295,14 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
             </div>
           </div>
 
-          {/* Images */}
           <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
             <h3 className="font-bold text-[#1a2e5a] border-b pb-2">Property Images</h3>
-            <label className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-6 cursor-pointer transition-colors ${uploading ? 'border-red-400 bg-red-50' : 'border-slate-300 hover:border-red-400 bg-slate-50 hover:bg-red-50'}`}>
+            <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 hover:border-red-400 bg-slate-50 hover:bg-red-50 rounded-xl p-6 cursor-pointer transition-colors">
               <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} disabled={uploading} />
-              {uploading ? (
-                <><Loader2 size={24} className="text-red-700 animate-spin mb-2" /><p className="text-sm text-slate-500">Uploading to Cloudinary...</p></>
-              ) : (
-                <><Upload size={24} className="text-slate-400 mb-2" /><p className="font-semibold text-slate-600 text-sm">Click to upload images</p><p className="text-xs text-slate-400 mt-1">JPG, PNG, WEBP</p></>
-              )}
+              {uploading
+                ? <><Loader2 size={24} className="text-red-700 animate-spin mb-2" /><p className="text-sm text-slate-500">Uploading...</p></>
+                : <><Upload size={24} className="text-slate-400 mb-2" /><p className="font-semibold text-slate-600 text-sm">Click to upload images</p><p className="text-xs text-slate-400 mt-1">JPG, PNG, WEBP</p></>
+              }
             </label>
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase mb-2 block">Or Add Image URL</label>
@@ -254,7 +331,6 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
           </div>
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-5">
           <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
             <h3 className="font-bold text-[#1a2e5a] border-b pb-2">Pricing</h3>
@@ -262,8 +338,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
               <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Listing Type</label>
               <select className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
                 value={form.priceType} onChange={e => setForm(f => ({ ...f, priceType: e.target.value }))}>
-                <option value="sale">For Sale</option>
-                <option value="rent">For Rent</option>
+                <option value="sale">For Sale</option><option value="rent">For Rent</option>
               </select>
             </div>
             <F label="Price (PKR) *" type="number" placeholder="25000000"
@@ -273,8 +348,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
                 <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Rent Period</label>
                 <select className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
                   value={form.rentPeriod} onChange={e => setForm(f => ({ ...f, rentPeriod: e.target.value }))}>
-                  <option value="month">Per Month</option>
-                  <option value="year">Per Year</option>
+                  <option value="month">Per Month</option><option value="year">Per Year</option>
                 </select>
               </div>
             )}
@@ -291,8 +365,6 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
                 <option value="rented">Rented</option>
               </select>
             </div>
-
-            {/* Featured checkbox — admin/superadmin only */}
             {can(role, 'markFeatured') && (
               <label className="flex items-center gap-3 cursor-pointer">
                 <input type="checkbox" checked={form.featured}
@@ -303,12 +375,49 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
             )}
           </div>
 
+          {/* Area conversions reference */}
+          {form.areaValue && (
+            <div className="bg-slate-50 rounded-xl p-4 text-xs text-slate-500 space-y-1.5">
+              <p className="font-semibold text-slate-700 mb-2">Area Conversions</p>
+              {(['sqft','sqyd','marla','kanal'] as AreaUnit[]).map(u => (
+                <p key={u} className={u === form.areaUnit ? 'font-bold text-red-700' : ''}>
+                  {formatArea(toSqft(Number(form.areaValue), form.areaUnit), u)}
+                </p>
+              ))}
+            </div>
+          )}
+
           <div className="bg-slate-50 rounded-xl p-4 text-xs text-slate-500">
-            <p className="font-semibold text-slate-700 mb-2">Images: {images.length} uploaded</p>
+            <p className="font-semibold text-slate-700 mb-1">Images: {images.length} uploaded</p>
             <p>First image will be used as the main cover.</p>
           </div>
         </div>
       </div>
+
+      {/* Reject modal */}
+      {showRejectModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <h3 className="font-bold text-[#1a2e5a] text-lg mb-2">Reject Listing</h3>
+            <p className="text-slate-500 text-sm mb-4">
+              Provide a reason so the seller knows what to fix. They will receive this by email.
+            </p>
+            <textarea rows={4} className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500 resize-none"
+              placeholder="e.g. Images are too dark. Please upload clearer photos and provide a more detailed description."
+              value={rejectionNote} onChange={e => setRejectionNote(e.target.value)} />
+            <div className="flex justify-end gap-3 mt-4">
+              <button onClick={() => setShowRejectModal(false)}
+                className="px-4 py-2 rounded-lg border text-slate-600 text-sm font-semibold hover:bg-slate-50">
+                Cancel
+              </button>
+              <button onClick={handleReject} disabled={saving}
+                className="px-4 py-2 rounded-lg bg-red-700 text-white text-sm font-semibold hover:bg-red-600 disabled:opacity-60">
+                {saving ? 'Sending...' : 'Reject & Notify Seller'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,145 +1,151 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Search, MapPin, Home, DollarSign } from 'lucide-react';
+import { useState } from "react";
+import Link from "next/link";
+import { Search, Building2, Star } from "lucide-react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
+import superFlowEffect from "@/lib/superFlowEffect";
+
+import "swiper/css";
+import "swiper/css/pagination";
+import "@/assets/css/super-flow.css";
+
+/* ─────────────────────────────────────────────
+   Hero background images
+───────────────────────────────────────────── */
+const HERO_IMAGES = [
+  "/heroImages/1.avif",
+  "/heroImages/2.avif",
+  "/heroImages/3.avif",
+  "/heroImages/4.avif",
+];
 
 export default function HeroSection() {
-  const router = useRouter();
-  const [keyword, setKeyword] = useState('');
-  const [type, setType] = useState('');
-  const [city, setCity] = useState('');
-  const [priceMax, setPriceMax] = useState('');
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const params = new URLSearchParams();
-    if (keyword) params.set('q', keyword);
-    if (type) params.set('type', type);
-    if (city) params.set('city', city);
-    if (priceMax) params.set('maxPrice', priceMax);
-    router.push(`/properties?${params.toString()}`);
-  };
+  const [searchType, setSearchType] = useState<"all" | "sale" | "rent">("all");
+  const [location, setLocation] = useState("");
 
   return (
-    <section
-      className="relative min-h-[90vh] flex items-center justify-center"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(10,22,40,0.65) 0%, rgba(10,22,40,0.75) 100%), url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600&q=80')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-      }}
-    >
-      <div className="container mx-auto px-4 py-20 text-center">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 bg-primary/20 border border-primary/40 text-red-300 text-sm font-semibold px-4 py-2 rounded-full mb-6">
-          <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-          Pakistan's #1 Trusted Real Estate Agency
+    <>
+      <style>{`
+        /* ── Section fade-in ── */
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(24px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.6s ease both; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.35s; }
+
+        /* ── Hero overlay gradient ── */
+        .hero-overlay {
+          background: linear-gradient(
+            120deg,
+            rgba(10,18,48,0.78) 0%,
+            rgba(10,18,48,0.45) 60%,
+            transparent 100%
+          );
+        }
+      `}</style>
+      <section className="relative min-h-[91vh] lg:min-h-[90vh] xl:min-h-[88vh] flex items-center overflow-hidden">
+        
+        {/* Background Swiper with Super Flow Effect */}
+        <div className="absolute inset-0 z-0">
+          <Swiper
+            modules={[Autoplay, Pagination, superFlowEffect as any]}
+            effect="super-flow"
+            slidesPerView={1}
+            loop={true}
+            speed={1000}
+            autoplay={{
+              delay: 3000,
+              disableOnInteraction: false,
+            }}
+            pagination={{ el: ".swiper-pagination", clickable: true }}
+            className="w-full h-full"
+          >
+            {HERO_IMAGES.map((img, i) => (
+              <SwiperSlide key={i}>
+                <div className="super-flow-image">
+                  <img src={img} alt={`Hero ${i+1}`} />
+                </div>
+              </SwiperSlide>
+            ))}
+            <div className="swiper-pagination swiper-pagination-bullets swiper-pagination-horizontal"></div>
+          </Swiper>
         </div>
 
-        {/* Heading */}
-        <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl text-white font-bold leading-tight mb-6">
-          Find Your Perfect
-          <span className="text-primary block">Dream Property</span>
-        </h1>
+        {/* Overlay */}
+        <div className="absolute inset-0 hero-overlay pointer-events-none" style={{ zIndex: 1 }} />
 
-        <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto mb-12">
-          Explore thousands of residential & commercial properties across Pakistan. Your dream home is just a search away.
-        </p>
-
-        {/* Search Box */}
-        <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-5xl mx-auto">
-          <form onSubmit={handleSearch}>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              {/* Keyword */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <input
-                  type="text"
-                  placeholder="Search properties..."
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primary text-navy text-sm"
-                />
-              </div>
-
-              {/* Type */}
-              <div className="relative">
-                <Home className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <select
-                  value={type}
-                  onChange={(e) => setType(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primary text-navy text-sm appearance-none bg-white"
-                >
-                  <option value="">Property Type</option>
-                  <option value="sale">For Sale</option>
-                  <option value="rent">For Rent</option>
-                </select>
-              </div>
-
-              {/* City */}
-              <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <select
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primary text-navy text-sm appearance-none bg-white"
-                >
-                  <option value="">Select City</option>
-                  <option>Karachi</option>
-                  <option>Lahore</option>
-                  <option>Islamabad</option>
-                  <option>Rawalpindi</option>
-                  <option>Faisalabad</option>
-                  <option>Multan</option>
-                </select>
-              </div>
-
-              {/* Price */}
-              <div className="relative">
-                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                <select
-                  value={priceMax}
-                  onChange={(e) => setPriceMax(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-primary text-navy text-sm appearance-none bg-white"
-                >
-                  <option value="">Max Price</option>
-                  <option value="5000000">PKR 50 Lac</option>
-                  <option value="10000000">PKR 1 Crore</option>
-                  <option value="30000000">PKR 3 Crore</option>
-                  <option value="50000000">PKR 5 Crore</option>
-                  <option value="100000000">PKR 10 Crore</option>
-                </select>
-              </div>
+        {/* Content */}
+        <div className="relative max-w-7xl mx-auto px-4 w-full" style={{ zIndex: 2 }}>
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 bg-red-700 text-white text-sm font-semibold px-4 py-2 rounded-full mb-6 fade-up">
+              <Star size={14} fill="currentColor" /> Pakistan's Trusted Real Estate Partner
             </div>
 
-            <button
-              type="submit"
-              className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-xl transition-colors duration-300 flex items-center justify-center gap-2 text-lg"
-            >
-              <Search size={20} />
-              Search Properties
-            </button>
-          </form>
-        </div>
+            <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight mb-4 fade-up delay-1">
+              Find Your <span className="text-red-400">Perfect</span>
+              <br /> Property in Pakistan
+            </h1>
 
-        {/* Stats */}
-        <div className="flex flex-wrap justify-center gap-8 mt-14 text-white">
-          {[
-            { value: '5,000+', label: 'Properties Listed' },
-            { value: '2,000+', label: 'Happy Clients' },
-            { value: '15+', label: 'Years Experience' },
-            { value: '50+', label: 'Expert Agents' },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <div className="font-heading text-3xl font-bold text-primary">{stat.value}</div>
-              <div className="text-sm text-gray-300 mt-1">{stat.label}</div>
+            <p className="text-slate-300 text-lg mb-10 leading-relaxed fade-up delay-2">
+              Explore thousands of verified properties across Karachi, Lahore,
+              and Islamabad. Buy, sell, or rent with Nayab Real Marketing — your
+              trusted partner since 2010.
+            </p>
+
+            {/* Search bar */}
+            <div className="bg-white rounded-2xl shadow-2xl p-4 fade-up delay-3">
+              <div className="flex gap-2 mb-4">
+                {(["all", "sale", "rent"] as const).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setSearchType(t)}
+                    className={`px-5 py-2 rounded-lg font-semibold text-sm transition-all ${
+                      searchType === t
+                        ? "bg-red-700 text-white shadow-md"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {t === "all" ? "All" : t === "sale" ? "For Sale" : "For Rent"}
+                  </button>
+                ))}
+              </div>
+              <div className="flex flex-col md:flex-row gap-3">
+                <div className="flex-1 flex items-center gap-2 border rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-red-300 transition-all">
+                  <Search size={18} className="text-red-600 shrink-0" />
+                  <input
+                    type="text"
+                    placeholder="Search by area, city, or property type..."
+                    className="flex-1 outline-none text-gray-700 text-sm"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                  />
+                </div>
+                <div className="flex items-center gap-2 border rounded-lg px-3 py-2 min-w-[160px] focus-within:ring-2 focus-within:ring-red-300 transition-all">
+                  <Building2 size={18} className="text-red-600 shrink-0" />
+                  <select className="flex-1 outline-none text-gray-700 text-sm bg-transparent">
+                    <option>Property Type</option>
+                    <option>Residential</option>
+                    <option>Commercial</option>
+                    <option>Plot</option>
+                    <option>Office</option>
+                  </select>
+                </div>
+                <Link
+                  href={`/properties${searchType !== "all" ? `?type=${searchType}` : ""}${location ? `&location=${encodeURIComponent(location)}` : ""}`}
+                  className="bg-red-700 hover:bg-red-600 active:scale-95 text-white px-8 py-3 rounded-lg font-bold text-sm transition-all flex items-center gap-2 whitespace-nowrap shadow-lg shadow-red-700/30"
+                >
+                  <Search size={16} /> Search Properties
+                </Link>
+              </div>
             </div>
-          ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

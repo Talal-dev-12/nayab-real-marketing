@@ -16,7 +16,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Settings, BarChart3, ShieldCheck, PenTool, PlusSquare, PenLine,
 };
 
-interface AuthUser { id: string; name: string; email: string; role: string; avatar?: string; }
+interface AuthUser { id: string; name: string; email: string; role: string; avatar?: string; emailVerified?: boolean; }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -41,7 +41,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           router.push('/sign-in');
           return;
         }
-        setUser(data.user);
+        // Persist fresh user data (includes emailVerified) to localStorage
+        const freshUser = {
+          id:            data.user.id,
+          name:          data.user.name,
+          email:         data.user.email,
+          role:          data.user.role,
+          avatar:        data.user.avatar,
+          emailVerified: data.user.emailVerified,
+        };
+        localStorage.setItem('auth_user',  JSON.stringify(freshUser));
+        localStorage.setItem('admin_user', JSON.stringify(freshUser));
+        setUser(freshUser);
         setAuthed(true);
       })
       .catch(() => {
