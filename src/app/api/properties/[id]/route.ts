@@ -35,10 +35,12 @@ export const PUT = requireAuth(async (req: NextRequest, user: JwtPayload, ctx: R
 
     const body = await req.json();
 
-    // Sellers cannot change featured status or agentId
+    // Sellers cannot change featured status, agentId, or approvalStatus
     if (user.role === 'seller') {
       delete body.featured;
       delete body.agentId;
+      delete body.approvalStatus;
+      delete body.rejectionNote;
     }
 
     const updated = await Property.findByIdAndUpdate(id, body, { new: true, runValidators: true });

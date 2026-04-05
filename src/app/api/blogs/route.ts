@@ -19,6 +19,8 @@ export async function GET(req: NextRequest) {
     const published = sp.get('published');
     const areaSlug  = sp.get('area');
     const schemeSlug = sp.get('scheme');
+    const approvalStatus = sp.get('approvalStatus') || ''; // dashboard filter
+    const dashboard    = sp.get('dashboard')   || 'false';
     const limit     = parseInt(sp.get('limit') || '50');
     const page      = parseInt(sp.get('page') || '1');
 
@@ -37,6 +39,13 @@ export async function GET(req: NextRequest) {
     if (published !== null) filter.published = published === 'true';
     if (areaSlug   && areaSlug   !== 'null') filter.areaSlug   = areaSlug;
     if (schemeSlug && schemeSlug !== 'null') filter.schemeSlug = schemeSlug;
+
+    // Protect public API 
+    if (dashboard === 'true') {
+      if (approvalStatus) filter.approvalStatus = approvalStatus;
+    } else {
+      filter.approvalStatus = 'approved';
+    }
 
     const skip = (page - 1) * limit;
     const [blogs, total] = await Promise.all([
@@ -59,6 +68,9 @@ export const POST = requireAuth(async (req: NextRequest, user: JwtPayload, _ctx:
     if (user.role === 'writer') {
       body.authorId = user.id;
       if (!body.author) body.author = user.name;
+      body.approvalStatus = 'pending';
+    } else {
+      body.approvalStatus = 'approved';
     }
     const {
       title, slug, excerpt, content, image, images, author, category,
@@ -92,6 +104,7 @@ export const POST = requireAuth(async (req: NextRequest, user: JwtPayload, _ctx:
       areaLabel:  areaLabel  || '',
       schemeSlug: schemeSlug ? makeSlug(schemeSlug) : '',
       schemeLabel: schemeLabel || '',
+      approvalStatus: body.approvalStatus,
     });
     return NextResponse.json(blog, { status: 201 });
   } catch (error) {

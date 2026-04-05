@@ -30,6 +30,13 @@ export const PUT = requireAuth(async (req: NextRequest, user: JwtPayload, ctx: R
     }
 
     const body = await req.json();
+
+    // Writers cannot approve their own blogs or manipulate published status
+    if (role === 'writer') {
+      delete body.approvalStatus;
+      delete body.rejectionNote;
+      delete body.published;
+    }
     const updated = await Blog.findByIdAndUpdate(id, body, { new: true, runValidators: true });
     return NextResponse.json(updated);
   } catch (error) {

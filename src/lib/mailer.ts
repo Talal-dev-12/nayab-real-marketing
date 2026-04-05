@@ -57,6 +57,26 @@ export async function sendVerificationEmail(to: string, name: string, token: str
   await transporter.sendMail({ from: FROM, to, subject: 'Verify your Nayab Real account', html });
 }
 
+// ── 1b. OTP verification email ────────────────────────────────────────────────
+export async function sendOtpEmail(to: string, name: string, otp: string) {
+  const html = layout('🔐 Your Verification Code', `
+    <p style="color:#1e293b;font-size:16px">Hi <strong>${name}</strong>,</p>
+    <p style="color:#475569;font-size:14px;line-height:1.7">
+      Thank you for registering on <strong>Nayab Real Marketing</strong>.
+      Use the code below to verify your email address and activate your account.
+    </p>
+    <div style="text-align:center;margin:28px 0">
+      <div style="display:inline-block;background:#f1f5f9;padding:18px 40px;border-radius:12px;border:2px dashed #c0392b">
+        <span style="font-size:36px;font-weight:bold;letter-spacing:10px;color:#0f1e3d">${otp}</span>
+      </div>
+    </div>
+    <p style="color:#94a3b8;font-size:13px;text-align:center">
+      This code expires in <strong>10 minutes</strong>. If you didn't sign up, you can safely ignore this email.
+    </p>
+  `);
+  await transporter.sendMail({ from: FROM, to, subject: `${otp} — Verify your Nayab Real account`, html });
+}
+
 // ── 2. Admin notification: new property submitted ─────────────────────────────
 export async function sendNewPropertyNotification({
   adminEmails, sellerName, sellerEmail, propertyTitle, propertyId,

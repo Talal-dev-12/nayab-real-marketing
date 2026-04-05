@@ -20,25 +20,24 @@ export interface NavItem {
 
 export const ALL_NAV: NavItem[] = [
   // Dashboard home — every portal role
-  { href: '/dashboard',                label: 'Dashboard',    icon: 'LayoutDashboard', roles: ['admin','superadmin','seller','writer'] },
+  { href: '/dashboard',                label: 'Dashboard',    icon: 'LayoutDashboard', roles: ['manager','superadmin','seller','writer'] },
 
-  // Properties — admin/superadmin see all; seller sees own
-  { href: '/dashboard/properties',     label: 'Properties',   icon: 'Home',            roles: ['admin','superadmin','seller'] },
-  { href: '/dashboard/properties/new', label: 'Add Property', icon: 'PlusSquare',      roles: ['admin','superadmin','seller'] },
+  // Properties — manager/superadmin see all; seller sees own
+  { href: '/dashboard/properties',     label: 'Properties',   icon: 'Home',            roles: ['manager','superadmin','seller'] },
+  { href: '/dashboard/properties/new', label: 'Add Property', icon: 'PlusSquare',      roles: ['manager','superadmin','seller'] },
 
-  // Blogs — admin/superadmin see all; writer sees own
-  { href: '/dashboard/blogs',          label: 'Blog Posts',   icon: 'FileText',        roles: ['admin','superadmin','writer'] },
-  { href: '/dashboard/blogs/new',      label: 'New Article',  icon: 'PenLine',         roles: ['admin','superadmin','writer'] },
+  // Blogs — manager/superadmin see all; writer sees own
+  { href: '/dashboard/blogs',          label: 'Blog Posts',   icon: 'FileText',        roles: ['manager','superadmin','writer'] },
+  { href: '/dashboard/blogs/new',      label: 'New Article',  icon: 'PenLine',         roles: ['manager','superadmin','writer'] },
 
   // Admin-only sections
-  { href: '/dashboard/agents',         label: 'Agents',       icon: 'Users',           roles: ['admin','superadmin'] },
-  { href: '/dashboard/writers',        label: 'Portal Users', icon: 'PenTool',         roles: ['admin','superadmin'] },
-  { href: '/dashboard/messages',       label: 'Messages',     icon: 'MessageSquare',   roles: ['admin','superadmin'] },
-  { href: '/dashboard/inquiries',      label: 'Inquiries',    icon: 'Send',            roles: ['admin','superadmin'] },
-  { href: '/dashboard/analytics',      label: 'Analytics',    icon: 'BarChart3',       roles: ['admin','superadmin'] },
+  { href: '/dashboard/agents',         label: 'Agents',       icon: 'Users',           roles: ['manager','superadmin'] },
+  { href: '/dashboard/users',          label: 'Users',        icon: 'Users',           roles: ['manager','superadmin'] },
+  { href: '/dashboard/messages',       label: 'Messages',     icon: 'MessageSquare',   roles: ['manager','superadmin'] },
+  { href: '/dashboard/inquiries',      label: 'Inquiries',    icon: 'Send',            roles: ['manager','superadmin'] },
+  { href: '/dashboard/analytics',      label: 'Analytics',    icon: 'BarChart3',       roles: ['manager','superadmin'] },
 
   // Superadmin-only
-  { href: '/dashboard/admins',         label: 'Admin Users',  icon: 'ShieldCheck',     roles: ['superadmin'] },
   { href: '/dashboard/settings',       label: 'Settings',     icon: 'Settings',        roles: ['superadmin'] },
 ];
 
@@ -77,7 +76,7 @@ const PERMISSIONS: Record<UserRole, RolePermissions> = {
     manageSettings:      true,  assignAgent:         true,
     markFeatured:        true,
   },
-  admin: {
+  manager: {
     manageAllProperties: true,  submitOwnProperties: true,
     featureProperties:   true,  deleteAnyProperty:   true,
     manageAllBlogs:      true,  writeOwnBlogs:       true,
@@ -126,7 +125,7 @@ export function can(role: UserRole, permission: keyof RolePermissions): boolean 
 // ── Role metadata (labels, colours) ──────────────────────────────────────────
 export const ROLE_META: Record<UserRole, { label: string; color: string }> = {
   superadmin: { label: 'Super Admin', color: 'bg-purple-100 text-purple-700' },
-  admin:      { label: 'Admin',       color: 'bg-red-100    text-red-700'    },
+  manager:    { label: 'Manager',     color: 'bg-red-100    text-red-700'    },
   seller:     { label: 'Seller',      color: 'bg-amber-100  text-amber-700'  },
   writer:     { label: 'Writer',      color: 'bg-blue-100   text-blue-700'   },
   agent:      { label: 'Agent',       color: 'bg-green-100  text-green-700'  },
@@ -134,4 +133,4 @@ export const ROLE_META: Record<UserRole, { label: string; color: string }> = {
 };
 
 // Roles that are allowed inside the /dashboard panel
-export const PANEL_ROLES: UserRole[] = ['admin', 'superadmin', 'seller', 'writer', 'agent'];
+export const PANEL_ROLES: UserRole[] = ['manager', 'superadmin', 'seller', 'writer', 'agent'];

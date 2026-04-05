@@ -40,7 +40,7 @@ export function requireAdmin(
     if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     try {
       const user = verifyToken(token);
-      if (user.role !== 'admin' && user.role !== 'superadmin') {
+      if (user.role !== 'manager' && user.role !== 'superadmin') {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
       return handler(req, user, ctx);

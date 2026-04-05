@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { User } from '@/models/User';
-import { AdminUser } from '@/models/AdminUser';
-import { signToken } from '@/lib/jwt';
+import { sendOtpEmail } from '@/lib/mailer';
+import crypto from 'crypto';
+
+function generateOtp(): string {
+  return crypto.randomInt(100000, 999999).toString();
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,62 +25,63 @@ export async function POST(req: NextRequest) {
     const nameClean  = name.trim();
     const emailClean = email.toLowerCase().trim();
 
-    // Email must be globally unique across both collections
-    const existingUser  = await User.findOne({ email: emailClean });
-    const existingAdmin = await AdminUser.findOne({ email: emailClean });
+    const existingUser = await User.findOne({ email: emailClean }).select('+otpCode');
 
-    if (existingUser || existingAdmin) {
+    if (existingUser) {
+      // If the user exists but is NOT verified, allow re-sending OTP
+      if (!existingUser.emailVerified) {
+        const otp = generateOtp();
+        existingUser.otpCode  = otp;
+        existingUser.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+        existingUser.name = nameClean;
+        existingUser.password = password;
+        existingUser.role = 'seller';
+        await existingUser.save();
+
+        try {
+          await sendOtpEmail(emailClean, nameClean, otp);
+        } catch (emailErr) {
+          console.error('OTP email failed:', emailErr);
+        }
+
+        return NextResponse.json({
+          success: true,
+          requiresVerification: true,
+          email: emailClean,
+          role: 'seller',
+          message: 'Verification code sent to your email.',
+        });
+      }
+
       return NextResponse.json({ error: 'An account with this email already exists' }, { status: 409 });
     }
 
-    // Seller accounts live in the AdminUser collection so the dashboard panel works
-    const newSeller = await AdminUser.create({
-      name:     nameClean,
-      email:    emailClean,
-      password,          // hashed by pre-save hook
-      role:     'seller',
-      active:   true,
+    const otp = generateOtp();
+
+    await User.create({
+      name:          nameClean,
+      email:         emailClean,
+      password,
+      role:          'seller',
+      active:        true,
+      emailVerified: false,
+      otpCode:       otp,
+      otpExpiry:     new Date(Date.now() + 10 * 60 * 1000),
     });
 
-    newSeller.lastLogin = new Date();
-    await newSeller.save();
+    try {
+      await sendOtpEmail(emailClean, nameClean, otp);
+    } catch (emailErr) {
+      console.error('OTP email failed:', emailErr);
+    }
 
-    const token = signToken({
-      id:    newSeller._id.toString(),
-      email: newSeller.email,
-      role:  newSeller.role,
-      name:  newSeller.name,
+    return NextResponse.json({
+      success: true,
+      requiresVerification: true,
+      email: emailClean,
+      role: 'seller',
+      message: 'Verification code sent to your email.',
     });
-
-    const response = NextResponse.json({
-      success:    true,
-      redirectTo: '/dashboard',
-      user: {
-        id:    newSeller._id,
-        name:  newSeller.name,
-        email: newSeller.email,
-        role:  newSeller.role,
-      },
-      token,
-    });
-
-    response.cookies.set('auth_token', token, {
-      httpOnly: true,
-      secure:   process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge:   7 * 24 * 60 * 60,
-      path:     '/',
-    });
-
-    response.cookies.set('admin_token', token, {
-      httpOnly: true,
-      secure:   process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge:   7 * 24 * 60 * 60,
-      path:     '/',
-    });
-
-    return response;
   } catch (error) {
     console.error('Seller register error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

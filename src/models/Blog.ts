@@ -12,6 +12,8 @@ export interface IBlog extends Document {
   category: string;
   tags: string[];
   published: boolean;
+  approvalStatus: 'pending' | 'approved' | 'rejected';
+  rejectionNote?: string;
   views: number;
   // ── Area / Scheme taxonomy ────────────────────────────────────
   areaSlug: string;
@@ -39,6 +41,8 @@ const BlogSchema = new Schema<IBlog>(
     category:        { type: String, default: 'General' },
     tags:            [{ type: String }],
     published:       { type: Boolean, default: false },
+    approvalStatus:  { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+    rejectionNote:   { type: String },
     views:           { type: Number, default: 0 },
     // area / scheme — optional
     areaSlug:        { type: String, default: '', lowercase: true, trim: true },
@@ -55,6 +59,7 @@ const BlogSchema = new Schema<IBlog>(
 
 BlogSchema.index({ slug: 1 });
 BlogSchema.index({ published: 1, createdAt: -1 });
+BlogSchema.index({ approvalStatus: 1 });
 BlogSchema.index({ areaSlug: 1, published: 1 });
 BlogSchema.index({ schemeSlug: 1, published: 1 });
 BlogSchema.index({ authorId: 1 });

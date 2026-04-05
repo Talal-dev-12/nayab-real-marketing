@@ -52,14 +52,17 @@ export default function SignUpPage() {
         return;
       }
 
-      // Store token for any future authenticated requests
+      // If OTP verification is required, redirect to verify page
+      if (data.requiresVerification) {
+        router.push(`/verify-otp?email=${encodeURIComponent(data.email)}&role=user`);
+        return;
+      }
+
+      // Fallback: direct login (shouldn't happen with new flow)
       if (data.token) {
         localStorage.setItem('auth_token', data.token);
         localStorage.setItem('auth_user',  JSON.stringify(data.user));
       }
-
-      // New public users always go to homepage
-      // Honour ?redirect= if present (e.g. came from a property page)
       const redirectTo = searchParams?.get('redirect') || '/';
       router.push(redirectTo);
     } catch {

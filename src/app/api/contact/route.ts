@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { ContactMessage } from '@/models/ContactMessage';
-import { AdminUser } from '@/models/AdminUser';
+import { User } from '@/models/User';
 import { requireAuth, RouteContext } from '@/lib/auth-middleware';
 import { JwtPayload } from '@/lib/jwt';
 import { sendContactNotification } from '@/lib/mailer';
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     // Send email notification to all active admins (non-blocking)
     try {
-      const admins = await AdminUser.find({ active: true }).select('email').lean();
+      const admins = await User.find({ active: true, role: { $in: ['manager', 'superadmin'] } }).select('email').lean();
       const adminEmails = (admins as any[]).map((a: any) => a.email).filter(Boolean);
       if (adminEmails.length > 0 && process.env.SMTP_USER) {
         await sendContactNotification({

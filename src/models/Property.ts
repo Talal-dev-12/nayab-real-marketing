@@ -50,7 +50,7 @@ const PropertySchema = new Schema<IProperty>(
     agentId:        { type: String, required: true },
     submittedBy:    { type: String },
     views:          { type: Number, default: 0 },
-    approvalStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'approved' },
+    approvalStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
     rejectionNote:  { type: String },
   },
   { timestamps: true }

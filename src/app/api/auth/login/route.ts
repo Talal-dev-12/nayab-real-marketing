@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
-import { AdminUser } from '@/models/AdminUser';
 import { User } from '@/models/User';
 import { signToken, getRedirectByRole } from '@/lib/jwt';
 
@@ -16,15 +15,7 @@ export async function POST(req: NextRequest) {
 
     const normalizedEmail = email.toLowerCase();
 
-    // ── 1. Check public User collection first ────────────────────────────────
     let userRecord = await User.findOne({ email: normalizedEmail, active: true }).select('+password');
-    let isPublicUser = true;
-
-    // ── 2. Fall back to AdminUser (staff: admin, superadmin, writer, agent, seller) ──
-    if (!userRecord) {
-      userRecord = await AdminUser.findOne({ email: normalizedEmail, active: true }).select('+password');
-      isPublicUser = false;
-    }
 
     if (!userRecord) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
@@ -40,6 +31,16 @@ export async function POST(req: NextRequest) {
     const isValid = await userRecord.comparePassword(password);
     if (!isValid) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
+    }
+
+    // Check if email is verified (skip for staff roles created by admin)
+    const staffRoles = ['manager', 'superadmin', 'agent'];
+    if (!userRecord.emailVerified && !staffRoles.includes(userRecord.role)) {
+      return NextResponse.json({
+        error: 'Please verify your email address first.',
+        requiresVerification: true,
+        email: userRecord.email,
+      }, { status: 403 });
     }
 
     // Update last login
@@ -68,7 +69,7 @@ export async function POST(req: NextRequest) {
       token,
     });
 
-    // Unified cookie — used by auth-middleware on API routes
+    // Unified cookie
     response.cookies.set('auth_token', token, {
       httpOnly: true,
       secure:   process.env.NODE_ENV === 'production',
@@ -77,8 +78,7 @@ export async function POST(req: NextRequest) {
       path:     '/',
     });
 
-    // Keep legacy cookie name so existing admin/agent/writer layouts
-    // (which send it as Authorization: Bearer) continue to work
+    // Keep legacy cookie name for robust compatibility
     response.cookies.set('admin_token', token, {
       httpOnly: true,
       secure:   process.env.NODE_ENV === 'production',
@@ -93,3 +93,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+

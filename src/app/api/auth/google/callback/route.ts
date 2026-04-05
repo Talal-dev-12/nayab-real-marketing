@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
-import { AdminUser } from '@/models/AdminUser';
 import { User } from '@/models/User';
 import { signToken, getRedirectByRole } from '@/lib/jwt';
 
@@ -41,7 +40,6 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Exchange code for tokens
     const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
       method:  'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -60,8 +58,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(new URL('/sign-in?error=token_failed', req.url));
     }
 
-    // Fetch Google profile
-    const userRes    = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+    const userRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
     const googleUser: GoogleUserInfo = await userRes.json();
@@ -74,39 +71,10 @@ export async function GET(req: NextRequest) {
 
     const normalizedEmail = googleUser.email.toLowerCase();
 
-    // ── 1. Check staff (AdminUser) first ─────────────────────────────────────
-    let staffUser = await AdminUser.findOne({ email: normalizedEmail });
+    let user = await User.findOne({ email: normalizedEmail });
 
-    if (staffUser) {
-      if (!staffUser.active) {
-        return NextResponse.redirect(new URL('/sign-in?error=account_disabled', req.url));
-      }
-
-      staffUser.googleId  = googleUser.sub;
-      staffUser.avatar    = staffUser.avatar || googleUser.picture;
-      staffUser.lastLogin = new Date();
-      if (!staffUser.name) staffUser.name = googleUser.name;
-      await staffUser.save();
-
-      const token      = signToken({
-        id:    staffUser._id.toString(),
-        email: staffUser.email,
-        role:  staffUser.role,
-        name:  staffUser.name,
-      });
-      const redirectTo = getRedirectByRole(staffUser.role);
-      return setAuthCookies(
-        NextResponse.redirect(new URL(redirectTo, req.url)),
-        token
-      );
-    }
-
-    // ── 2. Check or create public User ───────────────────────────────────────
-    let publicUser = await User.findOne({ email: normalizedEmail });
-
-    if (!publicUser) {
-      // Auto-register new Google user as role: "user"
-      publicUser = await User.create({
+    if (!user) {
+      user = await User.create({
         name:     googleUser.name,
         email:    normalizedEmail,
         role:     'user',
@@ -115,24 +83,27 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    if (!publicUser.active) {
+    if (!user.active) {
       return NextResponse.redirect(new URL('/sign-in?error=account_disabled', req.url));
     }
 
-    publicUser.googleId  = googleUser.sub;
-    publicUser.avatar    = publicUser.avatar || googleUser.picture;
-    publicUser.lastLogin = new Date();
-    await publicUser.save();
+    user.googleId  = googleUser.sub;
+    user.avatar    = user.avatar || googleUser.picture;
+    user.lastLogin = new Date();
+    if (!user.name) user.name = googleUser.name;
+    await user.save();
 
     const token = signToken({
-      id:    publicUser._id.toString(),
-      email: publicUser.email,
-      role:  publicUser.role,
-      name:  publicUser.name,
+      id:    user._id.toString(),
+      email: user.email,
+      role:  user.role,
+      name:  user.name,
     });
 
+    const redirectTo = getRedirectByRole(user.role);
+
     return setAuthCookies(
-      NextResponse.redirect(new URL('/', req.url)),
+      NextResponse.redirect(new URL(redirectTo, req.url)),
       token
     );
   } catch (err) {
@@ -140,3 +111,4 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL('/sign-in?error=server_error', req.url));
   }
 }
+

@@ -162,7 +162,7 @@ const blogHTML = (title: string, area: string, category: string) => `
 
 // ─── Mongoose schemas (minimal — matches live models) ────────────────────────
 const schemas = {
-  AdminUser: new mongoose.Schema({
+  User: new mongoose.Schema({
     name: String, email: { type: String, unique: true }, password: String,
     role: { type: String, default: 'superadmin' },
     active: { type: Boolean, default: true },
@@ -454,7 +454,7 @@ async function seed() {
   await mongoose.connect(URI);
   console.log('✅  Connected to MongoDB Atlas\n');
 
-  const AdminUser = mongoose.models.AdminUser      || mongoose.model('AdminUser',      schemas.AdminUser);
+  const User = mongoose.models.User || mongoose.model('User', schemas.User);
   const Agent     = mongoose.models.Agent          || mongoose.model('Agent',          schemas.Agent);
   const Property  = mongoose.models.Property       || mongoose.model('Property',       schemas.Property);
   const Blog      = mongoose.models.Blog           || mongoose.model('Blog',           schemas.Blog);
@@ -465,10 +465,10 @@ async function seed() {
   // ── Superadmin (only if not exists) ─────────────────────────────────────────
   const adminEmail = process.env.ADMIN_EMAIL    || 'admin@nayabrealmarketing.com';
   const adminPass  = process.env.ADMIN_PASSWORD || 'Admin@123456';
-  const existingAdmin = await AdminUser.findOne({ email: adminEmail });
+  const existingAdmin = await User.findOne({ email: adminEmail });
   if (!existingAdmin) {
     const hashed = await bcrypt.hash(adminPass, 12);
-    await AdminUser.create({ name:'Super Admin', email:adminEmail, password:hashed, role:'superadmin' });
+    await User.create({ name:'Super Admin', email:adminEmail, password:hashed, role:'superadmin' });
     console.log(`✅  Superadmin created — ${adminEmail} / ${adminPass}`);
   } else {
     console.log(`ℹ️   Superadmin exists (${adminEmail})`);
@@ -476,10 +476,10 @@ async function seed() {
 
   // ── Sellers & Writers (additive) ────────────────────────────────────────────
   for (const s of [...SELLERS, ...WRITERS]) {
-    const exists = await AdminUser.findOne({ email: s.email });
+    const exists = await User.findOne({ email: s.email });
     if (!exists) {
       const hashed = await bcrypt.hash(s.password, 12);
-      await AdminUser.create({ name:s.name, email:s.email, password:hashed, role:s.role, active:true });
+      await User.create({ name:s.name, email:s.email, password:hashed, role:s.role, active:true });
       inserted.staff++;
       console.log(`  + ${s.role}: ${s.name} (${s.email})`);
     }
@@ -596,7 +596,7 @@ async function seed() {
 
   // ── Summary ──────────────────────────────────────────────────────────────────
   console.log('\n📊  Final database counts:');
-  console.log(`     AdminUsers:  ${await AdminUser.countDocuments()}`);
+  console.log(`     Users:       ${await User.countDocuments()}`);
   console.log(`     Agents:      ${await Agent.countDocuments()}`);
   console.log(`     Properties:  ${await Property.countDocuments()}`);
   console.log(`     Blogs:       ${await Blog.countDocuments()}`);

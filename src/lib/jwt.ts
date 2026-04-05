@@ -4,7 +4,7 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_EXPIRES_IN = '7d';
 
 // All roles in the system
-export type UserRole = 'user' | 'seller' | 'agent' | 'writer' | 'admin' | 'superadmin';
+export type UserRole = 'user' | 'seller' | 'agent' | 'writer' | 'manager' | 'superadmin';
 
 export interface JwtPayload {
   id: string;

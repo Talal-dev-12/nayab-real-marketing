@@ -17,6 +17,8 @@ export async function GET(req: NextRequest) {
     const type         = searchParams.get('type')        || '';
     const city         = searchParams.get('city')        || '';
     const submittedBy  = searchParams.get('submittedBy') || ''; // seller "my listings"
+    const approvalStatus = searchParams.get('approvalStatus') || ''; // dashboard filter
+    const dashboard    = searchParams.get('dashboard')   || 'false';
     const page         = parseInt(searchParams.get('page')  || '1');
     const limit        = parseInt(searchParams.get('limit') || '12');
 
@@ -34,6 +36,13 @@ export async function GET(req: NextRequest) {
     if (priceType)    filter.priceType = priceType;
     if (city)         filter.city      = city;
     if (submittedBy)  filter.submittedBy = submittedBy;  // ← scope to seller
+    
+    // Protect public API 
+    if (dashboard === 'true') {
+      if (approvalStatus) filter.approvalStatus = approvalStatus;
+    } else {
+      filter.approvalStatus = 'approved';
+    }
 
     if (search) {
       filter.$or = [
@@ -70,6 +79,9 @@ export const POST = requireAuth(async (req: NextRequest, user: JwtPayload, _ctx:
       body.agentId = body.agentId || user.id;
       // Sellers cannot feature their own listings
       body.featured = false;
+      body.approvalStatus = 'pending';
+    } else {
+      body.approvalStatus = 'approved';
     }
 
     const { title, description, price, priceType, location, city, area, type, agentId } = body;
