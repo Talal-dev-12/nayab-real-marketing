@@ -54,6 +54,11 @@ export default function SellerSignUpPage() {
         return;
       }
 
+      if (data.requiresVerification) {
+        router.push(`/verify-otp?email=${encodeURIComponent(data.email)}&role=seller`);
+        return;
+      }
+
       if (data.token) {
         localStorage.setItem('auth_token',  data.token);
         localStorage.setItem('auth_user',   JSON.stringify(data.user));

@@ -95,7 +95,8 @@ function VerifyOtpContent() {
       
       // Redirect after short celebration
       setTimeout(() => {
-        router.push(data.redirectTo || '/');
+        const finalRedirect = searchParams.get('redirect') || data.redirectTo || '/';
+        router.push(finalRedirect);
       }, 1500);
     } catch {
       setError('Network error. Please try again.');

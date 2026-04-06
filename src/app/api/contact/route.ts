@@ -28,8 +28,8 @@ function looksLikeSpam(text: string): boolean {
   return patterns.some(p => p.test(text));
 }
 
-// PUBLIC: Submit contact form
-export async function POST(req: NextRequest) {
+// PROTECTED: Submit contact form
+export const POST = requireAuth(async (req: NextRequest, user: JwtPayload, _ctx: RouteContext) => {
   try {
     const ip = getClientIp(req);
     if (isRateLimited(ip)) {
@@ -38,29 +38,30 @@ export async function POST(req: NextRequest) {
 
     await connectDB();
     const body = await req.json();
-    const { name, email, phone, subject, message, propertyTitle } = body;
+    const { subject, message, propertyTitle, phone } = body;
 
-    if (!name || !email || !subject || !message) {
-      return NextResponse.json({ error: 'Name, email, subject, and message are required' }, { status: 400 });
+    // Use name and email from JWT for security/consistency
+    const name = user.name;
+    const email = user.email;
+
+    if (!subject || !message) {
+      return NextResponse.json({ error: 'Subject and message are required' }, { status: 400 });
     }
-    if (name.length > 100 || email.length > 150 || subject.length > 200 || message.length > 2000) {
+    if (subject.length > 200 || message.length > 2000) {
       return NextResponse.json({ error: 'One or more fields exceed maximum length' }, { status: 400 });
     }
     if (message.trim().length < 10) {
       return NextResponse.json({ error: 'Message is too short' }, { status: 400 });
     }
-    if (looksLikeSpam(name) || looksLikeSpam(subject)) {
+    if (looksLikeSpam(subject)) {
       return NextResponse.json({ success: true, message: 'Message received' });
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
     }
 
     // Save to DB
     await ContactMessage.create({
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
+      userId: user.id,
+      name,
+      email: email.toLowerCase(),
       phone: (phone || '').trim().slice(0, 20),
       subject: subject.trim(),
       message: message.trim(),
@@ -73,8 +74,8 @@ export async function POST(req: NextRequest) {
       if (adminEmails.length > 0 && process.env.SMTP_USER) {
         await sendContactNotification({
           to: adminEmails,
-          fromName: name.trim(),
-          fromEmail: email.trim(),
+          fromName: name,
+          fromEmail: email,
           phone: phone?.trim(),
           subject: subject.trim(),
           message: message.trim(),
@@ -82,7 +83,6 @@ export async function POST(req: NextRequest) {
         });
       }
     } catch (emailErr) {
-      // Never fail the request because of email error — just log it
       console.error('Email notification failed:', emailErr);
     }
 
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
     console.error('POST contact error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});
 
 // PROTECTED: Get all messages
 export const GET = requireAuth(async (req: NextRequest, _user: JwtPayload, _ctx: RouteContext) => {

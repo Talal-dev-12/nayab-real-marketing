@@ -193,3 +193,23 @@ export async function sendContactNotification({
     subject: `New Inquiry: ${subject}`, html,
   });
 }
+
+// ── 6. Password Reset OTP ─────────────────────────────────────────────────────
+export async function sendPasswordResetEmail(to: string, name: string, otp: string) {
+  const html = layout('🔑 Reset Your Password', `
+    <p style="color:#1e293b;font-size:16px">Hi <strong>${name}</strong>,</p>
+    <p style="color:#475569;font-size:14px;line-height:1.7">
+      You requested to reset your password for <strong>Nayab Real Marketing</strong>.
+      Use the code below to complete the process.
+    </p>
+    <div style="text-align:center;margin:28px 0">
+      <div style="display:inline-block;background:#fff1f0;padding:18px 40px;border-radius:12px;border:2px dashed #c0392b">
+        <span style="font-size:36px;font-weight:bold;letter-spacing:10px;color:#c0392b">${otp}</span>
+      </div>
+    </div>
+    <p style="color:#94a3b8;font-size:13px;text-align:center">
+      This code expires in <strong>15 minutes</strong>. If you didn't request a password reset, you can safely ignore this email and your password will remain unchanged.
+    </p>
+  `);
+  await transporter.sendMail({ from: FROM, to, subject: `${otp} — Reset your Nayab Real password`, html });
+}

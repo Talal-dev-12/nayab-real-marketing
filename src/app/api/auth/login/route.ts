@@ -33,9 +33,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
 
-    // Check if email is verified (skip for staff roles created by admin)
-    const staffRoles = ['manager', 'superadmin', 'agent'];
-    if (!userRecord.emailVerified && !staffRoles.includes(userRecord.role)) {
+    // Check if email is verified (skip for staff roles created by admin if needed, but safer to enforce for all)
+    // Here we allow superadmin/manager to bypass, but agents and sellers MUST be verified.
+    const staffBypassRoles = ['manager', 'superadmin'];
+    if (!userRecord.emailVerified && !staffBypassRoles.includes(userRecord.role)) {
       return NextResponse.json({
         error: 'Please verify your email address first.',
         requiresVerification: true,

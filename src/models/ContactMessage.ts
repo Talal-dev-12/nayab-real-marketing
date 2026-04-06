@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IContactMessage extends Document {
+  userId?: string;
   name: string;
   email: string;
   phone: string;
@@ -12,6 +13,7 @@ export interface IContactMessage extends Document {
 
 const ContactMessageSchema = new Schema<IContactMessage>(
   {
+    userId: { type: String, default: null },
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true },
     phone: { type: String, default: '' },

@@ -44,6 +44,12 @@ function SignInForm() {
       const data = await res.json();
 
       if (!res.ok) {
+        if (data.requiresVerification) {
+          const redir = searchParams.get('redirect');
+          const redirQuery = redir ? `&redirect=${encodeURIComponent(redir)}` : '';
+          router.push(`/verify-otp?email=${encodeURIComponent(data.email)}&role=${data.user?.role || 'user'}${redirQuery}`);
+          return;
+        }
         setError(data.error || 'Sign-in failed. Please try again.');
         return;
       }
@@ -143,6 +149,11 @@ function SignInForm() {
               >
                 {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
+            </div>
+            <div className="flex justify-end mt-1">
+              <Link href="/forgot-password" className="text-xs font-semibold text-red-600 hover:text-red-500 transition-colors">
+                Forgot password?
+              </Link>
             </div>
           </div>
 
