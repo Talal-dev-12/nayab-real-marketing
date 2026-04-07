@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, RouteContext } from '@/lib/auth-middleware';
+import { requireAuth, RouteContext } from '@/middleware/authMiddleware';
 import { JwtPayload } from '@/lib/jwt';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];

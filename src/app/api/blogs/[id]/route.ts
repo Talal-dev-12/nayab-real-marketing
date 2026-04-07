@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { Blog } from '@/models/Blog';
-import { requireAuth, RouteContext } from '@/lib/auth-middleware';
+import { requireAuth, RouteContext } from '@/middleware/authMiddleware';
 import { JwtPayload, UserRole } from '@/lib/jwt';
 
 export async function GET(_req: NextRequest, ctx: RouteContext) {

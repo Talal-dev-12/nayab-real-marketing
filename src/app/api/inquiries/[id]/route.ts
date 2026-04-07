@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { Inquiry } from '@/models/Inquiry';
-import { requireAuth, RouteContext } from '@/lib/auth-middleware';
+import { requireAuth, RouteContext } from '@/middleware/authMiddleware';
 import { JwtPayload } from '@/lib/jwt';
 
 // PUT — admin marks as read

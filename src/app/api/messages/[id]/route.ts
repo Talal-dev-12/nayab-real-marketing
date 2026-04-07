@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { ContactMessage } from '@/models/ContactMessage';
-import { requireAuth, RouteContext } from '@/lib/auth-middleware';
+import { requireAuth, RouteContext } from '@/middleware/authMiddleware';
 import { JwtPayload } from '@/lib/jwt';
 
 export const PUT = requireAuth(async (req: NextRequest, _user: JwtPayload, ctx: RouteContext) => {

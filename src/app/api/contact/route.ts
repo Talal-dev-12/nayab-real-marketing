@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { ContactMessage } from '@/models/ContactMessage';
 import { User } from '@/models/User';
-import { requireAuth, RouteContext } from '@/lib/auth-middleware';
+import { requireAuth, RouteContext } from '@/middleware/authMiddleware';
 import { JwtPayload } from '@/lib/jwt';
 import { sendContactNotification } from '@/lib/mailer';
 

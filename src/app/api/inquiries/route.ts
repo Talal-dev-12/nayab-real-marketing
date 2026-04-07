@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { Inquiry } from '@/models/Inquiry';
 import { Property } from '@/models/Property';
-import { requireAuth, RouteContext } from '@/lib/auth-middleware';
+import { requireAuth, RouteContext } from '@/middleware/authMiddleware';
 import { JwtPayload } from '@/lib/jwt';
 
 // POST — authenticated user submits inquiry

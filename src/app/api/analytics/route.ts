@@ -4,7 +4,7 @@ import { Blog } from '@/models/Blog';
 import { Property } from '@/models/Property';
 import { ContactMessage } from '@/models/ContactMessage';
 import { Agent } from '@/models/Agent';
-import { requireAuth, RouteContext } from '@/lib/auth-middleware';
+import { requireAuth, RouteContext } from '@/middleware/authMiddleware';
 import { JwtPayload } from '@/lib/jwt';
 
 export const GET = requireAuth(async (req: NextRequest, _user: JwtPayload, _ctx: RouteContext) => {
