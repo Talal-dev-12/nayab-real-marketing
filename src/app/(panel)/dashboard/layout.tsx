@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, FileText, Home, Users, MessageSquare,
   Settings, LogOut, Menu, X, BarChart3, Bell, ChevronRight,
-  ShieldCheck, PenTool, PlusSquare, PenLine, Send,
+  ShieldCheck, PenTool, PlusSquare, PenLine, Send, MapPin,
 } from 'lucide-react';
 import { ALL_NAV, PANEL_ROLES, ROLE_META } from '@/lib/rbac';
 import type { UserRole } from '@/lib/jwt';
@@ -13,7 +13,7 @@ import type { UserRole } from '@/lib/jwt';
 // Map icon string → lucide component
 const ICON_MAP: Record<string, React.ElementType> = {
   LayoutDashboard, FileText, Home, Users, MessageSquare,
-  Settings, BarChart3, ShieldCheck, PenTool, PlusSquare, PenLine,
+  Settings, BarChart3, ShieldCheck, PenTool, PlusSquare, PenLine, MapPin,
 };
 
 interface AuthUser { id: string; name: string; email: string; role: string; avatar?: string; emailVerified?: boolean; }

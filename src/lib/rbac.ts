@@ -30,6 +30,9 @@ export const ALL_NAV: NavItem[] = [
   { href: '/dashboard/blogs',          label: 'Blog Posts',   icon: 'FileText',        roles: ['manager','superadmin','writer'] },
   { href: '/dashboard/blogs/new',      label: 'New Article',  icon: 'PenLine',         roles: ['manager','superadmin','writer'] },
 
+  // Localities — areas & housing schemes management
+  { href: '/dashboard/localities',     label: 'Localities',   icon: 'MapPin',          roles: ['manager','superadmin'] },
+
   // Admin-only sections
   { href: '/dashboard/agents',         label: 'Agents',       icon: 'Users',           roles: ['manager','superadmin'] },
   { href: '/dashboard/users',          label: 'Users',        icon: 'Users',           roles: ['manager','superadmin'] },

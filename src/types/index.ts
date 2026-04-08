@@ -26,6 +26,7 @@ export interface Blog {
 export interface AreaSummary {
   slug: string;
   label: string;
+  image: string;
   blogCount: number;
   schemes: SchemeSummary[];
 }
@@ -33,9 +34,34 @@ export interface AreaSummary {
 export interface SchemeSummary {
   slug: string;
   label: string;
+  logo: string;
+  image: string;
   areaSlug: string;
   areaLabel: string;
   blogCount: number;
+}
+
+export interface ManagedArea {
+  _id: string;
+  name: string;
+  slug: string;
+  image: string;
+  description: string;
+  order: number;
+  createdAt: string;
+}
+
+export interface ManagedScheme {
+  _id: string;
+  name: string;
+  slug: string;
+  logo: string;
+  image: string;
+  areaId: string;
+  areaName: string;
+  description: string;
+  order: number;
+  createdAt: string;
 }
 
 export interface Property {

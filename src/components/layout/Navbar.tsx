@@ -41,6 +41,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -51,6 +52,11 @@ export default function Navbar() {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // ── Mark mounted so auth-dependent UI only renders on the client ────────
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
   // ── Read auth state from localStorage ────────────────────────────────────
@@ -105,15 +111,18 @@ export default function Navbar() {
     router.push("/");
   };
 
+  // Until mounted, treat as guest so server & client HTML match
+  const resolvedUser = mounted ? authUser : null;
+
   const initials =
-    authUser?.name
+    resolvedUser?.name
       ?.split(" ")
       .map((n) => n[0])
       .join("")
       .toUpperCase()
       .slice(0, 2) || "U";
 
-  const hasDashboard = authUser && DASHBOARD_ROLES.includes(authUser.role);
+  const hasDashboard = resolvedUser && DASHBOARD_ROLES.includes(resolvedUser.role);
 
   return (
     <>
@@ -180,14 +189,14 @@ export default function Navbar() {
 
               {/* CTA */}
               <Link
-                href={authUser ? "/dashboard" : "/sign-up/seller"}
+                href={resolvedUser ? "/dashboard" : "/sign-up/seller"}
                 className="ml-4 bg-red-700 hover:bg-red-600 text-white px-5 py-2 rounded font-semibold text-sm transition-colors"
               >
                Want to Sell? 
               </Link>
 
               {/* ── Auth area ── */}
-              {authUser ? (
+              {resolvedUser ? (
                 /* Logged-in user avatar + dropdown */
                 <div className="relative ml-3" ref={dropdownRef}>
                   <button 
@@ -299,7 +308,7 @@ export default function Navbar() {
             ))}
 
             {/* Mobile auth section */}
-            {authUser ? (
+            {resolvedUser ? (
               <div className="p-4 border-b border-slate-700">
                 {/* User info strip */}
                 <div className="flex items-center gap-3 mb-3 px-2">
@@ -363,7 +372,7 @@ export default function Navbar() {
             {/* Mobile CTA */}
             <div className="p-4">
               <Link
-                href={authUser ? "/dashboard" : "/sign-up/seller"}
+                href={resolvedUser ? "/dashboard" : "/sign-up/seller"}
                 className="block text-center bg-red-700 hover:bg-red-600 text-white py-3 rounded font-semibold transition-colors"
                 onClick={() => setMobileOpen(false)}
               >

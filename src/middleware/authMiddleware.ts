@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken, JwtPayload } from './jwt';
+import { verifyToken, JwtPayload } from '@/lib/jwt';
 
 export interface AuthenticatedRequest extends NextRequest { user?: JwtPayload; }
 export type RouteContext = { params: Promise<Record<string, string>> };
