@@ -1,66 +1,67 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { Blog } from '@/models/Blog';
+import { Area } from '@/models/Area';
+import { HousingScheme } from '@/models/HousingScheme';
 
 /**
  * GET /api/blogs/taxonomy
- * Returns all unique areas and schemes derived from published blog data.
- * Zero config — pages generate automatically from blog content.
+ * Returns all managed areas and schemes with blog counts representing published blogs.
  */
 export async function GET() {
   try {
     await connectDB();
 
-    // Aggregate areas
-    const areaDocs = await Blog.aggregate([
-      { $match: { published: true, areaSlug: { $ne: '' } } },
-      {
-        $group: {
-          _id: '$areaSlug',
-          label: { $first: '$areaLabel' },
-          blogCount: { $sum: 1 },
-          schemes: {
-            $addToSet: {
-              $cond: [
-                { $ne: ['$schemeSlug', ''] },
-                { slug: '$schemeSlug', label: '$schemeLabel' },
-                '$$REMOVE',
-              ],
-            },
-          },
-        },
-      },
-      { $sort: { blogCount: -1 } },
+    // Fetch managed areas and schemes, sorted by order
+    const [areasData, schemesData] = await Promise.all([
+      Area.find().sort({ order: 1, name: 1 }),
+      HousingScheme.find().sort({ order: 1, name: 1 })
     ]);
 
-    // Aggregate schemes
-    const schemeDocs = await Blog.aggregate([
-      { $match: { published: true, schemeSlug: { $ne: '' } } },
-      {
-        $group: {
-          _id: '$schemeSlug',
-          label: { $first: '$schemeLabel' },
-          areaSlug: { $first: '$areaSlug' },
-          areaLabel: { $first: '$areaLabel' },
-          blogCount: { $sum: 1 },
-        },
-      },
-      { $sort: { blogCount: -1 } },
+    // Aggregate counts of published blogs by areaSlug and schemeSlug
+    const [areaCounts, schemeCounts] = await Promise.all([
+      Blog.aggregate([
+        { $match: { published: true, areaSlug: { $ne: '' } } },
+        { $group: { _id: '$areaSlug', count: { $sum: 1 } } }
+      ]),
+      Blog.aggregate([
+        { $match: { published: true, schemeSlug: { $ne: '' } } },
+        { $group: { _id: '$schemeSlug', count: { $sum: 1 } } }
+      ])
     ]);
 
-    const areas = areaDocs.map(d => ({
-      slug: d._id,
-      label: d.label || d._id,
-      blogCount: d.blogCount,
-      schemes: (d.schemes || []).filter(Boolean),
+    // Map counts into dictionaries
+    const areaCountMap = areaCounts.reduce((acc, curr) => ({ ...acc, [curr._id]: curr.count }), {});
+    const schemeCountMap = schemeCounts.reduce((acc, curr) => ({ ...acc, [curr._id]: curr.count }), {});
+
+    // Map areas to AreaSummary interface
+    const areas = areasData.map(d => ({
+      slug: d.slug,
+      label: d.name,
+      image: d.image || '',
+      blogCount: areaCountMap[d.slug] || 0,
+      schemes: schemesData
+        .filter(s => s.areaId === d._id.toString())
+        .map(s => ({
+          slug: s.slug,
+          label: s.name,
+          logo: s.logo || '',
+          image: s.image || '',
+          areaSlug: d.slug,
+          areaLabel: d.name,
+          blogCount: schemeCountMap[s.slug] || 0
+        }))
     }));
 
-    const schemes = schemeDocs.map(d => ({
-      slug: d._id,
-      label: d.label || d._id,
-      areaSlug: d.areaSlug,
-      areaLabel: d.areaLabel,
-      blogCount: d.blogCount,
+    // Map all schemes to SchemeSummary interface
+    const schemes = schemesData.map(d => ({
+      slug: d.slug,
+      label: d.name,
+      logo: d.logo || '',
+      image: d.image || '',
+      areaSlug: d.areaName ? d.areaName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') : '',
+      areaLabel: d.areaName || '',
+      blogCount: schemeCountMap[d.slug] || 0
     }));
 
     return NextResponse.json({ areas, schemes });

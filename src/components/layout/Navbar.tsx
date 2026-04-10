@@ -203,10 +203,10 @@ export default function Navbar() {
                      onClick={() => setDropdownOpen((o) => !o)}
                     className="flex items-center gap-2 bg-white/10 hover:bg-white/20 transition-colors rounded-full pl-1 pr-3 py-1"
                   >
-                    {authUser.avatar ? (
+                    {resolvedUser.avatar ? (
                       <img
-                        src={authUser.avatar}
-                        alt={authUser.name}
+                        src={resolvedUser.avatar}
+                        alt={resolvedUser.name}
                         className="w-8 h-8 rounded-full object-cover"
                       />
                     ) : (
@@ -215,7 +215,7 @@ export default function Navbar() {
                       </div>
                     )}
                     <span className="text-white text-sm font-medium max-w-[100px] truncate">
-                      {authUser.name.split(" ")[0]}
+                      {resolvedUser.name.split(" ")[0]}
                     </span>
                     <ChevronDown
                       size={14}
@@ -228,10 +228,10 @@ export default function Navbar() {
                       {/* User info */}
                       <div className="px-4 py-3 bg-slate-50 border-b border-slate-100">
                         <p className="text-sm font-semibold text-slate-800 truncate">
-                          {authUser.name}
+                          {resolvedUser.name}
                         </p>
                         <p className="text-xs text-slate-500 truncate">
-                          {authUser.email}
+                          {resolvedUser.email}
                         </p>
                       </div>
                       {hasDashboard && (
@@ -312,10 +312,10 @@ export default function Navbar() {
               <div className="p-4 border-b border-slate-700">
                 {/* User info strip */}
                 <div className="flex items-center gap-3 mb-3 px-2">
-                  {authUser.avatar ? (
+                  {resolvedUser.avatar ? (
                     <img
-                      src={authUser.avatar}
-                      alt={authUser.name}
+                      src={resolvedUser.avatar}
+                      alt={resolvedUser.name}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
@@ -325,10 +325,10 @@ export default function Navbar() {
                   )}
                   <div className="min-w-0">
                     <p className="text-white text-sm font-semibold truncate">
-                      {authUser.name}
+                      {resolvedUser.name}
                     </p>
                     <p className="text-slate-400 text-xs truncate">
-                      {authUser.email}
+                      {resolvedUser.email}
                     </p>
                   </div>
                 </div>

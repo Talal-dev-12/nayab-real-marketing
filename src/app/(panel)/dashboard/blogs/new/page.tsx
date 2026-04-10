@@ -1,9 +1,10 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, ArrowLeft, Eye, Tag, Plus, X, Image as ImageIcon, Search, Loader2, Upload, MapPin } from 'lucide-react';
+import { Save, ArrowLeft, Eye, Tag, Plus, X, Image as ImageIcon, Search, Loader2, Upload, MapPin, Building2 } from 'lucide-react';
 import Link from 'next/link';
 import { api, uploadImage } from '@/lib/api-client';
+import type { ManagedArea, ManagedScheme } from '@/types';
 
 export default function NewBlogPage() {
   const router = useRouter();
@@ -14,6 +15,22 @@ export default function NewBlogPage() {
   const [insertingImage, setInsertingImage] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const insertFileRef = useRef<HTMLInputElement>(null);
+
+  const [areas, setAreas] = useState<ManagedArea[]>([]);
+  const [schemes, setSchemes] = useState<ManagedScheme[]>([]);
+  const [loadingLocalities, setLoadingLocalities] = useState(true);
+
+  // Fetch localities on mount
+  useEffect(() => {
+    Promise.all([
+      api.get<{ areas: ManagedArea[] }>('/api/areas'),
+      api.get<{ schemes: ManagedScheme[] }>('/api/schemes')
+    ]).then(([areaData, schemeData]) => {
+      setAreas(areaData.areas ?? []);
+      setSchemes(schemeData.schemes ?? []);
+    }).catch(console.error)
+      .finally(() => setLoadingLocalities(false));
+  }, []);
 
   const [form, setForm] = useState({
     title: '', excerpt: '', content: '',
@@ -293,26 +310,65 @@ export default function NewBlogPage() {
               <label className="text-xs font-bold text-slate-600 uppercase tracking-wide">Area & Scheme Classification</label>
               <span className="text-xs text-slate-400 font-normal">(for SEO pages)</span>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Area Name</label>
-                <input type="text" placeholder="e.g. Scheme 33"
-                  value={form.areaLabel}
-                  onChange={e => setForm(f => ({ ...f, areaLabel: e.target.value, areaSlug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }))}
-                  className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-400" />
-                {form.areaSlug && <p className="text-xs text-slate-400 mt-1">URL: /blogs/areas/<strong>{form.areaSlug}</strong></p>}
+            
+            {loadingLocalities ? (
+              <div className="flex items-center gap-2 text-sm text-slate-400 py-3">
+                <Loader2 size={16} className="animate-spin" /> Loading localities...
               </div>
-              <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Housing Scheme</label>
-                <input type="text" placeholder="e.g. DHA Karachi"
-                  value={form.schemeLabel}
-                  onChange={e => setForm(f => ({ ...f, schemeLabel: e.target.value, schemeSlug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }))}
-                  className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-400" />
-                {form.schemeSlug && <p className="text-xs text-slate-400 mt-1">URL: /blogs/schemes/<strong>{form.schemeSlug}</strong></p>}
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Area</label>
+                  <select 
+                    value={form.areaSlug}
+                    onChange={e => {
+                      const selected = areas.find(a => a.slug === e.target.value);
+                      if (selected) {
+                        setForm(f => ({ ...f, areaSlug: selected.slug, areaLabel: selected.name }));
+                      } else {
+                        setForm(f => ({ ...f, areaSlug: '', areaLabel: '' }));
+                      }
+                    }}
+                    className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-400"
+                  >
+                    <option value="">— No Area —</option>
+                    {areas.map(a => <option key={a._id} value={a.slug}>{a.name}</option>)}
+                  </select>
+                  {form.areaSlug && <p className="text-xs text-slate-400 mt-1">URL: /blogs/areas/<strong>{form.areaSlug}</strong></p>}
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Housing Scheme</label>
+                  <select 
+                    value={form.schemeSlug}
+                    onChange={e => {
+                      const selected = schemes.find(s => s.slug === e.target.value);
+                      if (selected) {
+                        // Optionally update area if scheme is tied to one
+                        const updates: any = { schemeSlug: selected.slug, schemeLabel: selected.name };
+                        if (selected.areaId && !form.areaSlug) {
+                           const parentArea = areas.find(a => a._id === selected.areaId);
+                           if (parentArea) {
+                             updates.areaSlug = parentArea.slug;
+                             updates.areaLabel = parentArea.name;
+                           }
+                        }
+                        setForm(f => ({ ...f, ...updates }));
+                      } else {
+                        setForm(f => ({ ...f, schemeSlug: '', schemeLabel: '' }));
+                      }
+                    }}
+                    className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-400"
+                  >
+                    <option value="">— No Scheme —</option>
+                    {schemes.map(s => <option key={s._id} value={s.slug}>{s.name} {s.areaName ? `(${s.areaName})` : ''}</option>)}
+                  </select>
+                  {form.schemeSlug && <p className="text-xs text-slate-400 mt-1">URL: /blogs/schemes/<strong>{form.schemeSlug}</strong></p>}
+                </div>
               </div>
-            </div>
+            )}
+            
             <div className="bg-blue-50 rounded-lg p-3 text-xs text-blue-700">
-              💡 Pages at <code>/blogs/areas/[area]</code> and <code>/blogs/schemes/[scheme]</code> generate automatically from these values — no extra setup needed.
+              💡 Pages at <code>/blogs/areas/[area]</code> and <code>/blogs/schemes/[scheme]</code> generate automatically from these values — no extra setup needed. Manage areas and schemes from the <strong>Localities</strong> menu.
             </div>
           </div>
 

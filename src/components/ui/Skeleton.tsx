@@ -134,19 +134,24 @@ export function SidebarSkeleton() {
 
 export function AreaCardSkeleton() {
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-4 flex flex-col items-center gap-3">
-      <Sk className="w-12 h-12 rounded-xl" />
-      <Sk className="h-4 w-20" />
-      <Sk className="h-3 w-14" />
+    <div className="w-[280px] sm:w-[300px] h-[380px] rounded-2xl shadow-sm p-6 flex flex-col justify-end shrink-0 relative overflow-hidden">
+      <div className="absolute inset-0 bg-slate-200 animate-pulse" />
+      <div className="relative z-10 w-full mt-auto mb-2">
+         <Sk className="h-8 w-3/4 mb-2 bg-slate-300" />
+         <Sk className="h-6 w-1/3 bg-slate-300" />
+      </div>
     </div>
   );
 }
 
 export function SchemeCardSkeleton() {
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-3">
-      <Sk className="w-10 h-10 rounded-xl shrink-0" />
-      <div className="flex-1 space-y-2"><Sk className="h-4 w-3/4" /><Sk className="h-3 w-1/2" /></div>
+    <div className="w-[280px] sm:w-[300px] h-[220px] bg-white rounded-2xl shadow-sm p-6 flex flex-col items-center justify-center gap-4 border border-slate-100 shrink-0">
+      <Sk className="w-20 h-20 rounded-full shadow-inner" />
+      <div className="w-full flex flex-col items-center mt-2">
+        <Sk className="h-5 w-3/4 mb-2" />
+        <Sk className="h-3 w-1/2" />
+      </div>
     </div>
   );
 }
