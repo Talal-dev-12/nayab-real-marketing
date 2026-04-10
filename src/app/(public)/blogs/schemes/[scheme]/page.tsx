@@ -3,12 +3,19 @@ import Link from 'next/link';
    
   
 import BlogCard from '@/components/ui/BlogCard';
-import { Building2, MapPin, ArrowLeft, FileText } from 'lucide-react';
+import PropertyCard from '@/components/ui/PropertyCard';
+import { Building2, MapPin, ArrowLeft, FileText, Home } from 'lucide-react';
+import { connectDB } from '@/lib/mongodb';
+import { HousingScheme } from '@/models/HousingScheme';
 
 interface Props { params: Promise<{ scheme: string }> }
 
 async function getSchemeData(schemeSlug: string) {
   const base = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  await connectDB();
+
+  const schemeDoc = await HousingScheme.findOne({ slug: schemeSlug }).lean();
+
   const [blogsRes, taxRes] = await Promise.all([
     fetch(`${base}/api/blogs?published=true&scheme=${schemeSlug}&limit=100`, { cache: 'no-store' }),
     fetch(`${base}/api/blogs/taxonomy`, { cache: 'no-store' }),
@@ -16,27 +23,33 @@ async function getSchemeData(schemeSlug: string) {
   const blogsData = await blogsRes.json();
   const tax = await taxRes.json();
   const schemeInfo = (tax.schemes || []).find((s: any) => s.slug === schemeSlug);
-  return { blogs: blogsData.blogs ?? [], schemeInfo };
+
+  const queryLabel = schemeDoc?.name || schemeInfo?.label || schemeSlug.replace(/-/g, ' ');
+  const propsRes = await fetch(`${base}/api/properties?search=${encodeURIComponent(queryLabel)}&limit=12`, { cache: 'no-store' });
+  const propsData = await propsRes.json();
+
+  return { blogs: blogsData.blogs ?? [], schemeInfo, schemeDoc, properties: propsData.properties ?? [] };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { scheme } = await params;
-  const { schemeInfo } = await getSchemeData(scheme);
-  const label = schemeInfo?.label || scheme.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+  const { schemeDoc, schemeInfo } = await getSchemeData(scheme);
+  const label = schemeDoc?.name || schemeInfo?.label || scheme.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
   return {
-    title: `${label} Real Estate Guide | Nayab Real Marketing`,
-    description: `Investment insights, property updates and development news for ${label}. Expert guides from Nayab Real Marketing.`,
+    title: `${label} Properties & Real Estate Guide | Nayab Real Marketing`,
+    description: schemeDoc?.description ? schemeDoc.description.slice(0, 160) : `Investment insights, properties for sale and rent in ${label}. Expert guides from Nayab Real Marketing.`,
     openGraph: {
-      title: `${label} — Real Estate Guide | Nayab Real Marketing`,
-      description: `Browse all property articles and investment guides for ${label}.`,
+      title: `${label} Properties & Guide — Nayab Real Marketing`,
+      description: schemeDoc?.description ? schemeDoc.description.slice(0, 160) : `Browse all properties and investment guides for ${label}.`,
+      images: schemeDoc?.image ? [{ url: schemeDoc.image, width: 800, height: 600, alt: label }] : undefined,
     },
   };
 }
 
 export default async function SchemePage({ params }: Props) {
   const { scheme } = await params;
-  const { blogs, schemeInfo } = await getSchemeData(scheme);
-  const label = schemeInfo?.label || scheme.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+  const { blogs, schemeInfo, schemeDoc, properties } = await getSchemeData(scheme);
+  const label = schemeDoc?.name || schemeInfo?.label || scheme.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
   const areaLabel = schemeInfo?.areaLabel;
   const areaSlug  = schemeInfo?.areaSlug;
 
@@ -75,9 +88,15 @@ export default async function SchemePage({ params }: Props) {
             </div>
           </div>
           <p className="text-slate-300 max-w-2xl mt-2">
-            Investment insights, property price trends and development updates for {label}
+            Investment insights, property listings and development updates for {label}
             {areaLabel ? `, ${areaLabel}, Karachi` : ', Karachi'}.
           </p>
+
+          {schemeDoc?.description && (
+            <div className="mt-4 p-4 bg-white/10 rounded-xl border border-white/10 backdrop-blur-sm max-w-4xl">
+              <p className="text-slate-200 text-sm leading-relaxed whitespace-pre-wrap">{schemeDoc.description}</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -102,6 +121,26 @@ export default async function SchemePage({ params }: Props) {
             {blogs.map((b: any) => <BlogCard key={b._id} blog={b} />)}
           </div>
         )}
+
+        {/* Properties Section */}
+        <div className="mt-16">
+          <h2 className="font-extrabold text-[#1a2e5a] text-xl mb-5 flex items-center gap-2">
+            <Home size={18} className="text-red-600" /> Properties in {label}
+          </h2>
+          {properties.length === 0 ? (
+            <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 shadow-sm">
+              <Home size={40} className="mx-auto mb-3 text-slate-300" />
+              <p className="text-slate-500 font-medium">No properties listed for {label} currently.</p>
+              <Link href="/properties" className="text-red-600 text-sm font-semibold mt-2 inline-block hover:underline">
+                Browse all properties →
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {properties.map((p: any) => <PropertyCard key={p._id} property={p} />)}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

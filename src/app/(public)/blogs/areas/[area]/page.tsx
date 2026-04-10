@@ -3,12 +3,19 @@ import Link from 'next/link';
    
   
 import BlogCard from '@/components/ui/BlogCard';
-import { MapPin, Building2, ArrowLeft, FileText } from 'lucide-react';
+import PropertyCard from '@/components/ui/PropertyCard';
+import { MapPin, Building2, ArrowLeft, FileText, Home } from 'lucide-react';
+import { connectDB } from '@/lib/mongodb';
+import { Area } from '@/models/Area';
 
 interface Props { params: Promise<{ area: string }> }
 
 async function getAreaData(areaSlug: string) {
   const base = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  await connectDB();
+  
+  const areaDoc = await Area.findOne({ slug: areaSlug }).lean();
+
   const [blogsRes, taxRes] = await Promise.all([
     fetch(`${base}/api/blogs?published=true&area=${areaSlug}&limit=100`, { cache: 'no-store' }),
     fetch(`${base}/api/blogs/taxonomy`, { cache: 'no-store' }),
@@ -17,7 +24,12 @@ async function getAreaData(areaSlug: string) {
   const tax = await taxRes.json();
   const areaInfo = (tax.areas || []).find((a: any) => a.slug === areaSlug);
   const schemes = (tax.schemes || []).filter((s: any) => s.areaSlug === areaSlug);
-  return { blogs: blogsData.blogs ?? [], areaInfo, schemes };
+
+  const queryLabel = areaDoc?.name || areaInfo?.label || areaSlug.replace(/-/g, ' ');
+  const propsRes = await fetch(`${base}/api/properties?search=${encodeURIComponent(queryLabel)}&limit=12`, { cache: 'no-store' });
+  const propsData = await propsRes.json();
+
+  return { blogs: blogsData.blogs ?? [], areaInfo, schemes, areaDoc, properties: propsData.properties ?? [] };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -25,14 +37,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (area === 'null' || area === 'undefined') {
     return { title: 'Invalid Area | Nayab Real Marketing' };
   }
-  const { areaInfo } = await getAreaData(area);
+  const { areaDoc, areaInfo } = await getAreaData(area);
   const label = areaInfo?.label || area.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
   return {
-    title: `${label} Karachi Property Guides | Nayab Real Marketing`,
-    description: `Explore property trends, investment opportunities and housing schemes in ${label}, Karachi. Latest articles and market insights.`,
+    title: `${label} Properties & Real Estate Guide | Nayab Real Marketing`,
+    description: areaDoc?.description ? areaDoc.description.slice(0, 160) : `Explore properties for sale and rent in ${label}, Karachi. Read our latest real estate investment guides and updates for ${label}.`,
     openGraph: {
-      title: `${label} Property Guides — Nayab Real Marketing`,
-      description: `Investment insights and property updates for ${label}, Karachi.`,
+      title: `${label} Properties & Area Guide — Nayab Real Marketing`,
+      description: areaDoc?.description ? areaDoc.description.slice(0, 160) : `Explore properties and investment updates for ${label}, Karachi.`,
+      images: areaDoc?.image ? [{ url: areaDoc.image, width: 800, height: 600, alt: label }] : undefined,
     },
   };
 }
@@ -56,8 +69,8 @@ export default async function AreaPage({ params }: Props) {
     );
   }
 
-  const { blogs, areaInfo, schemes } = await getAreaData(area);
-  const label = areaInfo?.label || area.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+  const { blogs, areaInfo, schemes, areaDoc, properties } = await getAreaData(area);
+  const label = areaDoc?.name || areaInfo?.label || area.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -87,6 +100,12 @@ export default async function AreaPage({ params }: Props) {
           <p className="text-slate-300 max-w-2xl mt-2">
             Property investment guides, market insights and development news for {label}, Karachi.
           </p>
+          
+          {areaDoc?.description && (
+            <div className="mt-4 p-4 bg-white/10 rounded-xl border border-white/10 backdrop-blur-sm max-w-4xl">
+              <p className="text-slate-200 text-sm leading-relaxed whitespace-pre-wrap">{areaDoc.description}</p>
+            </div>
+          )}
 
           {/* Scheme pills */}
           {schemes.length > 0 && (
@@ -149,6 +168,26 @@ export default async function AreaPage({ params }: Props) {
           <Link href="/blogs/areas" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-red-600 font-semibold">
             <ArrowLeft size={15} /> All Areas
           </Link>
+        </div>
+
+        {/* Properties Section */}
+        <div className="mt-16">
+          <h2 className="font-extrabold text-[#1a2e5a] text-xl mb-5 flex items-center gap-2">
+            <Home size={18} className="text-red-600" /> Properties in {label}
+          </h2>
+          {properties.length === 0 ? (
+            <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 shadow-sm">
+              <Home size={40} className="mx-auto mb-3 text-slate-300" />
+              <p className="text-slate-500 font-medium">No properties listed for {label} currently.</p>
+              <Link href="/properties" className="text-red-600 text-sm font-semibold mt-2 inline-block hover:underline">
+                Browse all properties →
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {properties.map((p: any) => <PropertyCard key={p._id} property={p} />)}
+            </div>
+          )}
         </div>
       </div>
     </div>
