@@ -209,14 +209,16 @@ function WriterDashboard({ userId }: { userId: string }) {
 // ─────────────────────────────────────────────────────────────────────────────
 function AdminDashboard() {
   const [stats, setStats] = useState({ properties: 0, blogs: 0, agents: 0, unreadMessages: 0 });
-  const [trafficData] = useState(() => {
+  const [trafficData, setTrafficData] = useState<any[]>([]);
+  
+  useEffect(() => {
     const d = []; const now = new Date();
     for (let i = 13; i >= 0; i--) {
       const date = new Date(now); date.setDate(date.getDate() - i);
       d.push({ date: date.toISOString().split('T')[0], visitors: Math.floor(Math.random() * 200 + 100), pageViews: Math.floor(Math.random() * 500 + 200) });
     }
-    return d;
-  });
+    setTrafficData(d);
+  }, []);
   const [propertyTypes, setPropertyTypes] = useState<{ name: string; value: number }[]>([]);
   const [recentMessages, setRecentMessages] = useState<any[]>([]);
 

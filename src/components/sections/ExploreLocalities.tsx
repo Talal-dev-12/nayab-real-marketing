@@ -107,9 +107,9 @@ function Carousel({ items, renderCard, autoPlaySpeed = 1, reverse = false }: { i
         ))}
       </div>
       
-      {/* Fade Edges */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-slate-50 to-transparent z-10" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-slate-50 to-transparent z-10" />
+      {/* Fade Edges (Hidden on mobile) */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-slate-50 to-transparent z-10 hidden sm:block" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-slate-50 to-transparent z-10 hidden sm:block" />
 
       {/* Navigation Arrows */}
       <button onClick={handlePrev} className="absolute left-2 top-1/2 -translate-y-1/2 bg-white text-slate-800 p-2.5 rounded-full shadow-lg opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-all hover:bg-slate-50 z-20 border border-slate-200">
@@ -170,7 +170,7 @@ export default function ExploreLocalities() {
             <div className="flex items-end justify-between mb-8">
               <div>
                 <p className="text-red-700 font-bold uppercase tracking-wider text-sm mb-2">Property Guides</p>
-                <h2 className="text-3xl md:text-4xl font-extrabold text-[#1a2e5a]">Explore Areas</h2>
+                <h2 className="text-3xl md:text-4xl font-extrabold text-[#1a2e5a]">Explore Karachi Areas</h2>
               </div>
               <Link href="/blogs/areas" className="text-sm font-bold text-red-700 hover:text-red-800 hover:underline hidden sm:block">
                 View All Areas →
@@ -194,9 +194,14 @@ export default function ExploreLocalities() {
                   
                   {/* Content */}
                   <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col justify-end">
-                    <div className="transform transition-transform duration-300 translate-y-2 group-hover:translate-y-0">
-                      <h3 className="text-2xl font-bold text-white mb-1.5">{area.label}</h3>
-                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                    <div className="transform transition-all duration-500 translate-y-9 group-hover:translate-y-0">
+                      <h3 className="text-2xl font-bold text-white mb-2">{area.label}</h3>
+                      {area.description && (
+                        <p className="text-sm text-slate-200 line-clamp-2 mb-3">
+                          {area.description}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                         <span className="bg-red-700/90 text-white text-xs font-bold px-2.5 py-1 rounded-md inline-flex items-center gap-1.5 backdrop-blur-sm">
                           <FileText size={12} /> {area.blogCount} Article{area.blogCount !== 1 ? 's' : ''}
                         </span>
@@ -219,7 +224,7 @@ export default function ExploreLocalities() {
             <div className="flex items-end justify-between mb-8">
               <div>
                 <p className="text-red-700 font-bold uppercase tracking-wider text-sm mb-2">Investment Guides</p>
-                <h2 className="text-3xl md:text-4xl font-extrabold text-[#1a2e5a]">Housing Schemes</h2>
+                <h2 className="text-3xl md:text-4xl font-extrabold text-[#1a2e5a]">Housing Schemes in Karachi</h2>
               </div>
               <Link href="/blogs/schemes" className="text-sm font-bold text-red-700 hover:text-red-800 hover:underline hidden sm:block">
                 View All Schemes →

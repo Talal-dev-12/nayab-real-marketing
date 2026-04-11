@@ -26,7 +26,7 @@ export const PUT = requireAuth(async (req: NextRequest, user: JwtPayload, _ctx: 
     if (name?.trim())   update.name   = name.trim();
     if (avatar?.trim()) update.avatar = avatar.trim();
 
-    let updated = await User.findByIdAndUpdate(user.id, update, { new: true }).select('-password');
+    let updated = await User.findByIdAndUpdate(user.id, update, { returnDocument: "after" }).select('-password');
     if (!updated) return NextResponse.json({ error: 'User not found' }, { status: 404 });
     return NextResponse.json({ user: updated });
   } catch (error) {

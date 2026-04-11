@@ -13,7 +13,7 @@ export const PUT = requireAuth(async (req: NextRequest, user: JwtPayload, ctx: R
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
     const body = await req.json();
-    const updated = await Inquiry.findByIdAndUpdate(id, { read: body.read }, { new: true });
+    const updated = await Inquiry.findByIdAndUpdate(id, { read: body.read }, { returnDocument: "after" });
     if (!updated) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json(updated);
   } catch {

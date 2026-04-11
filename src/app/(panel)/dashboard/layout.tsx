@@ -25,6 +25,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [authed,      setAuthed]      = useState(false);
   const [loading,     setLoading]     = useState(true);
   const [user,        setUser]        = useState<AuthUser | null>(null);
+  const [dateStr,     setDateStr]     = useState('');
+
+  useEffect(() => {
+    setDateStr(new Date().toDateString());
+  }, []);
 
   useEffect(() => {
     const token      = localStorage.getItem('auth_token') ?? localStorage.getItem('admin_token');
@@ -158,7 +163,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </button>
             <div>
               <h1 className="font-bold text-[#1a2e5a] text-lg">{activeNav?.label ?? 'Dashboard'}</h1>
-              <p className="text-xs text-slate-500">{new Date().toDateString()}</p>
+              <p className="text-xs text-slate-500">{dateStr}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">

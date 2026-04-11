@@ -37,7 +37,7 @@ export const PUT = requireAuth(async (req: NextRequest, user: JwtPayload, ctx: R
       delete body.rejectionNote;
       delete body.published;
     }
-    const updated = await Blog.findByIdAndUpdate(id, body, { new: true, runValidators: true });
+    const updated = await Blog.findByIdAndUpdate(id, body, { returnDocument: "after", runValidators: true });
     return NextResponse.json(updated);
   } catch (error) {
     console.error('PUT blog error:', error);

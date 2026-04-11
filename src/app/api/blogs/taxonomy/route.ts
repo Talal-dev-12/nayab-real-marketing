@@ -39,6 +39,7 @@ export async function GET() {
       slug: d.slug,
       label: d.name,
       image: d.image || '',
+      description: d.description || '',
       blogCount: areaCountMap[d.slug] || 0,
       schemes: schemesData
         .filter(s => s.areaId === d._id.toString())

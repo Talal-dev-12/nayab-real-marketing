@@ -21,7 +21,7 @@ export const PUT = requireAuth(async (req: NextRequest, _user: JwtPayload, ctx: 
     await connectDB();
     const { id } = await ctx.params;
     const body = await req.json();
-    const agent = await Agent.findByIdAndUpdate(id, body, { new: true, runValidators: true });
+    const agent = await Agent.findByIdAndUpdate(id, body, { returnDocument: "after", runValidators: true });
     if (!agent) return NextResponse.json({ error: 'Agent not found' }, { status: 404 });
     return NextResponse.json(agent);
   } catch (error) {

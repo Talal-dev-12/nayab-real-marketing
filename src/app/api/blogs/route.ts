@@ -43,8 +43,6 @@ export async function GET(req: NextRequest) {
     // Protect public API 
     if (dashboard === 'true') {
       if (approvalStatus) filter.approvalStatus = approvalStatus;
-    } else {
-      filter.approvalStatus = 'approved';
     }
 
     const skip = (page - 1) * limit;

@@ -9,7 +9,7 @@ export const PUT = requireAuth(async (req: NextRequest, _user: JwtPayload, ctx: 
     await connectDB();
     const { id } = await ctx.params;
     const body = await req.json();
-    const message = await ContactMessage.findByIdAndUpdate(id, body, { new: true });
+    const message = await ContactMessage.findByIdAndUpdate(id, body, { returnDocument: "after" });
     if (!message) return NextResponse.json({ error: 'Message not found' }, { status: 404 });
     return NextResponse.json(message);
   } catch {

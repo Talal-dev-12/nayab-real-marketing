@@ -56,7 +56,6 @@ const PropertySchema = new Schema<IProperty>(
   { timestamps: true }
 );
 
-PropertySchema.index({ slug: 1 });
 PropertySchema.index({ featured: 1, status: 1 });
 PropertySchema.index({ city: 1, type: 1, priceType: 1 });
 PropertySchema.index({ submittedBy: 1 });

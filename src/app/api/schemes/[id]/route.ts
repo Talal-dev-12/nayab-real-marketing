@@ -41,7 +41,7 @@ export const PUT = requireAdmin(async (req: NextRequest, _user: JwtPayload, ctx:
     if (body.description !== undefined) update.description = body.description;
     if (body.order !== undefined)       update.order = body.order;
 
-    const scheme = await HousingScheme.findByIdAndUpdate(id, update, { new: true });
+    const scheme = await HousingScheme.findByIdAndUpdate(id, update, { returnDocument: "after" });
     if (!scheme) return NextResponse.json({ error: 'Scheme not found' }, { status: 404 });
 
     return NextResponse.json(scheme);

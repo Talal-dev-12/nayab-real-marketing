@@ -123,6 +123,24 @@ export default async function AreaPage({ params }: Props) {
 
       <div className="max-w-5xl mx-auto px-4 py-12">
 
+        {/* Map Section */}
+        <div className="mb-10">
+          <h2 className="font-extrabold text-[#1a2e5a] text-xl mb-4 flex items-center gap-2">
+            <MapPin size={18} className="text-red-600" /> Location & Nearby
+          </h2>
+          <div className="w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+            <iframe
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(label + ', Karachi')}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen={false}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
+
         {/* Schemes section */}
         {schemes.length > 0 && (
           <div className="mb-10">

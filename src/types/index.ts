@@ -27,6 +27,7 @@ export interface AreaSummary {
   slug: string;
   label: string;
   image: string;
+  description: string;
   blogCount: number;
   schemes: SchemeSummary[];
 }

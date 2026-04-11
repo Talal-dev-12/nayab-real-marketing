@@ -44,44 +44,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin=""
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "RealEstateAgent",
-              name: "Nayab Real Marketing",
-              url: process.env.NEXT_PUBLIC_BASE_URL,
-              telephone: "+923212869000",
-              address: {
-                "@type": "PostalAddress",
-                addressLocality: "Karachi",
-                addressCountry: "Pakistan",
-              },
-            }),
-          }}
-        />
-      </head>
-      <body suppressHydrationWarning>
-        <Navbar />
+    <>
+      <Navbar />
+      <main className="min-h-screen">
         {children}
-        <SpeedInsights/>
-           <Footer />
-           </body>
-    </html>
+      </main>
+      <SpeedInsights />
+      <Footer />
+    </>
   );
 }

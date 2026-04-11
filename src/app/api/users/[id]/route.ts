@@ -30,7 +30,7 @@ export const PUT = requireAuth(async (req: NextRequest, jwtUser: JwtPayload, ctx
       delete updates.role;
     }
 
-    const updated = await User.findByIdAndUpdate(targetUserId, updates, { new: true }).select('-password');
+    const updated = await User.findByIdAndUpdate(targetUserId, updates, { returnDocument: "after" }).select('-password');
     return NextResponse.json(updated);
   } catch (error) {
     console.error('PUT user error:', error);

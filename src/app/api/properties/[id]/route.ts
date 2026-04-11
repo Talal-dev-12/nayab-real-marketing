@@ -43,7 +43,7 @@ export const PUT = requireAuth(async (req: NextRequest, user: JwtPayload, ctx: R
       delete body.rejectionNote;
     }
 
-    const updated = await Property.findByIdAndUpdate(id, body, { new: true, runValidators: true });
+    const updated = await Property.findByIdAndUpdate(id, body, { returnDocument: "after", runValidators: true });
     return NextResponse.json(updated);
   } catch (error) {
     console.error('PUT property error:', error);
