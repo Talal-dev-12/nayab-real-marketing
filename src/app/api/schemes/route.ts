@@ -9,11 +9,34 @@ function makeSlug(text: string) {
 }
 
 // PUBLIC: list all housing schemes (sorted by order)
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await connectDB();
-    const schemes = await HousingScheme.find().sort({ order: 1, name: 1 });
-    return NextResponse.json({ schemes });
+    const url = new URL(req.url);
+    const pageParam = url.searchParams.get('page');
+    const limitParam = url.searchParams.get('limit');
+    
+    let query = HousingScheme.find().sort({ order: 1, name: 1 });
+
+    if (pageParam && limitParam) {
+      const page = parseInt(pageParam) || 1;
+      const limit = parseInt(limitParam) || 10;
+      const skip = (page - 1) * limit;
+      
+      const [schemes, total] = await Promise.all([
+        HousingScheme.find().sort({ order: 1, name: 1 }).skip(skip).limit(limit),
+        HousingScheme.countDocuments()
+      ]);
+      
+      return NextResponse.json({ 
+        schemes,
+        total,
+        pages: Math.ceil(total / limit)
+      });
+    }
+
+    const schemes = await query;
+    return NextResponse.json({ schemes, total: schemes.length, pages: 1 });
   } catch (error) {
     console.error('GET schemes error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

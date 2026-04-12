@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Mail, AlertCircle, Home, ArrowLeft, Send } from 'lucide-react';
+import { AlertCircle, Home, ArrowLeft, Send } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -30,7 +30,6 @@ export default function ForgotPasswordPage() {
       }
 
       setSuccess(true);
-      // Wait 2 seconds then redirect to reset-password with email in query
       setTimeout(() => {
         router.push(`/reset-password?email=${encodeURIComponent(email)}`);
       }, 2000);
@@ -42,72 +41,86 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
-        
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex flex-col items-center gap-2 group">
-            <div className="w-16 h-16 bg-red-700 rounded-xl flex items-center justify-center group-hover:bg-red-600 transition-colors">
-              <Home size={30} className="text-white" />
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-8 font-sans">
+      <div className="bg-white rounded-[2rem] shadow-xl w-full max-w-[1100px] flex overflow-hidden lg:min-h-[700px]">
+        {/* LEFT PANEL */}
+        <div className="w-full lg:w-[45%] p-8 sm:p-12 xl:p-14 flex flex-col justify-center bg-white relative shrink-0">
+          
+          <Link href="/" className="inline-flex flex-row items-center gap-3 mb-10 group self-start">
+            <div className="w-12 h-12 bg-red-700 rounded-xl flex items-center justify-center group-hover:bg-red-600 transition-colors">
+              <Home size={24} className="text-white" />
             </div>
-            <span className="font-extrabold text-2xl tracking-tight text-[#1a2e5a]">NAYAB REAL</span>
+            <div className="flex flex-col">
+              <span className="font-extrabold text-[1.1rem] leading-none tracking-tight text-[#1a2e5a]">NAYAB</span>
+              <span className="font-extrabold text-[1.1rem] leading-none tracking-tight text-[#1a2e5a]">REAL MARKETING</span>
+            </div>
           </Link>
-          <h2 className="text-xl font-bold text-[#1a2e5a] mt-4">Forgot Password?</h2>
-          <p className="text-slate-500 text-sm mt-1">Enter your email and we&apos;ll send you a reset code</p>
+
+          {success ? (
+            <div className="text-left py-8">
+              <div className="w-16 h-16 bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center mb-6">
+                <Send size={28} className="text-emerald-600" />
+              </div>
+              <h2 className="text-[2.2rem] font-bold text-[#1a2e5a] mb-2 tracking-tight leading-tight">Code Sent!</h2>
+              <p className="text-slate-500 text-[15px] font-medium mb-6">We've sent a reset code to your email. Redirecting you to the reset page…</p>
+            </div>
+          ) : (
+            <>
+              <h1 className="text-[2.5rem] font-bold text-[#1a2e5a] mb-2 tracking-tight leading-tight">Forgot Password?</h1>
+              <p className="text-slate-500 text-[15px] font-medium mb-8">Enter your email and we'll send you a reset code to regain access to your account.</p>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2.5 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors">
+                  <label className="text-[11px] text-slate-400 font-medium block">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    className="w-full bg-transparent outline-none text-[#1a2e5a] text-[15px] pb-0.5 placeholder:text-slate-400 font-medium"
+                    placeholder="you@email.com"
+                  />
+                </div>
+
+                {error && (
+                  <div className="bg-red-50 border border-red-100 text-red-700 text-[13px] px-4 py-3 rounded-xl flex items-start gap-2">
+                    <AlertCircle size={15} className="mt-0.5 shrink-0" />
+                    <span className="font-medium">{error}</span>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-[#1a2e5a] hover:bg-[#112040] disabled:opacity-60 text-white mt-4 py-4 rounded-xl font-semibold text-[15px] transition-colors shadow-sm flex items-center justify-center gap-2"
+                >
+                  {loading ? 'Sending Code…' : (
+                    <>
+                      <Send size={18} />
+                      Send Reset Code
+                    </>
+                  )}
+                </button>
+              </form>
+            </>
+          )}
+
+          <div className="mt-10 pt-6 border-t border-slate-100 text-left">
+             <Link href="/sign-in" className="inline-flex items-center gap-2 text-[14px] font-semibold text-slate-500 hover:text-[#1a2e5a] transition-colors">
+              <ArrowLeft size={16} /> Back to Sign In
+            </Link>
+          </div>
         </div>
 
-        {success ? (
-          <div className="text-center py-6 bg-emerald-50 rounded-2xl border border-emerald-100 mb-6">
-            <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Send size={24} className="text-emerald-600" />
+        {/* RIGHT PANEL (Image Placeholder) */}
+        <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5">
+          <div className="w-full h-full bg-slate-200 rounded-[2.5rem] rounded-tl-[10rem] rounded-br-[10rem] overflow-hidden relative shadow-[inset_0_0_20px_rgba(0,0,0,0.05)]">
+            <div className="absolute top-12 right-12 max-w-[340px] text-right z-10">
+              <h2 className="text-[#1a2e5a] text-[28px] font-extrabold leading-[1.2]">
+                We'll help you get right back to finding your next home.
+              </h2>
             </div>
-            <p className="text-emerald-800 font-bold mb-1">Code sent successfully!</p>
-            <p className="text-emerald-600 text-xs">Redirecting to reset page…</p>
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="text-sm font-semibold text-slate-600 block mb-1.5">Email address</label>
-              <div className="relative">
-                <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                <input
-                  type="email"
-                  required
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  className="w-full border-2 rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-red-500 transition-colors"
-                />
-              </div>
-            </div>
-
-            {error && (
-              <div className="bg-red-50 border border-red-100 text-red-700 text-sm px-4 py-3 rounded-xl flex items-start gap-2">
-                <AlertCircle size={16} className="mt-0.5 shrink-0" />
-                <span>{error}</span>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-red-700 hover:bg-red-600 disabled:opacity-60 text-white py-3 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2"
-            >
-              {loading ? 'Sending…' : (
-                <>
-                  <Send size={16} />
-                  Send Reset Code
-                </>
-              )}
-            </button>
-          </form>
-        )}
-
-        <div className="mt-6 text-center">
-          <Link href="/sign-in" className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-red-700 transition-colors">
-            <ArrowLeft size={14} /> Back to Sign In
-          </Link>
         </div>
       </div>
     </div>

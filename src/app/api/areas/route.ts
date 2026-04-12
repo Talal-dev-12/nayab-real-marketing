@@ -9,11 +9,34 @@ function makeSlug(text: string) {
 }
 
 // PUBLIC: list all areas (sorted by order)
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await connectDB();
-    const areas = await Area.find().sort({ order: 1, name: 1 });
-    return NextResponse.json({ areas });
+    const url = new URL(req.url);
+    const pageParam = url.searchParams.get('page');
+    const limitParam = url.searchParams.get('limit');
+    
+    let query = Area.find().sort({ order: 1, name: 1 });
+
+    if (pageParam && limitParam) {
+      const page = parseInt(pageParam) || 1;
+      const limit = parseInt(limitParam) || 10;
+      const skip = (page - 1) * limit;
+      
+      const [areas, total] = await Promise.all([
+        Area.find().sort({ order: 1, name: 1 }).skip(skip).limit(limit),
+        Area.countDocuments()
+      ]);
+      
+      return NextResponse.json({ 
+        areas,
+        total,
+        pages: Math.ceil(total / limit)
+      });
+    }
+
+    const areas = await query;
+    return NextResponse.json({ areas, total: areas.length, pages: 1 });
   } catch (error) {
     console.error('GET areas error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

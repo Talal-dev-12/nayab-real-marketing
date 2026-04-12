@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import {
   MapPin, Building2, Plus, Edit, Trash2, X, Upload, Loader2, Image as ImageIcon,
-  GripVertical, ArrowUp, ArrowDown,
+  GripVertical, ArrowUp, ArrowDown, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { api, uploadImage } from '@/lib/api-client';
 import { TableRowSkeleton } from '@/components/ui/Skeleton';
@@ -19,9 +19,14 @@ const emptyScheme: SchemeForm = { name: '', logo: '', image: '', areaId: '', are
 
 export default function LocalitiesPage() {
   const [tab, setTab] = useState<Tab>('areas');
+  const limit = 10;
 
   /* ── Areas state ────────────────────────────────────────── */
   const [areas, setAreas] = useState<ManagedArea[]>([]);
+  const [allAreas, setAllAreas] = useState<ManagedArea[]>([]);
+  const [areasTotal, setAreasTotal] = useState(0);
+  const [areasPage, setAreasPage] = useState(1);
+  const [areasPages, setAreasPages] = useState(1);
   const [areasLoading, setAreasLoading] = useState(true);
   const [areaModal, setAreaModal] = useState(false);
   const [editingArea, setEditingArea] = useState<ManagedArea | null>(null);
@@ -31,6 +36,9 @@ export default function LocalitiesPage() {
 
   /* ── Schemes state ──────────────────────────────────────── */
   const [schemes, setSchemes] = useState<ManagedScheme[]>([]);
+  const [schemesTotal, setSchemesTotal] = useState(0);
+  const [schemesPage, setSchemesPage] = useState(1);
+  const [schemesPages, setSchemesPages] = useState(1);
   const [schemesLoading, setSchemesLoading] = useState(true);
   const [schemeModal, setSchemeModal] = useState(false);
   const [editingScheme, setEditingScheme] = useState<ManagedScheme | null>(null);
@@ -45,8 +53,10 @@ export default function LocalitiesPage() {
   const fetchAreas = async () => {
     setAreasLoading(true);
     try {
-      const data = await api.get<{ areas: ManagedArea[] }>('/api/areas');
+      const data = await api.get<any>(`/api/areas?page=${areasPage}&limit=${limit}`);
       setAreas(data.areas ?? []);
+      setAreasTotal(data.total ?? 0);
+      setAreasPages(data.pages ?? 1);
     } catch { /* ignore */ }
     finally { setAreasLoading(false); }
   };
@@ -54,13 +64,19 @@ export default function LocalitiesPage() {
   const fetchSchemes = async () => {
     setSchemesLoading(true);
     try {
-      const data = await api.get<{ schemes: ManagedScheme[] }>('/api/schemes');
+      const data = await api.get<any>(`/api/schemes?page=${schemesPage}&limit=${limit}`);
       setSchemes(data.schemes ?? []);
+      setSchemesTotal(data.total ?? 0);
+      setSchemesPages(data.pages ?? 1);
     } catch { /* ignore */ }
     finally { setSchemesLoading(false); }
   };
 
-  useEffect(() => { fetchAreas(); fetchSchemes(); }, []);
+  useEffect(() => { fetchAreas(); }, [areasPage]);
+  useEffect(() => { fetchSchemes(); }, [schemesPage]);
+  useEffect(() => {
+    api.get<{ areas: ManagedArea[] }>('/api/areas').then(data => setAllAreas(data.areas ?? [])).catch(() => {});
+  }, []);
 
   /* ── Area CRUD ──────────────────────────────────────────── */
   const openAreaCreate = () => { setEditingArea(null); setAreaForm(emptyArea); setAreaModal(true); setError(''); };
@@ -81,13 +97,18 @@ export default function LocalitiesPage() {
       }
       setAreaModal(false);
       fetchAreas();
+      api.get<{ areas: ManagedArea[] }>('/api/areas').then(data => setAllAreas(data.areas ?? [])).catch(() => {});
     } catch (e: any) { setError(e.message || 'Failed to save area'); }
     finally { setAreaSaving(false); }
   };
 
   const deleteArea = async (a: ManagedArea) => {
     if (!confirm(`Delete area "${a.name}"? This cannot be undone.`)) return;
-    try { await api.delete(`/api/areas/${a._id}`); fetchAreas(); }
+    try { 
+      await api.delete(`/api/areas/${a._id}`); 
+      fetchAreas(); 
+      api.get<{ areas: ManagedArea[] }>('/api/areas').then(data => setAllAreas(data.areas ?? [])).catch(() => {});
+    }
     catch (e: any) { alert(e.message || 'Delete failed'); }
   };
 
@@ -188,11 +209,11 @@ export default function LocalitiesPage() {
         <div className="flex border-b">
           <button onClick={() => setTab('areas')}
             className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-semibold transition-colors ${tab === 'areas' ? 'text-red-700 border-b-2 border-red-700 bg-red-50/50' : 'text-slate-500 hover:text-slate-700'}`}>
-            <MapPin size={16} /> Areas <span className="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full">{areas.length}</span>
+            <MapPin size={16} /> Areas <span className="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full">{areasTotal}</span>
           </button>
           <button onClick={() => setTab('schemes')}
             className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-semibold transition-colors ${tab === 'schemes' ? 'text-red-700 border-b-2 border-red-700 bg-red-50/50' : 'text-slate-500 hover:text-slate-700'}`}>
-            <Building2 size={16} /> Housing Schemes <span className="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full">{schemes.length}</span>
+            <Building2 size={16} /> Housing Schemes <span className="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full">{schemesTotal}</span>
           </button>
         </div>
 
@@ -243,6 +264,21 @@ export default function LocalitiesPage() {
                 <MapPin size={36} className="mx-auto mb-3 text-slate-300" />
                 <p className="text-sm font-medium">No areas yet</p>
                 <p className="text-xs mt-1">Add your first area to get started.</p>
+              </div>
+            )}
+            
+            {/* Areas Pagination */}
+            {areasTotal > limit && (
+              <div className="flex items-center justify-between px-5 py-4 border-t bg-slate-50">
+                <p className="text-xs text-slate-500">Showing page {areasPage} of {areasPages}</p>
+                <div className="flex gap-2">
+                  <button onClick={() => setAreasPage(p => Math.max(1, p - 1))} disabled={areasPage === 1} className="p-1 rounded bg-white border shadow-sm disabled:opacity-50 hover:bg-slate-50">
+                    <ChevronLeft size={16} />
+                  </button>
+                  <button onClick={() => setAreasPage(p => Math.min(areasPages, p + 1))} disabled={areasPage === areasPages} className="p-1 rounded bg-white border shadow-sm disabled:opacity-50 hover:bg-slate-50">
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -297,6 +333,21 @@ export default function LocalitiesPage() {
                 <Building2 size={36} className="mx-auto mb-3 text-slate-300" />
                 <p className="text-sm font-medium">No housing schemes yet</p>
                 <p className="text-xs mt-1">Add your first housing scheme to get started.</p>
+              </div>
+            )}
+            
+            {/* Schemes Pagination */}
+            {schemesTotal > limit && (
+              <div className="flex items-center justify-between px-5 py-4 border-t bg-slate-50">
+                <p className="text-xs text-slate-500">Showing page {schemesPage} of {schemesPages}</p>
+                <div className="flex gap-2">
+                  <button onClick={() => setSchemesPage(p => Math.max(1, p - 1))} disabled={schemesPage === 1} className="p-1 rounded bg-white border shadow-sm disabled:opacity-50 hover:bg-slate-50">
+                    <ChevronLeft size={16} />
+                  </button>
+                  <button onClick={() => setSchemesPage(p => Math.min(schemesPages, p + 1))} disabled={schemesPage === schemesPages} className="p-1 rounded bg-white border shadow-sm disabled:opacity-50 hover:bg-slate-50">
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -451,12 +502,12 @@ export default function LocalitiesPage() {
                 <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Parent Area (optional)</label>
                 <select value={schemeForm.areaId}
                   onChange={e => {
-                    const selected = areas.find(a => a._id === e.target.value);
+                    const selected = allAreas.find(a => a._id === e.target.value);
                     setSchemeForm(f => ({ ...f, areaId: e.target.value, areaName: selected?.name || '' }));
                   }}
                   className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500">
                   <option value="">— No area —</option>
-                  {areas.map(a => <option key={a._id} value={a._id}>{a.name}</option>)}
+                  {allAreas.map(a => <option key={a._id} value={a._id}>{a.name}</option>)}
                 </select>
               </div>
 

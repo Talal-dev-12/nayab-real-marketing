@@ -18,12 +18,10 @@ function VerifyOtpContent() {
   const [success, setSuccess]     = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Auto-focus first input
   useEffect(() => {
     inputRefs.current[0]?.focus();
   }, []);
 
-  // Resend cooldown timer
   useEffect(() => {
     if (resendCooldown <= 0) return;
     const t = setTimeout(() => setResendCooldown(c => c - 1), 1000);
@@ -31,12 +29,11 @@ function VerifyOtpContent() {
   }, [resendCooldown]);
 
   const handleChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return; // only digits
+    if (!/^\d*$/.test(value)) return;
     const newOtp = [...otp];
-    newOtp[index] = value.slice(-1); // single digit
+    newOtp[index] = value.slice(-1);
     setOtp(newOtp);
 
-    // Auto-focus next
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -78,14 +75,12 @@ function VerifyOtpContent() {
       if (!res.ok) {
         setError(data.error || 'Verification failed.');
         if (res.status === 410) {
-          // OTP expired — clear inputs
           setOtp(['', '', '', '', '', '']);
           inputRefs.current[0]?.focus();
         }
         return;
       }
 
-      // Store auth data
       if (data.token) {
         localStorage.setItem('auth_token', data.token);
         localStorage.setItem('auth_user', JSON.stringify(data.user));
@@ -93,7 +88,6 @@ function VerifyOtpContent() {
 
       setSuccess(true);
       
-      // Redirect after short celebration
       setTimeout(() => {
         const finalRedirect = searchParams.get('redirect') || data.redirectTo || '/';
         router.push(finalRedirect);
@@ -123,7 +117,7 @@ function VerifyOtpContent() {
         return;
       }
 
-      setResendCooldown(60); // 60 second cooldown
+      setResendCooldown(60);
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
     } catch {
@@ -135,9 +129,9 @@ function VerifyOtpContent() {
 
   if (!email) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <p className="text-slate-500 mb-4">No email address specified.</p>
+          <p className="text-slate-500 font-medium mb-4">No email address specified.</p>
           <Link href="/sign-up" className="text-red-700 font-semibold hover:underline">Go to Sign Up</Link>
         </div>
       </div>
@@ -145,104 +139,111 @@ function VerifyOtpContent() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
-
-        {/* Logo */}
-        <div className="text-center mb-7">
-          <Link href="/" className="inline-flex flex-col items-center gap-2 group">
-            <div className="w-16 h-16 bg-red-700 rounded-xl flex items-center justify-center group-hover:bg-red-600 transition-colors">
-              <Home size={30} className="text-white" />
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-8 font-sans">
+      <div className="bg-white rounded-[2rem] shadow-xl w-full max-w-[1100px] flex overflow-hidden lg:min-h-[700px]">
+        {/* LEFT PANEL */}
+        <div className="w-full lg:w-[45%] p-8 sm:p-12 xl:p-14 flex flex-col justify-center bg-white relative shrink-0">
+          
+          <Link href="/" className="inline-flex flex-row items-center gap-3 mb-12 group self-start">
+            <div className="w-12 h-12 bg-red-700 rounded-xl flex items-center justify-center group-hover:bg-red-600 transition-colors">
+              <Home size={24} className="text-white" />
             </div>
-            <h1 className="text-2xl font-extrabold text-[#1a2e5a] tracking-tight">NAYAB REAL</h1>
+            <div className="flex flex-col">
+              <span className="font-extrabold text-[1.1rem] leading-none tracking-tight text-[#1a2e5a]">NAYAB</span>
+              <span className="font-extrabold text-[1.1rem] leading-none tracking-tight text-[#1a2e5a]">REAL MARKETING</span>
+            </div>
           </Link>
+
+          {success ? (
+            <div className="text-center py-8">
+              <div className="w-20 h-20 mx-auto bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center mb-4 animate-bounce">
+                <ShieldCheck size={40} className="text-emerald-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-[#1a2e5a] mb-2 tracking-tight">Email Verified!</h2>
+              <p className="text-slate-500 text-[15px] font-medium">Your account is now active. Redirecting you…</p>
+            </div>
+          ) : (
+            <>
+              <h1 className="text-[2.2rem] font-bold text-[#1a2e5a] mb-2 tracking-tight leading-tight">Verify Your Email</h1>
+              <p className="text-slate-500 text-[15px] font-medium mb-8">
+                We sent a 6-digit code to <br className="hidden sm:block"/><strong className="text-[#1a2e5a]">{email}</strong>
+              </p>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="flex gap-2 justify-start sm:justify-start" onPaste={handlePaste}>
+                  {otp.map((digit, i) => (
+                    <input
+                      key={i}
+                      ref={el => { inputRefs.current[i] = el; }}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      onChange={e => handleChange(i, e.target.value)}
+                      onKeyDown={e => handleKeyDown(i, e)}
+                      className={`w-12 h-14 sm:w-14 sm:h-16 text-center text-[1.5rem] font-bold border rounded-xl outline-none transition-all ${
+                        digit
+                          ? 'border-[#1a2e5a] bg-white text-[#1a2e5a] shadow-[0_0_0_2px_rgba(26,46,90,0.1)]'
+                          : 'border-slate-200 focus:border-[#1a2e5a] focus:bg-white bg-[#f8f9fa]'
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                {error && (
+                  <div className="bg-red-50 border border-red-100 text-red-700 text-[13px] px-4 py-3 rounded-xl flex items-start gap-2">
+                    <AlertCircle size={15} className="mt-0.5 flex-shrink-0" />
+                    <span className="font-medium">{error}</span>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading || otp.join('').length !== 6}
+                  className="w-full bg-[#1a2e5a] hover:bg-[#112040] disabled:opacity-60 text-white mt-4 py-4 rounded-xl font-semibold text-[15px] transition-colors shadow-sm"
+                >
+                  {loading ? 'Verifying…' : 'Verify & Continue'}
+                </button>
+              </form>
+
+              <div className="mt-8 text-left">
+                <p className="text-[13px] text-slate-400 font-medium mb-3">Didn't receive the code? Check your spam folder.</p>
+                <button
+                  onClick={handleResend}
+                  disabled={resending || resendCooldown > 0}
+                  className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-red-700 hover:text-red-800 disabled:text-slate-400 disabled:cursor-not-allowed transition-colors"
+                >
+                  <RefreshCw size={14} className={resending ? 'animate-spin' : ''} />
+                  {resending
+                    ? 'Sending…'
+                    : resendCooldown > 0
+                      ? `Resend in ${resendCooldown}s`
+                      : 'Resend Code'}
+                </button>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-slate-100">
+                <p className="text-[14px] font-medium text-slate-500">
+                  Wrong email?{' '}
+                  <Link href={role === 'seller' ? '/sign-up/seller' : '/sign-up'} className="text-[#1a2e5a] font-semibold hover:underline decoration-[#1a2e5a] underline-offset-4">
+                    Go back
+                  </Link>
+                </p>
+              </div>
+            </>
+          )}
         </div>
 
-        {success ? (
-          <div className="text-center py-8">
-            <div className="w-20 h-20 mx-auto bg-emerald-100 rounded-full flex items-center justify-center mb-4 animate-bounce">
-              <ShieldCheck size={40} className="text-emerald-600" />
+        {/* RIGHT PANEL (Image Placeholder) */}
+        <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5">
+          <div className="w-full h-full bg-slate-200 rounded-[2.5rem] rounded-tl-[10rem] rounded-br-[10rem] overflow-hidden relative shadow-[inset_0_0_20px_rgba(0,0,0,0.05)]">
+            <div className="absolute top-12 right-12 max-w-[340px] text-right z-10">
+              <h2 className="text-[#1a2e5a] text-[28px] font-extrabold leading-[1.2]">
+                Securely verify your identity to protect your assets.
+              </h2>
             </div>
-            <h2 className="text-xl font-bold text-[#1a2e5a] mb-2">Email Verified!</h2>
-            <p className="text-slate-500 text-sm">Your account is now active. Redirecting you…</p>
           </div>
-        ) : (
-          <>
-            {/* Header */}
-            <div className="text-center mb-6">
-              <div className="w-14 h-14 mx-auto bg-blue-50 rounded-full flex items-center justify-center mb-3">
-                <ShieldCheck size={28} className="text-blue-600" />
-              </div>
-              <h2 className="text-xl font-bold text-[#1a2e5a]">Verify Your Email</h2>
-              <p className="text-slate-500 text-sm mt-1">
-                We sent a 6-digit code to<br />
-                <strong className="text-[#1a2e5a]">{email}</strong>
-              </p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* OTP Input Grid */}
-              <div className="flex gap-2 justify-center" onPaste={handlePaste}>
-                {otp.map((digit, i) => (
-                  <input
-                    key={i}
-                    ref={el => { inputRefs.current[i] = el; }}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={digit}
-                    onChange={e => handleChange(i, e.target.value)}
-                    onKeyDown={e => handleKeyDown(i, e)}
-                    className={`w-12 h-14 text-center text-2xl font-bold border-2 rounded-xl outline-none transition-all ${
-                      digit
-                        ? 'border-red-500 bg-red-50 text-[#1a2e5a]'
-                        : 'border-slate-200 focus:border-red-500'
-                    }`}
-                  />
-                ))}
-              </div>
-
-              {error && (
-                <div className="bg-red-50 border border-red-100 text-red-700 text-sm px-4 py-3 rounded-xl flex items-start gap-2">
-                  <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
-                  <span>{error}</span>
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading || otp.join('').length !== 6}
-                className="w-full bg-red-700 hover:bg-red-600 disabled:opacity-60 text-white py-3.5 rounded-xl font-bold text-sm transition-colors"
-              >
-                {loading ? 'Verifying…' : 'Verify & Continue'}
-              </button>
-            </form>
-
-            {/* Resend Section */}
-            <div className="mt-5 text-center">
-              <p className="text-xs text-slate-400 mb-2">Didn&apos;t receive the code? Check your spam folder.</p>
-              <button
-                onClick={handleResend}
-                disabled={resending || resendCooldown > 0}
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-red-700 hover:text-red-600 disabled:text-slate-400 disabled:cursor-not-allowed transition-colors"
-              >
-                <RefreshCw size={14} className={resending ? 'animate-spin' : ''} />
-                {resending
-                  ? 'Sending…'
-                  : resendCooldown > 0
-                    ? `Resend in ${resendCooldown}s`
-                    : 'Resend Code'}
-              </button>
-            </div>
-
-            <p className="mt-5 text-center text-sm text-slate-500">
-              Wrong email?{' '}
-              <Link href={role === 'seller' ? '/sign-up/seller' : '/sign-up'} className="text-red-700 font-semibold hover:underline">
-                Go back
-              </Link>
-            </p>
-          </>
-        )}
+        </div>
       </div>
     </div>
   );
@@ -250,11 +251,7 @@ function VerifyOtpContent() {
 
 export default function VerifyOtpPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-slate-400">Loading…</p>
-      </div>
-    }>
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-500 font-medium text-sm">Loading…</div>}>
       <VerifyOtpContent />
     </Suspense>
   );
