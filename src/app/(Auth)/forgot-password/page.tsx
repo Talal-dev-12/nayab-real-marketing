@@ -3,13 +3,14 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AlertCircle, Home, ArrowLeft, Send } from 'lucide-react';
+import Image from 'next/image';
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
-  const [email,    setEmail]   = useState('');
-  const [error,    setError]    = useState('');
-  const [loading,  setLoading]  = useState(false);
-  const [success,  setSuccess]  = useState(false);
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,9 +19,9 @@ export default function ForgotPasswordPage() {
 
     try {
       const res = await fetch('/api/auth/forgot-password', {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ email }),
+        body: JSON.stringify({ email }),
       });
       const data = await res.json();
 
@@ -45,7 +46,7 @@ export default function ForgotPasswordPage() {
       <div className="bg-white rounded-[2rem] shadow-xl w-full max-w-[1100px] flex overflow-hidden lg:min-h-[700px]">
         {/* LEFT PANEL */}
         <div className="w-full lg:w-[45%] p-8 sm:p-12 xl:p-14 flex flex-col justify-center bg-white relative shrink-0">
-          
+
           <Link href="/" className="inline-flex flex-row items-center gap-3 mb-10 group self-start">
             <div className="w-12 h-12 bg-red-700 rounded-xl flex items-center justify-center group-hover:bg-red-600 transition-colors">
               <Home size={24} className="text-white" />
@@ -106,17 +107,26 @@ export default function ForgotPasswordPage() {
           )}
 
           <div className="mt-10 pt-6 border-t border-slate-100 text-left">
-             <Link href="/sign-in" className="inline-flex items-center gap-2 text-[14px] font-semibold text-slate-500 hover:text-[#1a2e5a] transition-colors">
+            <Link href="/sign-in" className="inline-flex items-center gap-2 text-[14px] font-semibold text-slate-500 hover:text-[#1a2e5a] transition-colors">
               <ArrowLeft size={16} /> Back to Sign In
             </Link>
           </div>
         </div>
 
-        {/* RIGHT PANEL (Image Placeholder) */}
+        {/* RIGHT PANEL (Image Banner) */}
         <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5">
-          <div className="w-full h-full bg-slate-200 rounded-[2.5rem] rounded-tl-[10rem] rounded-br-[10rem] overflow-hidden relative shadow-[inset_0_0_20px_rgba(0,0,0,0.05)]">
+          <div className="w-full h-full relative flex items-center justify-center rounded-[2.5rem] overflow-hidden">
+            <Image
+              src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+              alt="Forgot Password Banner"
+              fill
+              className="object-cover object-right"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
+              priority
+            />
+
             <div className="absolute top-12 right-12 max-w-[340px] text-right z-10">
-              <h2 className="text-[#1a2e5a] text-[28px] font-extrabold leading-[1.2]">
+              <h2 className="text-white text-[28px] font-extrabold leading-[1.2] drop-shadow-md">
                 We'll help you get right back to finding your next home.
               </h2>
             </div>

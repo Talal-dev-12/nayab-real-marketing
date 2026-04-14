@@ -201,7 +201,6 @@ function SignInForm() {
               {loading ? 'Please wait...' : 'Login'}
             </button>
           </form>
-
           <p className="mt-6 text-center text-[14px] font-medium text-slate-700">
             Don't have an account?{' '}
             <Link href="/sign-up" className="text-red-700 font-semibold hover:underline decoration-red-700 underline-offset-4">
@@ -212,16 +211,15 @@ function SignInForm() {
 
         {/* RIGHT PANEL (Image Banner) */}
         <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5">
-          <div className="w-full h-full relative flex items-center justify-center">
+          <div className="w-full h-full relative flex items-center justify-center rounded-[2.5rem] overflow-hidden">
             <Image
-              src="/images/Subtract.png"
+              src="/images/Subtract.svg"
               alt="Login Banner"
               fill
-              className="object-contain object-right"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
+              className="object-cover object-right"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
               priority
             />
-
             <div className="absolute top-12 right-12 max-w-[340px] text-right z-10">
               <h2 className="text-white text-[24px] font-bold leading-tight drop-shadow-md">
                 Browse thousands of properties to buy, sell, or rent with trusted agents.

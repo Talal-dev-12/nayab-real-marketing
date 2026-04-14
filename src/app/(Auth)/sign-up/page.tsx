@@ -233,23 +233,13 @@ function SignUpForm() {
 
         {/* RIGHT PANEL (Image Banner) */}
         <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5">
-          <div
-            className="w-full h-full bg-slate-200 rounded-[2.5rem] overflow-hidden relative shadow-[inset_0_0_20px_rgba(0,0,0,0.05)]"
-            style={{
-              maskImage: `radial-gradient(circle 80px at 0 0, transparent 99%, black 100%), 
-                  radial-gradient(circle 80px at 100% 100%, transparent 99%, black 100%)`,
-              maskComposite: 'intersect',
-              WebkitMaskComposite: 'destination-in',
-            }}
-          >
+          <div className="w-full h-full relative flex items-center justify-center rounded-[2.5rem] overflow-hidden">
             <Image
               src="https://i.pinimg.com/736x/f5/15/23/f515236498b2429222d622009136dbc1.jpg"
               alt="Buyer Banner"
               fill
-              className="object-cover"
+              className="object-cover object-right"
             />
-            {/* Dark gradient overlay for text readability */}
-            <div className="absolute inset-0 bg-black/20" />
 
             <div className="absolute top-12 right-12 max-w-[340px] text-right z-10">
               <h2 className="text-white text-[28px] font-extrabold leading-[1.2] drop-shadow-md">

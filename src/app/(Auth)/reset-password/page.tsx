@@ -3,6 +3,7 @@ import { useState, useRef, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { ShieldCheck, AlertCircle, Home, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
+import Image from 'next/image';
 
 const PASSWORD_RULES = [
   { test: (p: string) => p.length >= 8,   label: 'At least 8 characters' },
@@ -221,11 +222,20 @@ function ResetPasswordContent() {
           </div>
         </div>
 
-        {/* RIGHT PANEL (Image Placeholder) */}
+        {/* RIGHT PANEL (Image Banner) */}
         <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5">
-          <div className="w-full h-full bg-slate-200 rounded-[2.5rem] rounded-tl-[10rem] rounded-br-[10rem] overflow-hidden relative shadow-[inset_0_0_20px_rgba(0,0,0,0.05)]">
+          <div className="w-full h-full relative flex items-center justify-center rounded-[2.5rem] overflow-hidden">
+            <Image
+              src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+              alt="Reset Password Banner"
+              fill
+              className="object-cover object-right"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
+              priority
+            />
+
             <div className="absolute top-12 right-12 max-w-[340px] text-right z-10">
-              <h2 className="text-[#1a2e5a] text-[28px] font-extrabold leading-[1.2]">
+              <h2 className="text-white text-[28px] font-extrabold leading-[1.2] drop-shadow-md">
                 Your account security is our top priority.
               </h2>
             </div>
