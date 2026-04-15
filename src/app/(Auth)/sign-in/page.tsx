@@ -213,7 +213,7 @@ function SignInForm() {
         <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5">
           <div className="w-full h-full relative flex items-center justify-center rounded-[2.5rem] overflow-hidden">
             <Image
-              src="/images/Subtract.svg"
+              src="/images/Subtract1.svg"
               alt="Login Banner"
               fill
               className="object-cover object-right"
@@ -221,8 +221,8 @@ function SignInForm() {
               priority
             />
             <div className="absolute top-12 right-12 max-w-[340px] text-right z-10">
-              <h2 className="text-white text-[24px] font-bold leading-tight drop-shadow-md">
-                Browse thousands of properties to buy, sell, or rent with trusted agents.
+              <h2 className="text-[#1a2e5a] text-[24px] font-bold leading-tight drop-shadow-md">
+                Browse thousands of properties to buy,<br /> sell, or rent <br /> with trusted agents.
               </h2>
             </div>
           </div>

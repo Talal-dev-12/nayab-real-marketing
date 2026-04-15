@@ -163,17 +163,10 @@ function ResetPasswordContent() {
                   </button>
                 </div>
                 
-                {password.length > 0 && (
-                  <ul className="space-y-1 px-1">
-                    {PASSWORD_RULES.map(rule => {
-                      const ok = rule.test(password);
-                      return (
-                        <li key={rule.label} className={`flex items-center gap-1.5 text-xs ${ok ? 'text-emerald-600' : 'text-slate-400'}`}>
-                          <CheckCircle2 size={12} className={ok ? 'text-emerald-500' : 'text-slate-300'} /> {rule.label}
-                        </li>
-                      );
-                    })}
-                  </ul>
+                {password.length > 0 && !passwordValid && (
+                  <p className="text-[12px] text-slate-500 px-1">
+                    Write a strong password (min 8 chars, 1 capital letter, 1 number, etc.).
+                  </p>
                 )}
 
                 <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors relative">
@@ -203,7 +196,7 @@ function ResetPasswordContent() {
 
                 <button
                   type="submit"
-                  disabled={loading || !passwordValid || !passwordsMatch || otp.join('').length !== 6}
+                  disabled={loading}
                   className="w-full bg-[#1a2e5a] hover:bg-[#112040] disabled:opacity-60 text-white mt-4 py-4 rounded-xl font-semibold text-[15px] transition-colors shadow-sm"
                 >
                   {loading ? 'Resetting Password…' : 'Reset & Confirm'}

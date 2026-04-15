@@ -172,17 +172,10 @@ function SellerSignUpForm() {
               </button>
             </div>
 
-            {form.password.length > 0 && (
-              <ul className="space-y-1 px-1">
-                {PASSWORD_RULES.map(rule => {
-                  const ok = rule.test(form.password);
-                  return (
-                    <li key={rule.label} className={`flex items-center gap-1.5 text-xs ${ok ? 'text-emerald-600' : 'text-slate-400'}`}>
-                      <CheckCircle2 size={12} className={ok ? 'text-emerald-500' : 'text-slate-300'} /> {rule.label}
-                    </li>
-                  );
-                })}
-              </ul>
+            {form.password.length > 0 && !passwordValid && (
+              <p className="text-[12px] text-slate-500 px-1">
+                Write a strong password (min 8 chars, 1 capital letter, 1 number, etc.).
+              </p>
             )}
 
             <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors relative">
@@ -209,7 +202,7 @@ function SellerSignUpForm() {
             )}
 
             <button
-              type="submit" disabled={loading || googleLoading || !passwordValid || !passwordsMatch}
+              type="submit" disabled={loading || googleLoading}
               className="w-full bg-[#1a2e5a] hover:bg-[#112040] disabled:opacity-60 text-white mt-4 py-4 rounded-xl font-semibold text-[15px] transition-colors shadow-sm"
             >
               {loading ? 'Creating account…' : 'Create Seller Account'}
@@ -239,16 +232,11 @@ function SellerSignUpForm() {
         {/* RIGHT PANEL (Image Banner) */}
         <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5">
           <div
-            className="w-full h-full bg-slate-200 rounded-[2.5rem] overflow-hidden relative shadow-[inset_0_0_20px_rgba(0,0,0,0.05)]"
-            style={{
-              maskImage: `radial-gradient(circle 80px at 0 0, transparent 99%, black 100%), 
-                  radial-gradient(circle 80px at 100% 100%, transparent 99%, black 100%)`,
-              maskComposite: 'intersect',
-              WebkitMaskComposite: 'destination-in',
-            }}
+            className="w-full h-full"
+
           >
             <Image
-              src="https://i.pinimg.com/1200x/53/e1/aa/53e1aa1b7b443af4ff61b06baabd01f7.jpg"
+              src="/images/Seller-Subtract.svg"
               alt="Seller Banner"
               fill
               className="object-cover"
@@ -257,7 +245,7 @@ function SellerSignUpForm() {
             />
 
             {/* Added overlay to improve text contrast over image */}
-            <div className="absolute inset-0 bg-black/30" />
+            <div className="absolute inset-0" />
 
             <div className="absolute top-12 right-12 max-w-[340px] text-right z-10 w-full flex flex-col items-end">
               <h2 className="text-white text-[28px] font-extrabold leading-[1.2] mb-6 inline-block drop-shadow-md">
