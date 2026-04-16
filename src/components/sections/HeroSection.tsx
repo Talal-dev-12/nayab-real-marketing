@@ -98,36 +98,42 @@ export default function HeroSection() {
             </p>
 
             {/* Search bar */}
-            <div className="bg-white rounded-2xl shadow-2xl p-4 fade-up delay-3">
-              <div className="flex gap-2 mb-4">
+            <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-5 fade-up delay-3 border border-white/20">
+              {/* Tabs */}
+              <div className="flex gap-1 mb-5 bg-slate-100 p-1 rounded-xl w-fit">
                 {(["all", "sale", "rent"] as const).map((t) => (
                   <button
                     key={t}
                     onClick={() => setSearchType(t)}
-                    className={`px-5 py-2 rounded-lg font-semibold text-sm transition-all ${
+                    className={`px-5 py-2 rounded-lg font-semibold text-sm transition-all duration-200 ${
                       searchType === t
-                        ? "bg-red-700 text-white shadow-md"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        ? "bg-[#1a2e5a] text-white shadow-md"
+                        : "text-slate-500 hover:text-slate-700"
                     }`}
                   >
-                    {t === "all" ? "All" : t === "sale" ? "For Sale" : "For Rent"}
+                    {t === "all" ? "All" : t === "sale" ? "Buy" : "Rent"}
                   </button>
                 ))}
               </div>
+
+              {/* Inputs row */}
               <div className="flex flex-col md:flex-row gap-3">
-                <div className="flex-1 flex items-center gap-2 border rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-red-300 transition-all">
-                  <Search size={18} className="text-red-600 shrink-0" />
+                {/* Location input */}
+                <div className="flex-1 flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all">
+                  <Search size={18} className="text-slate-400 shrink-0" />
                   <input
                     type="text"
-                    placeholder="Search by area, city, or property type..."
-                    className="flex-1 outline-none text-gray-700 text-sm"
+                    placeholder="Search by area, city, or property name..."
+                    className="flex-1 outline-none text-slate-700 text-sm bg-transparent placeholder:text-slate-400"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                   />
                 </div>
-                <div className="flex items-center gap-2 border rounded-lg px-3 py-2 min-w-[160px] focus-within:ring-2 focus-within:ring-red-300 transition-all">
-                  <Building2 size={18} className="text-red-600 shrink-0" />
-                  <select className="flex-1 outline-none text-gray-700 text-sm bg-transparent">
+
+                {/* Property type dropdown */}
+                <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 min-w-[180px] focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all">
+                  <Building2 size={18} className="text-slate-400 shrink-0" />
+                  <select className="flex-1 outline-none text-slate-700 text-sm bg-transparent appearance-none cursor-pointer font-medium">
                     <option>Property Type</option>
                     <option>Residential</option>
                     <option>Commercial</option>
@@ -135,11 +141,13 @@ export default function HeroSection() {
                     <option>Office</option>
                   </select>
                 </div>
+
+                {/* Search button */}
                 <Link
                   href={`/properties${searchType !== "all" ? `?type=${searchType}` : ""}${location ? `&location=${encodeURIComponent(location)}` : ""}`}
-                  className="bg-red-700 hover:bg-red-600 active:scale-95 text-white px-8 py-3 rounded-lg font-bold text-sm transition-all flex items-center gap-2 whitespace-nowrap shadow-lg shadow-red-700/30"
+                  className="bg-red-700 hover:bg-red-600 active:scale-[0.97] text-white px-8 py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-lg shadow-red-700/25"
                 >
-                  <Search size={16} /> Search Properties
+                  <Search size={16} /> Search
                 </Link>
               </div>
             </div>

@@ -171,7 +171,7 @@ function SignUpForm() {
             </div>
 
             {form.password.length > 0 && !passwordValid && (
-              <p className="text-[12px] text-slate-500 px-1">
+              <p className="text-[12px] text-red-500 font-medium px-1">
                 Write a strong password (min 8 chars, 1 capital letter, 1 number, etc.).
               </p>
             )}
@@ -225,7 +225,7 @@ function SignUpForm() {
         </div>
 
         {/* RIGHT PANEL (Image Banner) */}
-        <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5">
+        <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5 lg:h-[700px] self-center">
           <div className="w-full h-full relative flex items-center justify-center rounded-[2.5rem] overflow-hidden">
             <Image
               src="https://i.pinimg.com/736x/f5/15/23/f515236498b2429222d622009136dbc1.jpg"

@@ -236,7 +236,7 @@ function VerifyOtpContent() {
         </div>
 
         {/* RIGHT PANEL (Image Banner) */}
-        <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5">
+        <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5 lg:h-[700px] self-center">
           <div className="w-full h-full relative flex items-center justify-center rounded-[2.5rem] overflow-hidden">
             <Image
               src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"

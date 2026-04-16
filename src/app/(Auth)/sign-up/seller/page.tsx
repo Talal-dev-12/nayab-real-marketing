@@ -87,18 +87,15 @@ function SellerSignUpForm() {
       setLoading(false);
     }
   };
-
   const handleGoogle = () => {
     setGoogleLoading(true);
     window.location.href = '/api/auth/google';
   };
-
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-8 font-sans">
       <div className="bg-white rounded-[2rem] shadow-xl w-full max-w-[1100px] flex overflow-hidden lg:min-h-[700px]">
         {/* LEFT PANEL */}
         <div className="w-full lg:w-[45%] p-8 sm:p-12 xl:p-14 flex flex-col justify-center bg-white relative shrink-0">
-
           <Link href="/" className="inline-flex flex-row items-center gap-3 mb-8 group self-start">
             <div className="w-12 h-12 bg-red-700 rounded-xl flex items-center justify-center group-hover:bg-red-600 transition-colors">
               <Home size={24} className="text-white" />
@@ -108,10 +105,8 @@ function SellerSignUpForm() {
               <span className="font-extrabold text-[1.1rem] leading-none tracking-tight text-[#1a2e5a]">REAL MARKETING</span>
             </div>
           </Link>
-
           <h1 className="text-[2.2rem] font-bold text-[#1a2e5a] mb-1 tracking-tight leading-loose">Create Seller Account</h1>
           <p className="text-slate-500 text-[15px] font-medium mb-8">Start listing your properties today</p>
-
           <div className="space-y-3 mb-6">
             <button
               type="button"
@@ -132,12 +127,10 @@ function SellerSignUpForm() {
               Sign up with Apple
             </button>
           </div>
-
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200" /></div>
             <div className="relative flex justify-center text-xs"><span className="bg-white px-4 text-slate-400 font-medium tracking-wide">Or register with email</span></div>
           </div>
-
           <form onSubmit={handleSubmit} className="space-y-3">
             <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors">
               <label className="text-[11px] text-slate-400 font-medium block">Full Name</label>
@@ -148,7 +141,6 @@ function SellerSignUpForm() {
                 placeholder="Ali Hassan"
               />
             </div>
-
             <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors">
               <label className="text-[11px] text-slate-400 font-medium block">Email</label>
               <input
@@ -158,7 +150,6 @@ function SellerSignUpForm() {
                 placeholder="you@email.com"
               />
             </div>
-
             <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors relative">
               <label className="text-[11px] text-slate-400 font-medium block">Password</label>
               <input
@@ -171,13 +162,11 @@ function SellerSignUpForm() {
                 {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-
             {form.password.length > 0 && !passwordValid && (
-              <p className="text-[12px] text-slate-500 px-1">
+              <p className="text-[12px] text-red-500 font-medium px-1">
                 Write a strong password (min 8 chars, 1 capital letter, 1 number, etc.).
               </p>
             )}
-
             <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors relative">
               <label className="text-[11px] text-slate-400 font-medium block">Confirm Password</label>
               <input
@@ -193,14 +182,12 @@ function SellerSignUpForm() {
             {form.confirm.length > 0 && !passwordsMatch && (
               <p className="text-xs text-red-500 px-1">Passwords do not match</p>
             )}
-
             {error && (
               <div className="bg-red-50 border border-red-100 text-red-700 text-[13px] px-4 py-3 rounded-xl flex items-start gap-2 mt-2">
                 <AlertCircle size={15} className="mt-0.5 flex-shrink-0" />
                 <span className="font-medium">{error}</span>
               </div>
             )}
-
             <button
               type="submit" disabled={loading || googleLoading}
               className="w-full bg-[#1a2e5a] hover:bg-[#112040] disabled:opacity-60 text-white mt-4 py-4 rounded-xl font-semibold text-[15px] transition-colors shadow-sm"
@@ -230,7 +217,7 @@ function SellerSignUpForm() {
         </div>
 
         {/* RIGHT PANEL (Image Banner) */}
-        <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5">
+        <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5 lg:h-[700px] self-center">
           <div
             className="w-full h-full"
 

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import PropertyCard from '@/components/ui/PropertyCard';
 import Pagination from '@/components/ui/Pagination';
 import { PropertyCardSkeleton } from '@/components/ui/Skeleton';
-import { Search, SlidersHorizontal, MapPin, X } from 'lucide-react';
+import { Search, SlidersHorizontal, MapPin, X, Building2 } from 'lucide-react';
 import { useProperties, type PropertyFilters } from '@/hooks/useProperties';
 
 const POPULAR_AREAS = [
@@ -78,120 +78,147 @@ export default function PropertiesPage() {
     <div className="min-h-screen bg-gray-50">
 
       {/* ── Hero ── */}
-      <div className="primary-gradient py-16 text-center">
-        <h1 className="text-4xl font-extrabold text-white mb-2">Browse Properties</h1>
-        <p className="text-slate-400">Find your perfect property from our verified listings</p>
+      <div className="primary-gradient py-20 pb-28 text-center relative overflow-hidden">
+        {/* Subtle decorative circles */}
+        <div className="absolute -top-20 -right-20 w-72 h-72 bg-white/[0.03] rounded-full" />
+        <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-white/[0.03] rounded-full" />
+        <div className="relative z-10">
+          <p className="text-red-400 text-sm font-semibold tracking-widest uppercase mb-3">Explore Our Listings</p>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-3 tracking-tight">Browse Properties</h1>
+          <p className="text-slate-400 text-[15px] max-w-lg mx-auto">Discover verified properties across Pakistan — filtered to match exactly what you're looking for.</p>
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-10">
 
-        {/* ── Filter bar ── */}
-        <div className="bg-white rounded-xl shadow p-5 mb-8 flex flex-wrap gap-4 items-end">
+        {/* ── Filter bar — elevated card overlapping hero ── */}
+        <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 -mt-20 relative z-20 mb-10">
 
-          {/* Search */}
-          <div className="flex-1 min-w-[260px]" ref={searchRef}>
-            <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">
-              Search
-            </label>
-            <div className="relative">
-              <div className="flex items-center border-2 border-slate-200 focus-within:border-red-500 rounded-lg overflow-hidden transition-colors">
-                <Search size={16} className="text-red-600 ml-3 flex-shrink-0" />
-                <input
-                  type="text"
-                  value={searchInput}
-                  placeholder="Search by area, title or location..."
-                  className="outline-none text-sm flex-1 px-2 py-2.5"
-                  onChange={e => { setSearchInput(e.target.value); setShowSuggestions(true); }}
-                  onFocus={() => setShowSuggestions(true)}
-                  onKeyDown={e => e.key === 'Enter' && triggerSearch()}
-                />
-                {searchInput && (
-                  <button onClick={clearSearch} className="text-slate-400 hover:text-slate-600 px-2">
-                    <X size={14} />
-                  </button>
-                )}
-                <button
-                  onClick={triggerSearch}
-                  className="bg-red-700 hover:bg-red-600 text-white px-4 py-2.5 text-sm font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap"
-                >
-                  <Search size={14} /> Search
-                </button>
+          {/* Header row */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-red-700/10 flex items-center justify-center">
+                <SlidersHorizontal size={18} className="text-red-700" />
               </div>
-
-              {/* Suggestions */}
-              {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden">
-                  <p className="text-xs font-semibold text-slate-400 uppercase px-4 pt-3 pb-1">
-                    Popular Areas
-                  </p>
-                  {suggestions.map(area => (
-                    <button
-                      key={area}
-                      onClick={() => pickSuggestion(area)}
-                      className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-slate-700 hover:bg-red-50 hover:text-red-700 transition-colors"
-                    >
-                      <MapPin size={14} className="text-red-400 flex-shrink-0" />
-                      {area}
-                    </button>
-                  ))}
-                </div>
-              )}
+              <h2 className="text-[#1a2e5a] font-bold text-lg">Filter Properties</h2>
+            </div>
+            <div className="text-[13px] font-semibold text-slate-500 bg-slate-50 px-4 py-1.5 rounded-full border border-slate-100">
+              {loading ? 'Searching…' : `${total} propert${total === 1 ? 'y' : 'ies'} found`}
             </div>
           </div>
 
-          {/* Listing Type */}
-          <div>
-            <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">
-              Listing Type
-            </label>
-            <select
-              className="border rounded-lg px-3 py-2.5 text-sm outline-none"
-              value={filters.priceType}
-              onChange={e => setFilters(f => ({ ...f, priceType: e.target.value }))}
-            >
-              <option value="all">All</option>
-              <option value="sale">For Sale</option>
-              <option value="rent">For Rent</option>
-            </select>
-          </div>
+          {/* Filters grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
 
-          {/* Property Type */}
-          <div>
-            <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">
-              Property Type
-            </label>
-            <select
-              className="border rounded-lg px-3 py-2.5 text-sm outline-none"
-              value={filters.type}
-              onChange={e => setFilters(f => ({ ...f, type: e.target.value }))}
-            >
-              <option value="all">All Types</option>
-              <option value="residential">Residential</option>
-              <option value="commercial">Commercial</option>
-              <option value="office">Office</option>
-              <option value="plot">Plot</option>
-            </select>
-          </div>
+            {/* Search — spans wider */}
+            <div className="lg:col-span-5" ref={searchRef}>
+              <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">
+                Search Location
+              </label>
+              <div className="relative">
+                <div className="flex items-center bg-slate-50 border border-slate-200 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm rounded-xl overflow-hidden transition-all">
+                  <Search size={16} className="text-slate-400 ml-3.5 flex-shrink-0" />
+                  <input
+                    type="text"
+                    value={searchInput}
+                    placeholder="Area, title, or location..."
+                    className="outline-none text-sm flex-1 px-3 py-3 bg-transparent text-slate-800 placeholder:text-slate-400"
+                    onChange={e => { setSearchInput(e.target.value); setShowSuggestions(true); }}
+                    onFocus={() => setShowSuggestions(true)}
+                    onKeyDown={e => e.key === 'Enter' && triggerSearch()}
+                  />
+                  {searchInput && (
+                    <button onClick={clearSearch} className="text-slate-400 hover:text-slate-600 px-2 transition-colors">
+                      <X size={14} />
+                    </button>
+                  )}
+                  <button
+                    onClick={triggerSearch}
+                    className="bg-[#1a2e5a] hover:bg-[#243d72] text-white px-5 py-3 text-sm font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap"
+                  >
+                    <Search size={14} /> Search
+                  </button>
+                </div>
 
-          {/* City */}
-          <div>
-            <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">City</label>
-            <select
-              className="border rounded-lg px-3 py-2.5 text-sm outline-none"
-              value={filters.city}
-              onChange={e => setFilters(f => ({ ...f, city: e.target.value }))}
-            >
-              <option value="all">All Cities</option>
-              <option value="Karachi">Karachi</option>
-              <option value="Lahore">Lahore</option>
-              <option value="Islamabad">Islamabad</option>
-            </select>
-          </div>
+                {/* Suggestions dropdown */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-2xl z-50 overflow-hidden py-1">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-4 pt-2.5 pb-1.5">
+                      Popular Areas
+                    </p>
+                    {suggestions.map(area => (
+                      <button
+                        key={area}
+                        onClick={() => pickSuggestion(area)}
+                        className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-slate-700 hover:bg-red-50 hover:text-red-700 transition-colors"
+                      >
+                        <MapPin size={14} className="text-red-400 flex-shrink-0" />
+                        {area}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
 
-          {/* Count */}
-          <div className="text-sm text-slate-500 pb-1">
-            <SlidersHorizontal size={16} className="inline mr-1" />
-            {loading ? 'Loading…' : `${total} propert${total === 1 ? 'y' : 'ies'} found`}
+            {/* Listing Type */}
+            <div className="lg:col-span-2">
+              <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">
+                Listing Type
+              </label>
+              <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all">
+                <select
+                  className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none"
+                  value={filters.priceType}
+                  onChange={e => setFilters(f => ({ ...f, priceType: e.target.value }))}
+                >
+                  <option value="all">All Listings</option>
+                  <option value="sale">For Sale</option>
+                  <option value="rent">For Rent</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Property Type */}
+            <div className="lg:col-span-3">
+              <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">
+                Property Type
+              </label>
+              <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all">
+                <Building2 size={16} className="text-slate-400 mr-2 shrink-0" />
+                <select
+                  className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none"
+                  value={filters.type}
+                  onChange={e => setFilters(f => ({ ...f, type: e.target.value }))}
+                >
+                  <option value="all">All Types</option>
+                  <option value="residential">Residential</option>
+                  <option value="commercial">Commercial</option>
+                  <option value="office">Office</option>
+                  <option value="plot">Plot</option>
+                </select>
+              </div>
+            </div>
+
+            {/* City */}
+            <div className="lg:col-span-2">
+              <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">
+                City
+              </label>
+              <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all">
+                <MapPin size={16} className="text-slate-400 mr-2 shrink-0" />
+                <select
+                  className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none"
+                  value={filters.city}
+                  onChange={e => setFilters(f => ({ ...f, city: e.target.value }))}
+                >
+                  <option value="all">All Cities</option>
+                  <option value="Karachi">Karachi</option>
+                  <option value="Lahore">Lahore</option>
+                  <option value="Islamabad">Islamabad</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
 

@@ -210,7 +210,7 @@ function SignInForm() {
         </div>
 
         {/* RIGHT PANEL (Image Banner) */}
-        <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5">
+        <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5 lg:h-[700px] self-center">
           <div className="w-full h-full relative flex items-center justify-center rounded-[2.5rem] overflow-hidden">
             <Image
               src="/images/Subtract1.svg"
