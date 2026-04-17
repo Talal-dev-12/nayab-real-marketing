@@ -72,7 +72,7 @@ function SellerSignUpForm() {
         router.push(`/verify-otp?email=${encodeURIComponent(data.email)}&role=seller`);
         return;
       }
-
+// seller page
       if (data.token) {
         localStorage.setItem('auth_token', data.token);
         localStorage.setItem('auth_user', JSON.stringify(data.user));
