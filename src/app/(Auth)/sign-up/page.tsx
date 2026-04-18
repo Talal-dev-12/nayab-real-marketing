@@ -225,18 +225,19 @@ function SignUpForm() {
         </div>
 
         {/* RIGHT PANEL (Image Banner) */}
-        <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5 lg:h-[700px] self-center">
+        <div className="hidden lg:block w-[55%] relative lg:h-[700px] self-center">
           <div className="w-full h-full relative flex items-center justify-center rounded-[2.5rem] overflow-hidden">
             <Image
-              src="https://i.pinimg.com/736x/f5/15/23/f515236498b2429222d622009136dbc1.jpg"
-              alt="Buyer Banner"
+              src="/images/Subtract1.svg"
+              alt="Login Banner"
               fill
-              className="object-cover object-right"
+              className="object-fill"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
+              priority
             />
-
             <div className="absolute top-12 right-12 max-w-[340px] text-right z-10">
-              <h2 className="text-white text-[28px] font-extrabold leading-[1.2] drop-shadow-md">
-                Join thousands of users discovering their dream properties.
+              <h2 className="text-[#1a2e5a] text-[24px] font-bold leading-tight drop-shadow-md">
+                Join thousands of users Discovering <br /> Their dream properties.
               </h2>
             </div>
           </div>
