@@ -113,78 +113,78 @@ function SignInForm() {
             </div>
           </Link>
 
-          {/* Titles */}
-          <h1 className="text-[2.5rem] font-bold text-[#1a2e5a] mb-2 tracking-tight leading-tight">Welcome Back</h1>
-          <p className="text-slate-500 text-[15px] font-medium mb-8">Let's login to grab amazing deal</p>
+      {/* Titles */}
+      <h1 className="text-[2.5rem] font-bold text-[#1a2e5a] mb-2 tracking-tight leading-tight">Welcome Back</h1>
+      <p className="text-slate-500 text-[15px] font-medium mb-8">Let's login to grab amazing deal</p>
 
-          {/* Social Logins */}
-          <div className="space-y-3 mb-6">
-            <button
-              type="button"
-              onClick={handleGoogle}
-              disabled={googleLoading || loading}
-              className="w-full flex items-center justify-center gap-3 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
-            >
-              <GoogleIcon />
-              {googleLoading ? 'Redirecting...' : 'Continue with Google'}
-            </button>
-            <button
-              type="button"
-              disabled
-              onClick={() => alert('Apple login not configured yet.')}
-              className="w-full flex items-center justify-center gap-3 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <AppleIcon />
-              Continue with Apple
-            </button>
-          </div>
+      {/* Social Logins */}
+      <div className="space-y-3 mb-6">
+        <button
+          type="button"
+          onClick={handleGoogle}
+          disabled={googleLoading || loading}
+          className="w-full flex items-center justify-center gap-3 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
+        >
+          <GoogleIcon />
+          {googleLoading ? 'Redirecting...' : 'Continue with Google'}
+        </button>
+        <button
+          type="button"
+          disabled
+          onClick={() => alert('Apple login not configured yet.')}
+          className="w-full flex items-center justify-center gap-3 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <AppleIcon />
+          Continue with Apple
+        </button>
+      </div>
 
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200" /></div>
-            <div className="relative flex justify-center text-xs"><span className="bg-white px-4 text-slate-400 font-medium tracking-wide">Or</span></div>
-          </div>
+      <div className="relative mb-6">
+        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200" /></div>
+        <div className="relative flex justify-center text-xs"><span className="bg-white px-4 text-slate-400 font-medium tracking-wide">Or</span></div>
+      </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2.5 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors">
-              <label className="text-[11px] text-slate-400 font-medium block">Email</label>
-              <input
-                type="email"
-                required
-                value={form.email}
-                onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                className="w-full bg-transparent outline-none text-[#1a2e5a] text-[15px] pb-0.5 placeholder:text-slate-400 font-medium"
-                placeholder="you@email.com"
-              />
-            </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2.5 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors">
+          <label className="text-[11px] text-slate-400 font-medium block">Email</label>
+          <input
+            type="email"
+            required
+            value={form.email}
+            onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+            className="w-full bg-transparent outline-none text-[#1a2e5a] text-[15px] pb-0.5 placeholder:text-slate-400 font-medium"
+            placeholder="you@email.com"
+          />
+        </div>
 
-            <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2.5 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors relative">
-              <label className="text-[11px] text-slate-400 font-medium block">Password</label>
-              <input
-                type={showPass ? 'text' : 'password'}
-                required
-                value={form.password}
-                onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                className="w-full bg-transparent outline-none text-[#1a2e5a] text-[15px] pb-0.5 font-medium tracking-wider placeholder:text-slate-400 placeholder:tracking-normal"
-                placeholder="••••••••••••••••"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPass(s => !s)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-              >
-                {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
+        <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2.5 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors relative">
+          <label className="text-[11px] text-slate-400 font-medium block">Password</label>
+          <input
+            type={showPass ? 'text' : 'password'}
+            required
+            value={form.password}
+            onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+            className="w-full bg-transparent outline-none text-[#1a2e5a] text-[15px] pb-0.5 font-medium tracking-wider placeholder:text-slate-400 placeholder:tracking-normal"
+            placeholder="••••••••••••••••"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPass(s => !s)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+          >
+            {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
 
-            <div className="flex items-center justify-between mt-4">
-              <label className="flex items-center gap-2 cursor-pointer group">
-                <input type="checkbox" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} className="w-3.5 h-3.5 rounded border-slate-300 text-red-700 focus:ring-red-700 cursor-pointer" />
-                <span className="text-[14px] font-medium text-slate-700 group-hover:text-slate-900 transition-colors">Remember me</span>
-              </label>
-              <Link href="/forgot-password" className="text-[14px] font-semibold text-red-700 hover:text-red-800 hover:underline underline-offset-2">
-                Forgot Password?
-              </Link>
-            </div>
+        <div className="flex items-center justify-between mt-4">
+          <label className="flex items-center gap-2 cursor-pointer group">
+            <input type="checkbox" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} className="w-3.5 h-3.5 rounded border-slate-300 text-red-700 focus:ring-red-700 cursor-pointer" />
+            <span className="text-[14px] font-medium text-slate-700 group-hover:text-slate-900 transition-colors">Remember me</span>
+          </label>
+          <Link href="/forgot-password" className="text-[14px] font-semibold text-red-700 hover:text-red-800 hover:underline underline-offset-2">
+            Forgot Password?
+          </Link>
+        </div>
 
             {error && (
               <div className="bg-red-50 border border-red-100 text-red-700 text-[13px] px-4 py-3 rounded-xl flex items-start gap-2">
@@ -193,20 +193,20 @@ function SignInForm() {
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading || googleLoading}
-              className="w-full bg-[#1a2e5a] hover:bg-[#112040] disabled:opacity-60 text-white mt-4 py-4 rounded-xl font-semibold text-[15px] transition-colors shadow-sm"
-            >
-              {loading ? 'Please wait...' : 'Login'}
-            </button>
-          </form>
-          <p className="mt-6 text-center text-[14px] font-medium text-slate-700">
-            Don't have an account?{' '}
-            <Link href="/sign-up" className="text-red-700 font-semibold hover:underline decoration-red-700 underline-offset-4">
-              Sign Up
-            </Link>
-          </p>
+        <button
+          type="submit"
+          disabled={loading || googleLoading}
+          className="w-full bg-[#1a2e5a] hover:bg-[#112040] disabled:opacity-60 text-white mt-4 py-4 rounded-xl font-semibold text-[15px] transition-colors shadow-sm"
+        >
+          {loading ? 'Please wait...' : 'Login'}
+        </button>
+      </form>
+      <p className="mt-6 text-center text-[14px] font-medium text-slate-700">
+        Don't have an account?{' '}
+        <Link href="/sign-up" className="text-red-700 font-semibold hover:underline decoration-red-700 underline-offset-4">
+          Sign Up
+        </Link>
+      </p>
         </div>
 
         {/* RIGHT PANEL (Image Banner) */}
