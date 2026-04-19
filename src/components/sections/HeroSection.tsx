@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Search, Building2, Star } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -67,8 +68,8 @@ export default function HeroSection() {
           >
             {HERO_IMAGES.map((img, i) => (
               <SwiperSlide key={i}>
-                <div className="super-flow-image">
-                  <img src={img} alt={`Hero ${i+1}`} />
+                <div className="super-flow-image relative w-full h-full">
+                  <Image src={img} alt={`Hero ${i+1}`} fill priority={i === 0} className="object-cover" />
                 </div>
               </SwiperSlide>
             ))}

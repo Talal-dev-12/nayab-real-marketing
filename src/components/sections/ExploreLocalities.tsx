@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { MapPin, Building2, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
 import { AreaCardSkeleton, SchemeCardSkeleton } from '@/components/ui/Skeleton';
 import type { AreaSummary, SchemeSummary } from '@/types';
@@ -15,19 +16,32 @@ function Carousel({ items, renderCard, autoPlaySpeed = 1, reverse = false }: { i
   // Triple items for seamless infinite scroll
   const duplicatedItems = [...items, ...items, ...items];
 
+  const [isInView, setIsInView] = useState(false);
+
   // Initialize scroll position to middle third so we can scroll left or right infinitely
   useEffect(() => {
     const el = scrollRef.current;
     if (el && items.length > 0) {
-      // Small timeout to ensure DOM is rendered before calculating width
       setTimeout(() => {
         el.scrollLeft = el.scrollWidth / 3;
       }, 50);
     }
   }, [items]);
 
+  // Set up Intersection Observer for performance
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { threshold: 0 }
+    );
+    if (scrollRef.current) observer.observe(scrollRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   // Auto-scroll loop
   useEffect(() => {
+    if (!isInView) return; // Pause animation when out of view
+
     let animationFrameId: number;
     let lastTime = performance.now();
 
@@ -57,7 +71,7 @@ function Carousel({ items, renderCard, autoPlaySpeed = 1, reverse = false }: { i
 
     animationFrameId = requestAnimationFrame(scroll);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [isHovered, isDown, autoPlaySpeed, reverse, items]);
+  }, [isHovered, isDown, autoPlaySpeed, reverse, items, isInView]);
 
   const handlePrev = () => {
     const el = scrollRef.current;
@@ -183,7 +197,7 @@ export default function ExploreLocalities() {
               renderCard={(area: AreaSummary) => (
                 <Link href={`/blogs/areas/${area.slug}`} className="group block relative h-[380px] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   {area.image ? (
-                    <img src={area.image} alt={area.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <Image src={area.image} alt={area.label} fill sizes="(max-width: 640px) 100vw, 300px" className="object-cover transition-transform duration-700 group-hover:scale-110" />
                   ) : (
                     <div className="absolute inset-0 bg-slate-200 flex items-center justify-center transition-transform duration-700 group-hover:scale-105">
                       <MapPin size={48} className="text-slate-400" />
@@ -241,10 +255,9 @@ export default function ExploreLocalities() {
                   <div className="h-1.5 w-full bg-gradient-to-r from-red-600 to-red-800 absolute top-0 left-0" />
                   
                   <div className="p-6 h-full flex flex-col items-center justify-center text-center gap-4">
-                    {/* Logo Circle */}
-                    <div className="w-20 h-20 rounded-full bg-slate-50 border-2 border-slate-100 p-3 flex items-center justify-center shadow-inner group-hover:border-red-200 transition-colors">
+                    <div className="w-20 h-20 relative rounded-full bg-slate-50 border-2 border-slate-100 p-3 flex items-center justify-center shadow-inner group-hover:border-red-200 transition-colors overflow-hidden">
                       {scheme.logo ? (
-                        <img src={scheme.logo} alt={scheme.label} className="w-full h-full object-contain mix-blend-multiply" />
+                        <Image src={scheme.logo} alt={scheme.label} fill sizes="80px" className="object-contain mix-blend-multiply p-2" />
                       ) : (
                         <Building2 size={32} className="text-slate-300" />
                       )}

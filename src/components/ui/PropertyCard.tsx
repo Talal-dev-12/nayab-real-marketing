@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Bed, Bath, Maximize, MapPin, Heart, ArrowUpRight } from 'lucide-react';
 import { Property } from '@/types';
 import { savedApi } from '@/lib/api-client';
@@ -48,11 +49,13 @@ export default function PropertyCard({ property, initialSaved = false }: Propert
       className="block bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-1.5 group cursor-pointer"
     >
       {/* Image */}
-      <div className="relative overflow-hidden h-56">
-        <img
+      <div className="relative overflow-hidden h-56 w-full">
+        <Image
           src={property.images[0] || 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600'}
           alt={property.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
         />
 
         {/* Dark gradient overlay for text legibility */}
