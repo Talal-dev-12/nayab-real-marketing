@@ -4,12 +4,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   User, Mail, Heart, Send, MapPin, Bed, Bath, Maximize,
-  Edit2, Save, X, LogOut, ChevronRight, ExternalLink, Clock,
+  Edit2, Save, X, LogOut, ChevronRight, ExternalLink, Clock, Home,
 } from 'lucide-react';
 import type { Property, Inquiry, UserProfile } from '@/types';
-import { profileApi, savedApi, inquiriesApi } from '@/lib/api-client';
+import { profileApi, savedApi, inquiriesApi, api } from '@/lib/api-client';
 
-type Tab = 'saved' | 'inquiries' | 'settings';
+type Tab = 'my_properties' | 'saved' | 'inquiries' | 'settings';
 
 function formatPrice(price: number, type: string, period?: string) {
   const f = price >= 10000000
@@ -24,6 +24,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const [profile,    setProfile]    = useState<UserProfile | null>(null);
   const [saved,      setSaved]      = useState<Property[]>([]);
+  const [myProperties, setMyProperties] = useState<any[]>([]);
   const [inquiries,  setInquiries]  = useState<Inquiry[]>([]);
   const [tab,        setTab]        = useState<Tab>('saved');
   const [loading,    setLoading]    = useState(true);
@@ -36,17 +37,28 @@ export default function ProfilePage() {
     const token = localStorage.getItem('auth_token') ?? localStorage.getItem('admin_token');
     if (!token) { router.push('/sign-in?redirect=/profile'); return; }
 
+    let storedUserId = '';
+    const raw = localStorage.getItem('auth_user') ?? localStorage.getItem('admin_user');
+    if (raw) {
+      try { storedUserId = JSON.parse(raw).id; } catch {}
+    }
+
     Promise.all([
       profileApi.get(),
       savedApi.list(),
       inquiriesApi.myList(),
+      api.get(`/api/properties?submittedBy=${storedUserId}&dashboard=true&limit=50`).catch(() => ({ properties: [] }))
     ])
-      .then(([prof, sv, inqs]) => {
+      .then(([prof, sv, inqs, myPropsRes]) => {
         const u = (prof as any).user as UserProfile;
         setProfile(u);
         setEditName(u.name);
         setSaved((sv as any).savedProperties as Property[] ?? []);
         setInquiries(Array.isArray(inqs) ? inqs as Inquiry[] : []);
+        setMyProperties((myPropsRes as any).properties || []);
+        if (u.role === 'seller' || u.role === 'agent' || u.role === 'manager' || u.role === 'superadmin') {
+          setTab('my_properties');
+        }
       })
       .catch(() => router.push('/sign-in?redirect=/profile'))
       .finally(() => setLoading(false));
@@ -189,6 +201,7 @@ export default function ProfilePage() {
             <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
               <div className="flex border-b">
                 {([
+                  ...(profile.role === 'seller' || profile.role === 'agent' || profile.role === 'manager' || profile.role === 'superadmin' ? [{ key: 'my_properties', label: 'My Listed Properties', icon: Home, count: myProperties.length }] : []),
                   { key: 'saved',     label: 'Saved Properties', icon: Heart,  count: saved.length     },
                   { key: 'inquiries', label: 'My Inquiries',      icon: Send,   count: inquiries.length },
                 ] as { key: Tab; label: string; icon: any; count: number }[]).map(({ key, label, icon: Icon, count }) => (
@@ -202,6 +215,68 @@ export default function ProfilePage() {
                   </button>
                 ))}
               </div>
+
+              {/* ── My Properties tab ─────────────────────────────── */}
+              {tab === 'my_properties' && (
+                <div className="p-5">
+                  {myProperties.length === 0 ? (
+                    <div className="text-center py-16 text-slate-400">
+                      <Home size={44} className="mx-auto mb-3 text-slate-200" />
+                      <p className="font-semibold text-slate-500">You haven't listed any properties yet</p>
+                      <Link href="/dashboard/properties/new"
+                        className="mt-3 inline-block text-sm text-red-700 font-semibold hover:underline">
+                        Add New Property →
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {myProperties.map(p => (
+                        <div key={p._id} className="border rounded-xl overflow-hidden hover:shadow-md transition-shadow group flex flex-col justify-between">
+                          <div>
+                            <div className="relative h-36 overflow-hidden">
+                              <img
+                                src={p.images?.[0] || 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400'}
+                                alt={p.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                              <div className="absolute top-2 left-2 flex gap-1">
+                                <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold text-white ${p.priceType === 'sale' ? 'bg-red-700' : 'bg-blue-600'}`}>
+                                  For {p.priceType === 'sale' ? 'Sale' : 'Rent'}
+                                </span>
+                                <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${
+                                  p.approvalStatus === 'approved' ? 'bg-emerald-500 text-white' :
+                                  p.approvalStatus === 'rejected' ? 'bg-red-500 text-white' :
+                                  'bg-amber-500 text-white'
+                                }`}>
+                                  {p.approvalStatus || 'pending'}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="p-3">
+                              <h3 className="font-bold text-[#1a2e5a] text-sm line-clamp-1 group-hover:text-red-700 transition-colors">{p.title}</h3>
+                              <p className="flex items-center gap-1 text-xs text-slate-400 mt-1">
+                                <MapPin size={10} className="text-red-500 shrink-0" />{p.location}
+                              </p>
+                              {p.approvalStatus === 'rejected' && p.rejectionNote && (
+                                <div className="mt-2 text-xs text-red-600 bg-red-50 p-2 rounded line-clamp-2">
+                                  <strong>Reason:</strong> {p.rejectionNote}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="p-3 pt-0 flex justify-between items-end border-t mt-3 border-slate-100 pt-3">
+                            <p className="font-extrabold text-red-700 text-sm">{formatPrice(p.price, p.priceType, p.rentPeriod)}</p>
+                            <Link href={`/dashboard/properties/${p._id}/edit`}
+                              className="text-xs bg-slate-100 hover:bg-red-700 hover:text-white text-slate-700 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1 transition-colors">
+                              <Edit2 size={10} /> Edit
+                            </Link>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* ── Saved Properties tab ─────────────────────────────── */}
               {tab === 'saved' && (

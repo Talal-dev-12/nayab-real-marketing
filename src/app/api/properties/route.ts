@@ -5,6 +5,8 @@ import { requireAuth, RouteContext } from '@/middleware/authMiddleware';
 import { JwtPayload } from '@/lib/jwt';
 import { can } from '@/lib/rbac';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
@@ -51,6 +53,9 @@ export async function GET(req: NextRequest) {
         { city:     { $regex: search, $options: 'i' } },
       ];
     }
+    
+    console.log('GET /api/properties incoming params:', { dashboard, approvalStatus, submittedBy });
+    console.log('GET /api/properties filter constructed:', filter);
 
     const skip = (page - 1) * limit;
     const [properties, total] = await Promise.all([
@@ -96,6 +101,21 @@ export const POST = requireAuth(async (req: NextRequest, user: JwtPayload, _ctx:
     }
 
     const property = await Property.create({ ...body, slug: generatedSlug });
+
+    // Send notifications if seller submitted
+    if (user.role === 'seller') {
+      import('@/lib/mailer').then(({ sendPropertyUnderReviewEmail, sendNewPropertyNotification }) => {
+        sendPropertyUnderReviewEmail(user.email, user.name, title).catch(console.error);
+        sendNewPropertyNotification({
+          adminEmails: ['info@nayabrealmarketing.com'],
+          sellerName: user.name,
+          sellerEmail: user.email,
+          propertyTitle: title,
+          propertyId: property._id.toString()
+        }).catch(console.error);
+      });
+    }
+
     return NextResponse.json(property, { status: 201 });
   } catch (error) {
     console.error('POST property error:', error);

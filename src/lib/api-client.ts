@@ -47,18 +47,18 @@ export async function uploadImage(file: File): Promise<string> {
 
 export const api = {
   get:    <T>(url: string) =>
-    fetch(url, { headers: authHeaders() }).then(res => handleResponse<T>(res)),
+    fetch(url, { headers: authHeaders(), cache: 'no-store' }).then(res => handleResponse<T>(res)),
 
   post:   <T>(url: string, body: unknown) =>
-    fetch(url, { method: 'POST', headers: authHeaders(), body: JSON.stringify(body) })
+    fetch(url, { method: 'POST', headers: authHeaders(), body: JSON.stringify(body), cache: 'no-store' })
       .then(res => handleResponse<T>(res)),
 
   put:    <T>(url: string, body: unknown) =>
-    fetch(url, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(body) })
+    fetch(url, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(body), cache: 'no-store' })
       .then(res => handleResponse<T>(res)),
 
   delete: <T>(url: string) =>
-    fetch(url, { method: 'DELETE', headers: authHeaders() }).then(res => handleResponse<T>(res)),
+    fetch(url, { method: 'DELETE', headers: authHeaders(), cache: 'no-store' }).then(res => handleResponse<T>(res)),
 };
 
 // ── Domain helpers ────────────────────────────────────────────────────────────

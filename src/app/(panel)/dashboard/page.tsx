@@ -14,8 +14,21 @@ import type { UserRole } from '@/lib/jwt';
 function useCurrentUser() {
   const [user, setUser] = useState<{ id: string; name: string; role: UserRole; emailVerified?: boolean } | null>(null);
   useEffect(() => {
+    let parsed: any = null;
     const raw = localStorage.getItem('auth_user') ?? localStorage.getItem('admin_user');
-    if (raw) try { setUser(JSON.parse(raw)); } catch { /* ignore */ }
+    if (raw) try { parsed = JSON.parse(raw); } catch { /* ignore */ }
+    
+    // Safely extract ID from JWT if it is missing in the localStorage object
+    const token = localStorage.getItem('auth_token') ?? localStorage.getItem('admin_token');
+    if (token && parsed && !parsed.id && !parsed._id) {
+      try {
+        const payloadStr = atob(token.split('.')[1]);
+        const payload = JSON.parse(payloadStr);
+        if (payload.id) parsed.id = payload.id;
+      } catch { /* ignore */ }
+    }
+    
+    setUser(parsed);
   }, []);
   return user;
 }
@@ -29,7 +42,7 @@ function SellerDashboard({ userId, emailVerified }: { userId: string; emailVerif
   const [resendMsg, setResendMsg] = useState('');
 
   useEffect(() => {
-    api.get<any>(`/api/properties?submittedBy=${userId}&limit=200`)
+    api.get<any>(`/api/properties?dashboard=true&submittedBy=${userId}&limit=200`)
       .then(d => setProperties(d.properties ?? []))
       .catch(() => {});
   }, [userId]);
@@ -141,7 +154,7 @@ function WriterDashboard({ userId }: { userId: string }) {
   const [blogs, setBlogs] = useState<any[]>([]);
 
   useEffect(() => {
-    api.get<any>(`/api/blogs?authorId=${userId}&limit=200`)
+    api.get<any>(`/api/blogs?dashboard=true&authorId=${userId}&limit=200`)
       .then(d => setBlogs(d.blogs ?? []))
       .catch(() => {});
   }, [userId]);
@@ -224,8 +237,8 @@ function AdminDashboard() {
 
   useEffect(() => {
     Promise.all([
-      api.get<any>('/api/properties?limit=200'),
-      api.get<any>('/api/blogs?limit=200'),
+      api.get<any>('/api/properties?dashboard=true&limit=200'),
+      api.get<any>('/api/blogs?dashboard=true&limit=200'),
       api.get<any>('/api/agents?limit=200'),
       api.get<any>('/api/contact'),
     ]).then(([props, blogs, agents, messages]) => {
@@ -346,7 +359,9 @@ export default function DashboardPage() {
   const user = useCurrentUser();
   if (!user) return null;
 
-  if (user.role === 'seller') return <SellerDashboard userId={user.id} emailVerified={user.emailVerified} />;
-  if (user.role === 'writer') return <WriterDashboard userId={user.id} />;
+  const uid = user.id || (user as any)._id;
+
+  if (user.role === 'seller') return <SellerDashboard userId={uid} emailVerified={user.emailVerified} />;
+  if (user.role === 'writer') return <WriterDashboard userId={uid} />;
   return <AdminDashboard />;
 }

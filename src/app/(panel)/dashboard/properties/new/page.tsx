@@ -85,7 +85,7 @@ export default function NewPropertyPage() {
         bathrooms: Number(form.bathrooms) || 0,
         images,
       });
-      router.push('/dashboard/properties');
+      router.push('/dashboard/properties?tab=pending');
     } catch (e: any) { setError(e.message || 'Failed to save property'); }
     finally { setSaving(false); }
   };

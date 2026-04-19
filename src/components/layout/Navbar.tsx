@@ -34,7 +34,7 @@ interface AuthUser {
 }
 
 // Roles that have a dashboard portal
-const DASHBOARD_ROLES = ["admin", "superadmin", "writer", "agent", "seller"];
+const DASHBOARD_ROLES = ["manager", "superadmin", "writer", "agent", "seller"];
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);

@@ -43,7 +43,24 @@ export const PUT = requireAuth(async (req: NextRequest, user: JwtPayload, ctx: R
       delete body.rejectionNote;
     }
 
+    const prevStatus = property.approvalStatus;
     const updated = await Property.findByIdAndUpdate(id, body, { returnDocument: "after", runValidators: true });
+
+    if (updated.approvalStatus !== prevStatus) {
+      if (updated.approvalStatus === 'approved' || updated.approvalStatus === 'rejected') {
+        const { User } = await import('@/models/User');
+        const seller = await User.findById(property.submittedBy);
+        if (seller) {
+          const { sendPropertyApprovedEmail, sendPropertyRejectedEmail } = await import('@/lib/mailer');
+          if (updated.approvalStatus === 'approved') {
+            sendPropertyApprovedEmail(seller.email, seller.name, updated.title, updated.slug).catch(console.error);
+          } else {
+            sendPropertyRejectedEmail(seller.email, seller.name, updated.title, updated.rejectionNote || 'No reason provided').catch(console.error);
+          }
+        }
+      }
+    }
+
     return NextResponse.json(updated);
   } catch (error) {
     console.error('PUT property error:', error);

@@ -226,13 +226,13 @@ function SignUpForm() {
 
         {/* RIGHT PANEL (Image Banner) */}
         <div className="hidden lg:block w-[55%] relative lg:h-[700px] self-center">
-          <div className="w-full h-full relative flex items-center justify-center rounded-[2.5rem] overflow-hidden">
+          <div className="w-full h-full relative flex items-start justify-center rounded-[2.5rem] overflow-hidden">
             <Image
-              src="/images/Subtract1.svg"
+              src="/images/Seller-Subtract.svg"
               alt="Login Banner"
               fill
               className="object-fill"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vh"
               priority
             />
             <div className="absolute top-12 right-12 max-w-[340px] text-right z-10">

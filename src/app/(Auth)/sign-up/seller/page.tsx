@@ -72,7 +72,7 @@ function SellerSignUpForm() {
         router.push(`/verify-otp?email=${encodeURIComponent(data.email)}&role=seller`);
         return;
       }
-// seller page
+      // seller page
       if (data.token) {
         localStorage.setItem('auth_token', data.token);
         localStorage.setItem('auth_user', JSON.stringify(data.user));
@@ -226,7 +226,7 @@ function SellerSignUpForm() {
               src="/images/Seller-Subtract.svg"
               alt="Seller Banner"
               fill
-              className="object-cover"
+              className="object-fill h-[700px]"
               priority
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
             />

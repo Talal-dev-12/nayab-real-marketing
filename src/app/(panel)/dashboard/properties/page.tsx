@@ -12,8 +12,20 @@ import type { AreaUnit } from '@/lib/areaUtils';
 function useCurrentUser() {
   const [user, setUser] = useState<{ id: string; role: UserRole } | null>(null);
   useEffect(() => {
+    let parsed: any = null;
     const raw = localStorage.getItem('auth_user') ?? localStorage.getItem('admin_user');
-    if (raw) try { setUser(JSON.parse(raw)); } catch { /* ignore */ }
+    if (raw) try { parsed = JSON.parse(raw); } catch { /* ignore */ }
+    
+    const token = localStorage.getItem('auth_token') ?? localStorage.getItem('admin_token');
+    if (token && parsed && !parsed.id && !parsed._id) {
+      try {
+        const payloadStr = atob(token.split('.')[1]);
+        const payload = JSON.parse(payloadStr);
+        if (payload.id) parsed.id = payload.id;
+      } catch { /* ignore */ }
+    }
+    
+    setUser(parsed);
   }, []);
   return user;
 }
@@ -36,6 +48,16 @@ export default function DashboardProperties() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search);
+      const t = p.get('tab');
+      if (t && ['all', 'pending', 'approved', 'rejected'].includes(t)) {
+        setActiveTab(t);
+      }
+    }
+  }, []);
+
   // Review Modal state
   const [reviewProperty, setReviewProperty] = useState<any | null>(null);
   const [rejectionNote, setRejectionNote] = useState('');
@@ -43,17 +65,19 @@ export default function DashboardProperties() {
   const fetchProperties = async () => {
     if (!currentUser) return;
     setLoading(true);
-    let url = `/api/properties?dashboard=true&page=${page}&limit=${limit}`;
+    let url = `/api/properties?dashboard=true&page=${page}&limit=${limit}&_t=${Date.now()}`;
     
+    const uid = currentUser.id || (currentUser as any)._id;
+
     if (currentUser.role === 'seller') {
-      url += `&submittedBy=${currentUser.id}`;
+      url += `&submittedBy=${uid}`;
     } else if (currentUser.role === 'agent') {
-      url += `&agentId=${currentUser.id}`; // Optional: Agents only view assigned properties. But currently we use manageAllProperties.
+      url += `&agentId=${uid}`; // Optional: Agents only view assigned properties. But currently we use manageAllProperties.
     }
 
     if (!can(currentUser.role, 'manageAllProperties') && currentUser.role !== 'seller') {
       // agent scoping
-      url += `&agentId=${currentUser.id}`;
+      url += `&agentId=${uid}`;
     }
 
     if (activeTab !== 'all') {
@@ -121,11 +145,12 @@ export default function DashboardProperties() {
   );
 
   if (!currentUser) return null;
+  const uid        = currentUser.id || (currentUser as any)._id;
   const role       = currentUser.role;
   const canFeature = can(role, 'markFeatured');
   const isSeller   = role === 'seller';
   const canManage  = can(role, 'manageAllProperties');
-  const canDelete  = (p: any) => can(role, 'deleteAnyProperty') || (isSeller && p.submittedBy === currentUser.id);
+  const canDelete  = (p: any) => can(role, 'deleteAnyProperty') || (isSeller && p.submittedBy === uid);
 
   return (
     <div className="space-y-5">

@@ -124,6 +124,10 @@ export async function sendPropertyApprovedEmail(to: string, sellerName: string, 
       Great news! Your property listing <strong>${propertyTitle}</strong> has been approved
       and is now live on Nayab Real Marketing.
     </p>
+    <p style="color:#475569;font-size:14px;line-height:1.7">
+      We are dedicated to helping you reach thousands of potential buyers quickly and securely. 
+      Why stop here? List more properties with <strong>Nayab Real Marketing</strong> and grow your amazing portfolio!
+    </p>
     <div style="text-align:center;margin:24px 0">
       <a href="${publicLink}"
         style="background:#16a34a;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:14px;display:inline-block">
@@ -212,4 +216,26 @@ export async function sendPasswordResetEmail(to: string, name: string, otp: stri
     </p>
   `);
   await transporter.sendMail({ from: FROM, to, subject: `${otp} — Reset your Nayab Real password`, html });
+}
+
+// ── 7. Seller notification: property under review ──────────────────────────────
+export async function sendPropertyUnderReviewEmail(to: string, sellerName: string, propertyTitle: string) {
+  const html = layout('⏳ Your Property is Under Review', `
+    <p style="color:#1e293b;font-size:16px">Hi <strong>${sellerName}</strong>,</p>
+    <p style="color:#475569;font-size:14px;line-height:1.7">
+      Thank you for listing with <strong>Nayab Real Marketing</strong>!
+      Your property listing <strong>${propertyTitle}</strong> has been received and is currently under review.
+    </p>
+    <p style="color:#475569;font-size:14px;line-height:1.7">
+      We will notify you once it has been approved and published to the site.
+      Keep an eye on your dashboard or email for updates.
+    </p>
+    <div style="text-align:center;margin:24px 0">
+      <a href="${BASE_URL}/dashboard/properties"
+         style="background:#c0392b;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:14px;display:inline-block">
+        Go to Dashboard
+      </a>
+    </div>
+  `);
+  await transporter.sendMail({ from: FROM, to, subject: `Under Review: ${propertyTitle}`, html });
 }
