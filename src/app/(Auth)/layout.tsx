@@ -42,20 +42,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <head>
-      </head>
-      <body>
-        <Navbar />
-        {children}
-        
-           </body>
-    </html>
+    <>
+      <Navbar />
+      {children}
+    </>
   );
 }
