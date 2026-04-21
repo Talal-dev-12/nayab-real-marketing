@@ -1,5 +1,19 @@
+import { Metadata } from 'next';
 import React from 'react';
 import { Award, Users, Home, Star, CheckCircle, Building, Wrench } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: "About Us | Nayab Real Marketing",
+  description: "Learn about the history of Nayab Real Marketing. Established in 1997, we provide trustworthy and experienced real estate guidance across Pakistan.",
+  keywords: "about Nayab Real Marketing, real estate agency Karachi, property experts Pakistan",
+  openGraph: {
+    title: "About Us | Nayab Real Marketing",
+    description: "Discover our journey of trust, resilience, and real estate excellence since 1997.",
+    url: "https://nayabrealmarketing.com/about",
+    siteName: "Nayab Real Marketing",
+    type: "website",
+  },
+};
 
 export default function AboutPage() {
   return (

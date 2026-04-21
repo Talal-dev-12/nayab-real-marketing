@@ -1,6 +1,19 @@
    
-  
+import { Metadata } from 'next';
 import { Home, Building2, TrendingUp, FileText, Paintbrush, Calculator } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: "Our Services | Nayab Real Marketing",
+  description: "Comprehensive real estate services including property buying & selling, rentals, investment consulting, valuation, legal documentation, and interior design.",
+  keywords: "real estate services, property valuation, investment consulting, legal documentation, interior design Karachi",
+  openGraph: {
+    title: "Our Services | Nayab Real Marketing",
+    description: "Explore our comprehensive real estate services in Pakistan.",
+    url: "https://nayabrealmarketing.com/services",
+    siteName: "Nayab Real Marketing",
+    type: "website",
+  },
+};
 import Link from 'next/link';
 
 const services = [
