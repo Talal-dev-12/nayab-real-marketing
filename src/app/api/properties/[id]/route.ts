@@ -75,10 +75,10 @@ export const DELETE = requireAuth(async (_req: NextRequest, user: JwtPayload, ct
     const property = await Property.findById(id);
     if (!property) return NextResponse.json({ error: 'Property not found' }, { status: 404 });
 
-    // Only admins/superadmin can delete any property
-    // Sellers cannot delete — they should contact admin
-    if (!can(user.role, 'deleteAnyProperty')) {
-      return NextResponse.json({ error: 'Forbidden – only admins can delete listings' }, { status: 403 });
+    const isOwner = user.role === 'seller' && property.submittedBy === user.id;
+    
+    if (!can(user.role, 'deleteAnyProperty') && !isOwner) {
+      return NextResponse.json({ error: 'Forbidden – you can only delete your own listings' }, { status: 403 });
     }
 
     await Property.findByIdAndDelete(id);

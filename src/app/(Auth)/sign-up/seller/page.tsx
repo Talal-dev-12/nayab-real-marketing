@@ -37,7 +37,7 @@ const BENEFITS = [
 function SellerSignUpForm() {
   const router = useRouter();
 
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirm: '' });
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState('');
@@ -59,7 +59,7 @@ function SellerSignUpForm() {
       const res = await fetch('/api/auth/register-seller', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: form.name, email: form.email, password: form.password }),
+        body: JSON.stringify({ name: form.name, email: form.email, phone: form.phone, password: form.password }),
       });
       const data = await res.json();
 
@@ -148,6 +148,15 @@ function SellerSignUpForm() {
                 onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                 className="w-full bg-transparent outline-none text-[#1a2e5a] text-[15px] pb-0.5 placeholder:text-slate-400 font-medium"
                 placeholder="you@email.com"
+              />
+            </div>
+            <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors">
+              <label className="text-[11px] text-slate-400 font-medium block">Phone Number</label>
+              <input
+                type="tel" required autoComplete="tel" value={form.phone}
+                onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                className="w-full bg-transparent outline-none text-[#1a2e5a] text-[15px] pb-0.5 placeholder:text-slate-400 font-medium"
+                placeholder="+92-300-1234567"
               />
             </div>
             <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors relative">

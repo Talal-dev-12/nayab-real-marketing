@@ -12,10 +12,10 @@ export async function POST(req: NextRequest) {
   try {
     await connectDB();
 
-    const { name, email, password } = await req.json();
+    const { name, email, password, phone } = await req.json();
 
-    if (!name || !email || !password) {
-      return NextResponse.json({ error: 'Name, email and password are required' }, { status: 400 });
+    if (!name || !email || !password || !phone) {
+      return NextResponse.json({ error: 'Name, email, password and phone are required' }, { status: 400 });
     }
 
     if (password.length < 8) {
@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
         existingUser.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
         existingUser.name = nameClean;
         existingUser.password = password;
+        existingUser.phone = phone;
         existingUser.role = 'seller';
         await existingUser.save();
 
@@ -62,6 +63,7 @@ export async function POST(req: NextRequest) {
       name:          nameClean,
       email:         emailClean,
       password,
+      phone,
       role:          'seller',
       active:        true,
       emailVerified: false,

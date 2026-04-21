@@ -30,7 +30,6 @@ const PASSWORD_RULES = [
 function SignUpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
