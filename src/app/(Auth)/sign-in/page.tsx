@@ -211,7 +211,7 @@ function SignInForm() {
         <div className="hidden lg:block w-[55%] relative lg:h-[700px] self-center">
           <div className="w-full h-full relative flex items-center justify-center rounded-[2.5rem] overflow-hidden">
             <Image
-              src="/images/Subtract1.svg"
+              src="/images/sign-in.svg"
               alt="Login Banner"
               fill
               className="object-fill"

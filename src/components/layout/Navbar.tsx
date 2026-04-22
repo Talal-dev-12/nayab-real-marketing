@@ -12,10 +12,18 @@ import {
   User,
   ChevronDown,
   LayoutDashboard,
+  Ruler,
+  Hammer,
+  Calculator,
+  Map,
+  TrendingUp,
+  Sparkles,
+  Clock,
 } from "lucide-react";
 import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
 
+/* ─── Navigation Links ──────────────────────────────────────────────────── */
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
@@ -24,6 +32,45 @@ const navLinks = [
   { href: "/agents", label: "Agents" },
   { href: "/blog", label: "Blog" },
   { href: "/contact", label: "Contact" },
+];
+
+/* ─── Tools Data ────────────────────────────────────────────────────────── */
+const toolItems = [
+  {
+    href: "/tools/area-converter",
+    label: "Area Converter",
+    description: "Convert between Sq Ft, Marla, Kanal & more",
+    icon: Ruler,
+    color: "from-blue-500 to-cyan-400",
+  },
+  {
+    href: "/tools/construction-calculator",
+    label: "Construction Cost",
+    description: "Estimate your construction budget instantly",
+    icon: Hammer,
+    color: "from-amber-500 to-orange-400",
+  },
+  {
+    href: "/tools/loan-calculator",
+    label: "Loan Calculator",
+    description: "Calculate your monthly mortgage payments",
+    icon: Calculator,
+    color: "from-emerald-500 to-green-400",
+  },
+  {
+    href: "/tools/property-index",
+    label: "Property Index",
+    description: "Browse indexed property rates by location",
+    icon: Map,
+    color: "from-violet-500 to-purple-400",
+  },
+  {
+    href: "/tools/property-trends",
+    label: "Property Trends",
+    description: "View real-time market trends & analytics",
+    icon: TrendingUp,
+    color: "from-rose-500 to-pink-400",
+  },
 ];
 
 interface AuthUser {
@@ -40,12 +87,16 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const [authUser, setAuthUser] = useState<AuthUser | null>(null);
   const [mounted, setMounted] = useState(false);
 
   const pathname = usePathname();
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const toolsRef = useRef<HTMLDivElement>(null);
+  const toolsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // ── Scroll shadow ─────────────────────────────────────────────────────────
   useEffect(() => {
@@ -74,7 +125,7 @@ export default function Navbar() {
     }
   }, [pathname]); // re-run on route change so state stays in sync after login/logout
 
-  // ── Close dropdown when clicking outside ─────────────────────────────────
+  // ── Close dropdowns when clicking outside ────────────────────────────────
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (
@@ -83,10 +134,22 @@ export default function Navbar() {
       ) {
         setDropdownOpen(false);
       }
+      if (
+        toolsRef.current &&
+        !toolsRef.current.contains(e.target as Node)
+      ) {
+        setToolsOpen(false);
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  // ── Close mobile menu on route change ────────────────────────────────────
+  useEffect(() => {
+    setMobileOpen(false);
+    setMobileToolsOpen(false);
+  }, [pathname]);
 
   // ── Logout ────────────────────────────────────────────────────────────────
   const handleLogout = async () => {
@@ -122,266 +185,380 @@ export default function Navbar() {
       .toUpperCase()
       .slice(0, 2) || "U";
 
-  const hasDashboard = resolvedUser && DASHBOARD_ROLES.includes(resolvedUser.role);
+  const hasDashboard =
+    resolvedUser && DASHBOARD_ROLES.includes(resolvedUser.role);
+
+  // ── Tools hover helpers (desktop) ─────────────────────────────────────────
+  const handleToolsEnter = () => {
+    if (toolsTimeoutRef.current) clearTimeout(toolsTimeoutRef.current);
+    setToolsOpen(true);
+  };
+  const handleToolsLeave = () => {
+    toolsTimeoutRef.current = setTimeout(() => setToolsOpen(false), 200);
+  };
+
+  const isToolsActive = pathname.startsWith("/tools");
 
   return (
     <>
       {/* ── Top Bar ─────────────────────────────────────────────────────── */}
-      <div className="bg-red-700 text-white py-2 text-sm hidden md:block">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <span className="flex items-center gap-2">
-              <Phone size={16} />
-              <a
-                href="tel:+923212869000"
-                className="hover:text-gray-200 transition"
-              >
-                +92 321 2869000
-              </a>
-            </span>
-            <span className="flex items-center gap-2">
-              <Mail size={16} />
-              <a
-                href="mailto:info@nayabrealestate.com"
-                className="hover:text-gray-200 transition"
-              >
-                info@nayabrealmarketing.com
-              </a>
-            </span>
+      <div className="navbar-topbar">
+        <div className="navbar-topbar-inner">
+          <div className="navbar-topbar-left">
+            <a href="tel:+923212869000" className="navbar-topbar-link">
+              <Phone size={14} />
+              <span>+92 321 2869000</span>
+            </a>
+            <span className="navbar-topbar-divider" />
+            <a
+              href="mailto:info@nayabrealmarketing.com"
+              className="navbar-topbar-link"
+            >
+              <Mail size={14} />
+              <span>info@nayabrealmarketing.com</span>
+            </a>
           </div>
-          <span>Mon - Thursday : 11:00 AM - 7:00 PM</span>
+          <div className="navbar-topbar-right">
+            <Clock size={14} />
+            <span>Mon – Thu : 11 AM – 7 PM</span>
+          </div>
         </div>
       </div>
 
       {/* ── Main Navbar ─────────────────────────────────────────────────── */}
       <nav
-        className={`bg-[#1a2e5a] sticky top-0 z-50 transition-all duration-300 ${scrolled ? "shadow-xl" : ""}`}
+        className={`navbar-main ${scrolled ? "navbar-scrolled" : ""}`}
       >
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between h-20">
-            {/* Logo */}
-            <Link href="/" className="flex items-center">
-              <Image
-                src={logo}
-                alt="Nayab Real Marketing"
-                width={200}
-                height={60}
-                className="w-[130px] sm:w-[150px] md:w-[170px] lg:w-[190px] h-auto"
-                loading="eager"
-              />
-            </Link>
+        <div className="navbar-container">
+          {/* Logo */}
+          <Link href="/" className="navbar-logo">
+            <Image
+              src={logo}
+              alt="Nayab Real Marketing"
+              width={200}
+              height={60}
+              className="navbar-logo-img"
+              loading="eager"
+            />
+          </Link>
 
-            {/* ── Desktop Menu ─────────────────────────────────────────── */}
-            <div className="hidden lg:flex items-center gap-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`px-4 py-2 text-sm font-semibold uppercase tracking-wide transition-colors duration-200 ${
-                    pathname === link.href
-                      ? "text-red-400 border-b-2 border-red-500"
-                      : "text-slate-200 hover:text-red-400"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-
-              {/* CTA */}
-              <Link
-                href={resolvedUser ? "/dashboard" : "/sign-up/seller"}
-                className="ml-4 bg-red-700 hover:bg-red-600 text-white px-5 py-2 rounded font-semibold text-sm transition-colors"
-              >
-               Want to Sell? 
-              </Link>
-
-              {/* ── Auth area ── */}
-              {resolvedUser ? (
-                /* Logged-in user avatar + dropdown */
-                <div className="relative ml-3" ref={dropdownRef}>
-                  <button 
-                     onClick={() => setDropdownOpen((o) => !o)}
-                    className="flex items-center gap-2 bg-white/10 hover:bg-white/20 transition-colors rounded-full pl-1 pr-3 py-1"
-                  >
-                    {resolvedUser.avatar ? (
-                      <img
-                        src={resolvedUser.avatar}
-                        alt={resolvedUser.name}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                        {initials}
-                      </div>
-                    )}
-                    <span className="text-white text-sm font-medium max-w-[100px] truncate">
-                      {resolvedUser.name.split(" ")[0]}
-                    </span>
-                    <ChevronDown
-                      size={14}
-                      className={`text-slate-300 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
-                    />
-                  </button>
-
-                  {dropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50">
-                      {/* User info */}
-                      <div className="px-4 py-3 bg-slate-50 border-b border-slate-100">
-                        <p className="text-sm font-semibold text-slate-800 truncate">
-                          {resolvedUser.name}
-                        </p>
-                        <p className="text-xs text-slate-500 truncate">
-                          {resolvedUser.email}
-                        </p>
-                      </div>
-                      {hasDashboard && (
-                        <Link
-                          href="/dashboard"
-                          onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-2 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                        >
-                          <LayoutDashboard
-                            size={15}
-                            className="text-slate-400"
-                          />
-                          Dashboard
-                        </Link>
-                      )}
-
-                      <Link
-                        href="/profile"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors border-t border-slate-100"
-                      >
-                        <User size={15} className="text-slate-400" />
-                        My Profile
-                      </Link>
-
-                      <button
-                        onClick={handleLogout}
-                        className="flex items-center gap-2 w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-slate-100"
-                      >
-                        <LogOut size={15} />
-                        Sign Out
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                /* Guest — Sign In button */
-                <Link
-                  href="/sign-in"
-                  className="ml-3 flex items-center gap-2 border-2 border-white/30 hover:border-white/70 hover:bg-white/10 text-white px-4 py-2 rounded font-semibold text-sm transition-all"
-                >
-                  <LogIn size={15} />
-                  Sign In
-                </Link>
-              )}
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              className="lg:hidden text-white"
-              onClick={() => setMobileOpen(!mobileOpen)}
-            >
-              {mobileOpen ? <X size={28} /> : <Menu size={28} />}
-            </button>
-          </div>
-        </div>
-
-        {/* ── Mobile Menu ──────────────────────────────────────────────── */}
-        {mobileOpen && (
-          <div className="lg:hidden bg-[#0f1e3d] border-t border-slate-700">
+          {/* ── Desktop Menu ─────────────────────────────────────────── */}
+          <div className="navbar-desktop-menu">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className={`block px-6 py-4 font-medium border-b border-slate-700 transition-colors ${
-                  pathname === link.href
-                    ? "text-red-400 bg-slate-800"
-                    : "text-slate-200 hover:text-red-400 hover:bg-slate-800"
+                className={`navbar-link ${
+                  pathname === link.href ? "navbar-link-active" : ""
                 }`}
               >
                 {link.label}
               </Link>
             ))}
 
-            {/* Mobile auth section */}
+            {/* ── Tools Dropdown ── */}
+            <div
+              ref={toolsRef}
+              className="navbar-tools-wrapper"
+              onMouseEnter={handleToolsEnter}
+              onMouseLeave={handleToolsLeave}
+            >
+              <button
+                className={`navbar-link navbar-tools-trigger ${
+                  isToolsActive ? "navbar-link-active" : ""
+                }`}
+                onClick={() => setToolsOpen((o) => !o)}
+                aria-expanded={toolsOpen}
+                aria-haspopup="true"
+              >
+                <Sparkles size={15} />
+                Tools
+                <ChevronDown
+                  size={14}
+                  className={`navbar-tools-chevron ${toolsOpen ? "navbar-tools-chevron-open" : ""}`}
+                />
+              </button>
+
+              {/* Tools Mega Menu */}
+              <div
+                className={`navbar-tools-dropdown ${toolsOpen ? "navbar-tools-dropdown-open" : ""}`}
+              >
+                <div className="navbar-tools-dropdown-header">
+                  <Sparkles size={16} className="navbar-tools-header-icon" />
+                  <span>Real Estate Tools</span>
+                </div>
+                <div className="navbar-tools-grid">
+                  {toolItems.map((tool) => (
+                    <Link
+                      key={tool.href}
+                      href={tool.href}
+                      className="navbar-tool-card"
+                      onClick={() => setToolsOpen(false)}
+                    >
+                      <div className={`navbar-tool-icon bg-gradient-to-br ${tool.color}`}>
+                        <tool.icon size={20} />
+                      </div>
+                      <div className="navbar-tool-info">
+                        <span className="navbar-tool-label">{tool.label}</span>
+                        <span className="navbar-tool-desc">
+                          {tool.description}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* CTA */}
+            <Link
+              href={resolvedUser ? "/dashboard" : "/sign-up/seller"}
+              className="navbar-cta"
+            >
+              <span className="navbar-cta-pulse" />
+              Want to Sell?
+            </Link>
+
+            {/* ── Auth area ── */}
             {resolvedUser ? (
-              <div className="p-4 border-b border-slate-700">
-                {/* User info strip */}
-                <div className="flex items-center gap-3 mb-3 px-2">
+              /* Logged-in user avatar + dropdown */
+              <div className="navbar-user-wrapper" ref={dropdownRef}>
+                <button
+                  onClick={() => setDropdownOpen((o) => !o)}
+                  className="navbar-user-btn"
+                >
                   {resolvedUser.avatar ? (
                     <img
                       src={resolvedUser.avatar}
                       alt={resolvedUser.name}
-                      className="w-10 h-10 rounded-full object-cover"
+                      className="navbar-user-avatar"
                     />
                   ) : (
-                    <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                    <div className="navbar-user-initials">
                       {initials}
                     </div>
                   )}
-                  <div className="min-w-0">
-                    <p className="text-white text-sm font-semibold truncate">
-                      {resolvedUser.name}
-                    </p>
-                    <p className="text-slate-400 text-xs truncate">
-                      {resolvedUser.email}
-                    </p>
-                  </div>
-                </div>
-
-                {hasDashboard && (
-                  <Link
-                    href="/dashboard"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-2 w-full text-slate-200 hover:text-white hover:bg-slate-700 px-3 py-2 rounded-lg text-sm font-medium mb-2 transition-colors"
-                  >
-                    <LayoutDashboard size={16} /> Dashboard
-                  </Link>
-                )}
-
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 w-full bg-red-700 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-colors"
-                >
-                  <LogOut size={16} /> Sign Out
+                  <span className="navbar-user-name">
+                    {resolvedUser.name.split(" ")[0]}
+                  </span>
+                  <ChevronDown
+                    size={14}
+                    className={`navbar-user-chevron ${dropdownOpen ? "navbar-user-chevron-open" : ""}`}
+                  />
                 </button>
+
+                {dropdownOpen && (
+                  <div className="navbar-user-dropdown">
+                    {/* User info */}
+                    <div className="navbar-user-dropdown-header">
+                      <p className="navbar-user-dropdown-name">
+                        {resolvedUser.name}
+                      </p>
+                      <p className="navbar-user-dropdown-email">
+                        {resolvedUser.email}
+                      </p>
+                    </div>
+                    {hasDashboard && (
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setDropdownOpen(false)}
+                        className="navbar-user-dropdown-item"
+                      >
+                        <LayoutDashboard size={15} />
+                        Dashboard
+                      </Link>
+                    )}
+
+                    <Link
+                      href="/profile"
+                      onClick={() => setDropdownOpen(false)}
+                      className="navbar-user-dropdown-item"
+                    >
+                      <User size={15} />
+                      My Profile
+                    </Link>
+
+                    <button
+                      onClick={handleLogout}
+                      className="navbar-user-dropdown-item navbar-user-dropdown-logout"
+                    >
+                      <LogOut size={15} />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="p-4 border-b border-slate-700 flex flex-col gap-2">
-                <Link
-                  href="/sign-in"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center gap-2 border-2 border-white/30 text-white py-3 rounded-lg font-semibold text-sm hover:bg-white/10 transition-colors"
-                >
-                  <LogIn size={16} /> Sign In
-                </Link>
-                <Link
-                  href="/sign-up"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center gap-2 bg-red-700 hover:bg-red-600 text-white py-3 rounded-lg font-semibold text-sm transition-colors"
-                >
-                  Create Account
-                </Link>
-              </div>
+              /* Guest — Sign In button */
+              <Link href="/sign-in" className="navbar-signin">
+                <LogIn size={15} />
+                Sign In
+              </Link>
             )}
+          </div>
 
-            {/* Mobile CTA */}
-            <div className="p-4">
+          {/* Mobile Menu Button */}
+          <button
+            className="navbar-mobile-toggle"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle navigation menu"
+          >
+            {mobileOpen ? <X size={26} /> : <Menu size={26} />}
+          </button>
+        </div>
+      </nav>
+
+      {/* ── Mobile Overlay ──────────────────────────────────────────────── */}
+      <div
+        className={`navbar-mobile-overlay ${mobileOpen ? "navbar-mobile-overlay-open" : ""}`}
+        onClick={() => setMobileOpen(false)}
+      />
+
+      {/* ── Mobile Menu Panel ───────────────────────────────────────────── */}
+      <div
+        className={`navbar-mobile-panel ${mobileOpen ? "navbar-mobile-panel-open" : ""}`}
+      >
+        {/* Mobile Header */}
+        <div className="navbar-mobile-header">
+          <Link href="/" onClick={() => setMobileOpen(false)}>
+            <Image
+              src={logo}
+              alt="Nayab Real Marketing"
+              width={140}
+              height={42}
+              className="h-10 w-auto"
+            />
+          </Link>
+          <button
+            className="navbar-mobile-close"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close navigation menu"
+          >
+            <X size={22} />
+          </button>
+        </div>
+
+        {/* Mobile Nav Links */}
+        <div className="navbar-mobile-links">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              className={`navbar-mobile-link ${
+                pathname === link.href ? "navbar-mobile-link-active" : ""
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+
+          {/* Mobile Tools Accordion */}
+          <button
+            className={`navbar-mobile-link navbar-mobile-tools-trigger ${
+              isToolsActive ? "navbar-mobile-link-active" : ""
+            }`}
+            onClick={() => setMobileToolsOpen((o) => !o)}
+          >
+            <span className="flex items-center gap-2">
+              <Sparkles size={16} />
+              Tools
+            </span>
+            <ChevronDown
+              size={16}
+              className={`transition-transform duration-300 ${
+                mobileToolsOpen ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+
+          {mobileToolsOpen && (
+            <div className="navbar-mobile-tools-list">
+              {toolItems.map((tool) => (
+                <Link
+                  key={tool.href}
+                  href={tool.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="navbar-mobile-tool-item"
+                >
+                  <div className={`navbar-mobile-tool-icon bg-gradient-to-br ${tool.color}`}>
+                    <tool.icon size={16} />
+                  </div>
+                  <div className="navbar-mobile-tool-info">
+                    <span className="navbar-mobile-tool-label">
+                      {tool.label}
+                    </span>
+                    <span className="navbar-mobile-tool-desc">
+                      {tool.description}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Auth */}
+        <div className="navbar-mobile-footer">
+          {resolvedUser ? (
+            <>
+              <div className="navbar-mobile-user-info">
+                {resolvedUser.avatar ? (
+                  <img
+                    src={resolvedUser.avatar}
+                    alt={resolvedUser.name}
+                    className="navbar-mobile-user-avatar"
+                  />
+                ) : (
+                  <div className="navbar-mobile-user-initials">
+                    {initials}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="navbar-mobile-user-name">{resolvedUser.name}</p>
+                  <p className="navbar-mobile-user-email">
+                    {resolvedUser.email}
+                  </p>
+                </div>
+              </div>
+
+              {hasDashboard && (
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileOpen(false)}
+                  className="navbar-mobile-action"
+                >
+                  <LayoutDashboard size={16} />
+                  Dashboard
+                </Link>
+              )}
+
+              <button onClick={handleLogout} className="navbar-mobile-logout">
+                <LogOut size={16} />
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <div className="navbar-mobile-guest-actions">
               <Link
-                href={resolvedUser ? "/dashboard" : "/sign-up/seller"}
-                className="block text-center bg-red-700 hover:bg-red-600 text-white py-3 rounded font-semibold transition-colors"
+                href="/sign-in"
                 onClick={() => setMobileOpen(false)}
+                className="navbar-mobile-signin"
+              >
+                <LogIn size={16} />
+                Sign In
+              </Link>
+              <Link
+                href="/sign-up/seller"
+                onClick={() => setMobileOpen(false)}
+                className="navbar-mobile-cta"
               >
                 Want to Sell?
               </Link>
             </div>
-          </div>
-        )}
-      </nav>
+          )}
+        </div>
+      </div>
     </>
   );
 }
