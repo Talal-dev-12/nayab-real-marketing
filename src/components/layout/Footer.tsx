@@ -134,7 +134,7 @@ export default function Footer() {
               </li>
               <li className="flex gap-3 text-sm">
                 <Mail size={16} className="text-red-500 shrink-0" />
-                <span className="text-slate-400">info@nayabrealestate.com</span>
+                <a href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'nayabrealmarketing.official@gmail.com'}`} className="text-slate-400 hover:text-red-400 transition-colors">{process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'nayabrealmarketing.official@gmail.com'}</a>
               </li>
             </ul>
           </div>

@@ -9,7 +9,7 @@ export default function AdminSettings() {
     siteName: 'Nayab Real Marketing',
     tagline: 'Your Trusted Real Estate Partner in Pakistan',
     phone: '+92-300-1234567',
-    email: 'info@nayabrealestate.com',
+    email: 'nayabrealmarketing.official@gmail.com',
     address: 'Office 301, XYZ Plaza, Shahrah-e-Faisal, Karachi',
     currentPassword: '',
     newPassword: '',

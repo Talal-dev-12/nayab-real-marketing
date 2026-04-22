@@ -1,6 +1,6 @@
 'use client';
-   
-  
+
+
 import { FileText, ChevronRight, Scale, AlertTriangle, CheckCircle2, Ban, Globe, Mail } from 'lucide-react';
 import Link from 'next/link';
 
@@ -111,7 +111,7 @@ We encourage amicable resolution of disputes. If you have a complaint about our 
 export default function TermsOfServicePage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      
+
 
       {/* Hero */}
       <div className="primary-gradient py-16">
@@ -225,7 +225,7 @@ export default function TermsOfServicePage() {
                 {[
                   { label: 'Company', value: 'Nayab Real Marketing' },
                   { label: 'Legal', value: 'legal@nayabrealestate.com' },
-                  { label: 'General', value: 'info@nayabrealestate.com' },
+                  { label: 'General', value: 'nayabrealmarketing.official@gmail.com' },
                   { label: 'Phone', value: '+92-300-1234567' },
                   { label: 'Address', value: 'Karachi, Sindh, Pakistan' },
                 ].map(({ label, value }) => (

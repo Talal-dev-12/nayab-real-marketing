@@ -1,11 +1,11 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, FileText, Home, Users, MessageSquare,
   Settings, LogOut, Menu, X, BarChart3, Bell, ChevronRight,
-  ShieldCheck, PenTool, PlusSquare, PenLine, Send, MapPin,
+  ShieldCheck, PenTool, PlusSquare, PenLine, Send, MapPin, CheckCircle,
 } from 'lucide-react';
 import { ALL_NAV, PANEL_ROLES, ROLE_META } from '@/lib/rbac';
 import type { UserRole } from '@/lib/jwt';
@@ -26,6 +26,54 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [loading,     setLoading]     = useState(true);
   const [user,        setUser]        = useState<AuthUser | null>(null);
   const [dateStr,     setDateStr]     = useState('');
+
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount,   setUnreadCount]   = useState(0);
+  const [showNotifs,    setShowNotifs]    = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setShowNotifs(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const fetchNotifications = async () => {
+    const token = localStorage.getItem('auth_token') ?? localStorage.getItem('admin_token');
+    if (!token) return;
+    try {
+      const res = await fetch('/api/notifications', { headers: { Authorization: `Bearer ${token}` } });
+      if (res.ok) {
+        const data = await res.json();
+        setNotifications(data.notifications || []);
+        setUnreadCount(data.unreadCount || 0);
+      }
+    } catch { /* ignore */ }
+  };
+
+  useEffect(() => {
+    if (authed) {
+      fetchNotifications();
+      const interval = setInterval(fetchNotifications, 60000); // Poll every minute
+      return () => clearInterval(interval);
+    }
+  }, [authed]);
+
+  const handleToggleNotifs = async () => {
+    setShowNotifs(!showNotifs);
+    if (!showNotifs && unreadCount > 0) {
+      const token = localStorage.getItem('auth_token') ?? localStorage.getItem('admin_token');
+      try {
+        await fetch('/api/notifications', { method: 'PATCH', headers: { Authorization: `Bearer ${token}` } });
+        setUnreadCount(0);
+        setNotifications(n => n.map(x => ({ ...x, read: true })));
+      } catch { /* ignore */ }
+    }
+  };
 
   useEffect(() => {
     setDateStr(new Date().toDateString());
@@ -167,7 +215,41 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <button className="relative"><Bell size={20} className="text-slate-500" /></button>
+            <div className="relative" ref={notifRef}>
+              <button onClick={handleToggleNotifs} className="relative p-2 rounded-lg hover:bg-slate-100 transition-colors">
+                <Bell size={20} className="text-slate-600" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1.5 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-white"></span>
+                )}
+              </button>
+              
+              {showNotifs && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50">
+                  <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                    <h3 className="font-bold text-[#1a2e5a]">Notifications</h3>
+                    {unreadCount > 0 && <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-bold">{unreadCount} New</span>}
+                  </div>
+                  <div className="max-h-[350px] overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="p-6 text-center text-slate-500 text-sm">No recent notifications.</div>
+                    ) : (
+                      <div className="divide-y divide-slate-50">
+                        {notifications.map(n => (
+                          <Link key={n._id} href={n.link || '#'} onClick={() => setShowNotifs(false)}
+                            className={`block p-4 hover:bg-slate-50 transition-colors ${!n.read ? 'bg-blue-50/30' : ''}`}>
+                            <p className="text-sm font-semibold text-[#1a2e5a] mb-1">{n.title}</p>
+                            <p className="text-xs text-slate-500 leading-relaxed">{n.message}</p>
+                            <p className="text-[10px] text-slate-400 mt-2">
+                              {new Date(n.createdAt).toLocaleDateString()} at {new Date(n.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </p>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
             <Link href="/" target="_blank" className="text-xs bg-red-700 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 font-medium">
               View Site ↗
             </Link>

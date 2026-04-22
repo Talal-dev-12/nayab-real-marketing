@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 
 const COOLDOWN_MS = 60_000; // 1 minute between submissions
+const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'nayabrealmarketing.official@gmail.com';
 
 export default function ContactPage() {
   const [user, setUser] = useState<any>(null);
@@ -148,8 +149,8 @@ export default function ContactPage() {
                   title: "Email",
                   content: (
                     <div className="flex flex-col gap-1">
-                      <a href="mailto:info@nayabrealmarketing.com" className="hover:text-red-700 transition">info@nayabrealmarketing.com</a>
-                      <a href="mailto:support@nayabrealmarketing.com" className="hover:text-red-700 transition">support@nayabrealmarketing.com</a>
+                      <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-red-700 transition">{CONTACT_EMAIL}</a>
+                      <a href="mailto:m.tallal.nadeem@gmail.com" className="hover:text-red-700 transition">m.tallal.nadeem@gmail.com</a>
                     </div>
                   ),
                 },

@@ -154,7 +154,7 @@ export default function DashboardProperties() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-extrabold text-[#1a2e5a]">
             {isSeller ? 'My Properties' : 'Properties'}
@@ -168,15 +168,15 @@ export default function DashboardProperties() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm text-sm overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b">
-          <div className="flex bg-slate-100 p-1 rounded-lg">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between p-4 border-b gap-4">
+          <div className="flex flex-wrap bg-slate-100 p-1 rounded-lg gap-1 w-full lg:w-auto">
             {['all', 'pending', 'approved', 'rejected'].map(tab => (
-              <button key={tab} onClick={() => { setActiveTab(tab); setPage(1); }} className={`px-4 py-1.5 rounded-md font-semibold capitalize transition-all ${activeTab === tab ? 'bg-white shadow-sm text-[#1a2e5a]' : 'text-slate-500 hover:text-[#1a2e5a]'}`}>
+              <button key={tab} onClick={() => { setActiveTab(tab); setPage(1); }} className={`flex-1 sm:flex-none px-4 py-1.5 rounded-md font-semibold capitalize transition-all ${activeTab === tab ? 'bg-white shadow-sm text-[#1a2e5a]' : 'text-slate-500 hover:text-[#1a2e5a]'}`}>
                 {tab}
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-2 border rounded-lg px-3 py-1.5 max-w-sm ml-4 basis-1/3">
+          <div className="flex items-center gap-2 border rounded-lg px-3 py-1.5 w-full lg:max-w-sm lg:ml-4 lg:basis-1/3">
             <Search size={16} className="text-slate-400" />
             <input type="text" placeholder="Search properties..." className="outline-none text-sm flex-1 min-w-0"
               onChange={e => setSearch(e.target.value)} />

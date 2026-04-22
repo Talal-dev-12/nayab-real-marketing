@@ -12,6 +12,8 @@ import {
 import type { Property } from '@/types';
 import { savedApi, inquiriesApi } from '@/lib/api-client';
 
+const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'nayabrealmarketing.official@gmail.com';
+
 interface AuthUser { id: string; name: string; email: string; role: string; }
 
 function useAuth() {
@@ -26,24 +28,24 @@ function useAuth() {
 }
 
 export default function PropertyDetailPage() {
-  const params     = useParams();
-  const router     = useRouter();
+  const params = useParams();
+  const router = useRouter();
   const { user, checked } = useAuth();
 
-  const [property,     setProperty]     = useState<Property | null>(null);
-  const [related,      setRelated]      = useState<Property[]>([]);
-  const [loading,      setLoading]      = useState(true);
+  const [property, setProperty] = useState<Property | null>(null);
+  const [related, setRelated] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentImage, setCurrentImage] = useState(0);
 
   // Save state
-  const [saved,        setSaved]        = useState(false);
-  const [savingProp,   setSavingProp]   = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [savingProp, setSavingProp] = useState(false);
 
   // Inquiry form
-  const [message,      setMessage]      = useState('');
-  const [phone,        setPhone]        = useState('');
-  const [sent,         setSent]         = useState(false);
-  const [sending,      setSending]      = useState(false);
+  const [message, setMessage] = useState('');
+  const [phone, setPhone] = useState('');
+  const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
   const [inquiryError, setInquiryError] = useState('');
 
   useEffect(() => {
@@ -55,7 +57,7 @@ export default function PropertyDetailPage() {
         fetch(`/api/properties?type=${data.type}&status=available&limit=4`)
           .then(r => r.json()).then(d => {
             setRelated((d.properties ?? []).filter((p: Property) => p._id !== data._id).slice(0, 3));
-          }).catch(() => {});
+          }).catch(() => { });
         setLoading(false);
       }).catch(() => setLoading(false));
   }, [params.slug]);
@@ -66,7 +68,7 @@ export default function PropertyDetailPage() {
     savedApi.list().then(res => {
       const ids = ((res as any).savedProperties ?? []).map((p: any) => p._id ?? p);
       setSaved(ids.includes((property as any)._id));
-    }).catch(() => {});
+    }).catch(() => { });
   }, [user, property]);
 
   // Pre-fill message
@@ -93,8 +95,8 @@ export default function PropertyDetailPage() {
     try {
       await inquiriesApi.send({
         propertyId: (property as any)._id,
-        message:    message.trim(),
-        phone:      phone.trim(),
+        message: message.trim(),
+        phone: phone.trim(),
       });
       setSent(true);
     } catch (err: any) {
@@ -125,7 +127,7 @@ export default function PropertyDetailPage() {
     </div>
   );
 
-  const images    = property.images?.length ? property.images : ['https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800'];
+  const images = property.images?.length ? property.images : ['https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800'];
   const amenities = ['Electricity Backup', 'Sui Gas', 'Boundary Wall', 'CCTV Security', 'Near Market', 'Near Mosque', 'Good Ventilation', 'Peaceful Environment'];
 
   return (
@@ -213,8 +215,8 @@ export default function PropertyDetailPage() {
               <h2 className="font-extrabold text-[#1a2e5a] text-xl mb-5 pb-3 border-b">Property Overview</h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[
-                  { icon: Maximize2, label: 'Area',      value: `${property.area?.toLocaleString()} sqft`, color: 'bg-blue-50 text-blue-700' },
-                  ...(property.bedrooms  > 0 ? [{ icon: Bed,  label: 'Bedrooms',  value: String(property.bedrooms),  color: 'bg-amber-50 text-amber-700'   }] : []),
+                  { icon: Maximize2, label: 'Area', value: `${property.area?.toLocaleString()} sqft`, color: 'bg-blue-50 text-blue-700' },
+                  ...(property.bedrooms > 0 ? [{ icon: Bed, label: 'Bedrooms', value: String(property.bedrooms), color: 'bg-amber-50 text-amber-700' }] : []),
                   ...(property.bathrooms > 0 ? [{ icon: Bath, label: 'Bathrooms', value: String(property.bathrooms), color: 'bg-emerald-50 text-emerald-700' }] : []),
                   { icon: Tag, label: 'Type', value: property.type.charAt(0).toUpperCase() + property.type.slice(1), color: 'bg-purple-50 text-purple-700' },
                 ].map(({ icon: Icon, label, value, color }) => (
@@ -260,8 +262,8 @@ export default function PropertyDetailPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                 {[
                   { icon: ShieldCheck, title: '100% Verified Listings', desc: 'Every property is personally verified for legal clarity.' },
-                  { icon: TrendingUp,  title: 'Best Market Valuations', desc: 'Data-driven pricing for maximum value.' },
-                  { icon: Users,       title: '14+ Years Experience',   desc: 'Trusted by 1,200+ clients across Pakistan.' },
+                  { icon: TrendingUp, title: 'Best Market Valuations', desc: 'Data-driven pricing for maximum value.' },
+                  { icon: Users, title: '14+ Years Experience', desc: 'Trusted by 1,200+ clients across Pakistan.' },
                 ].map(({ icon: Icon, title, desc }) => (
                   <div key={title} className="bg-gray-50 rounded-xl p-4">
                     <div className="w-9 h-9 bg-red-100 rounded-lg flex items-center justify-center mb-3"><Icon size={18} className="text-red-700" /></div>
@@ -275,9 +277,9 @@ export default function PropertyDetailPage() {
                   className="inline-flex items-center gap-2 bg-red-700 hover:bg-red-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors">
                   <Phone size={15} /> +92-321-2869000
                 </a>
-                <a href="mailto:info@nayabrealmarketing.com"
+                <a href={`mailto:${CONTACT_EMAIL}`}
                   className="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors">
-                  <Mail size={15} /> info@nayabrealmarketing.com
+                  <Mail size={15} /> {CONTACT_EMAIL}
                 </a>
               </div>
             </div>
@@ -370,7 +372,7 @@ export default function PropertyDetailPage() {
                   className="flex items-center gap-3 w-full bg-slate-50 hover:bg-red-50 border hover:border-red-200 text-slate-700 px-4 py-3 rounded-xl font-semibold text-sm transition-colors">
                   <Phone size={15} className="text-red-700" /> +92-321-2869000
                 </a>
-                <a href="mailto:info@nayabrealmarketing.com"
+                <a href={`mailto:${CONTACT_EMAIL}`}
                   className="flex items-center gap-3 w-full bg-slate-50 hover:bg-red-50 border hover:border-red-200 text-slate-700 px-4 py-3 rounded-xl font-semibold text-sm transition-colors">
                   <Mail size={15} className="text-red-700" /> Email Us
                 </a>

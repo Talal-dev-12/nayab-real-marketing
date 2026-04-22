@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Send, Mail, Phone, CheckCheck, Trash2, ExternalLink, Search } from 'lucide-react';
+import { Send, Mail, Phone, CheckCheck, Trash2, ExternalLink, Search, ChevronLeft } from 'lucide-react';
 import { api } from '@/lib/api-client';
 import type { Inquiry } from '@/types';
 
@@ -45,21 +45,21 @@ export default function AdminInquiries() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-extrabold text-[#1a2e5a]">Property Inquiries</h2>
           <p className="text-slate-500 text-sm">{unread} unread · {inquiries.length} total</p>
         </div>
-        <div className="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white max-w-xs">
+        <div className="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white w-full sm:max-w-xs">
           <Search size={14} className="text-slate-400" />
-          <input type="text" placeholder="Search..." className="outline-none text-sm flex-1 w-40"
+          <input type="text" placeholder="Search..." className="outline-none text-sm flex-1 min-w-0"
             value={search} onChange={e => setSearch(e.target.value)} />
         </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden flex h-[calc(100vh-250px)] min-h-[500px]">
         {/* List panel */}
-        <div className="w-full md:w-80 border-r overflow-y-auto shrink-0">
+        <div className={`w-full md:w-80 border-r overflow-y-auto shrink-0 ${selected ? 'hidden md:block' : 'block'}`}>
           {loading ? (
             <div className="divide-y">{Array(5).fill(0).map((_, i) => (
               <div key={i} className="p-4 animate-pulse">
@@ -102,11 +102,16 @@ export default function AdminInquiries() {
 
         {/* Detail panel */}
         {selected ? (
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 w-full">
             <div className="flex items-start justify-between mb-6">
-              <div>
-                <h3 className="text-xl font-bold text-[#1a2e5a]">Inquiry: {selected.propertyTitle}</h3>
-                <p className="text-sm text-slate-500">{new Date(selected.createdAt).toLocaleString()}</p>
+              <div className="flex gap-2 items-start">
+                <button className="md:hidden p-1 -ml-1 text-slate-400 hover:bg-slate-100 rounded-lg shrink-0 mt-0.5" onClick={() => setSelected(null)}>
+                  <ChevronLeft size={20} />
+                </button>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-bold text-[#1a2e5a]">Inquiry: {selected.propertyTitle}</h3>
+                  <p className="text-sm text-slate-500">{new Date(selected.createdAt).toLocaleString()}</p>
+                </div>
               </div>
               <div className="flex gap-2">
                 <button onClick={() => markRead(selected)} title="Mark read"

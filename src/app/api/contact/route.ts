@@ -71,6 +71,11 @@ export const POST = requireAuth(async (req: NextRequest, user: JwtPayload, _ctx:
     try {
       const admins = await User.find({ active: true, role: { $in: ['manager', 'superadmin'] } }).select('email').lean();
       const adminEmails = (admins as any[]).map((a: any) => a.email).filter(Boolean);
+      // Always include the primary contact + notification emails from env
+      const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL;
+      const notifEmail = process.env.NOTIFICATION_EMAIL;
+      if (contactEmail && !adminEmails.includes(contactEmail)) adminEmails.push(contactEmail);
+      if (notifEmail && !adminEmails.includes(notifEmail)) adminEmails.push(notifEmail);
       if (adminEmails.length > 0 && process.env.SMTP_USER) {
         await sendContactNotification({
           to: adminEmails,

@@ -58,14 +58,14 @@ export default function NotFound() {
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { label: "Properties",  href: "/properties"  },
-              { label: "Blog",        href: "/blog"        },
-              { label: "Agents",      href: "/agents"      },
-              { label: "About Us",    href: "/about"       },
-              { label: "Services",    href: "/services"    },
-              { label: "Contact",     href: "/contact"     },
-              { label: "Tools",       href: "/tools"       },
-              { label: "Sign In",     href: "/sign-in"     },
+              { label: "Properties", href: "/properties" },
+              { label: "Blog", href: "/blog" },
+              { label: "Agents", href: "/agents" },
+              { label: "About Us", href: "/about" },
+              { label: "Services", href: "/services" },
+              { label: "Contact", href: "/contact" },
+              { label: "Tools", href: "/tools" },
+              { label: "Sign In", href: "/sign-in" },
             ].map(({ label, href }) => (
               <Link
                 key={href}
@@ -79,10 +79,10 @@ export default function NotFound() {
         </div>
 
         <p className="text-xs text-slate-400 mt-6">
-          Nayab Real Marketing · +92-321-2869000 · info@nayabrealmarketing.com
+          Nayab Real Marketing · +92-321-2869000 · nayabrealmarketing.official@gmail.com
         </p>
 
       </div>
-    </div>  
-  );        
+    </div>
+  );
 }

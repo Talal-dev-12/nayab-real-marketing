@@ -23,6 +23,8 @@ import {
 import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
 
+const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'nayabrealmarketing.official@gmail.com';
+
 /* ─── Navigation Links ──────────────────────────────────────────────────── */
 const navLinks = [
   { href: "/", label: "Home" },
@@ -211,11 +213,11 @@ export default function Navbar() {
             </a>
             <span className="navbar-topbar-divider" />
             <a
-              href="mailto:info@nayabrealmarketing.com"
+              href={`mailto:${CONTACT_EMAIL}`}
               className="navbar-topbar-link"
             >
               <Mail size={14} />
-              <span>info@nayabrealmarketing.com</span>
+              <span>{CONTACT_EMAIL}</span>
             </a>
           </div>
           <div className="navbar-topbar-right">
@@ -248,9 +250,8 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`navbar-link ${
-                  pathname === link.href ? "navbar-link-active" : ""
-                }`}
+                className={`navbar-link ${pathname === link.href ? "navbar-link-active" : ""
+                  }`}
               >
                 {link.label}
               </Link>
@@ -264,9 +265,8 @@ export default function Navbar() {
               onMouseLeave={handleToolsLeave}
             >
               <button
-                className={`navbar-link navbar-tools-trigger ${
-                  isToolsActive ? "navbar-link-active" : ""
-                }`}
+                className={`navbar-link navbar-tools-trigger ${isToolsActive ? "navbar-link-active" : ""
+                  }`}
                 onClick={() => setToolsOpen((o) => !o)}
                 aria-expanded={toolsOpen}
                 aria-haspopup="true"
@@ -445,9 +445,8 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className={`navbar-mobile-link ${
-                pathname === link.href ? "navbar-mobile-link-active" : ""
-              }`}
+              className={`navbar-mobile-link ${pathname === link.href ? "navbar-mobile-link-active" : ""
+                }`}
             >
               {link.label}
             </Link>
@@ -455,9 +454,8 @@ export default function Navbar() {
 
           {/* Mobile Tools Accordion */}
           <button
-            className={`navbar-mobile-link navbar-mobile-tools-trigger ${
-              isToolsActive ? "navbar-mobile-link-active" : ""
-            }`}
+            className={`navbar-mobile-link navbar-mobile-tools-trigger ${isToolsActive ? "navbar-mobile-link-active" : ""
+              }`}
             onClick={() => setMobileToolsOpen((o) => !o)}
           >
             <span className="flex items-center gap-2">
@@ -466,9 +464,8 @@ export default function Navbar() {
             </span>
             <ChevronDown
               size={16}
-              className={`transition-transform duration-300 ${
-                mobileToolsOpen ? "rotate-180" : ""
-              }`}
+              className={`transition-transform duration-300 ${mobileToolsOpen ? "rotate-180" : ""
+                }`}
             />
           </button>
 

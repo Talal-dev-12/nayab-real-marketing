@@ -94,27 +94,27 @@ function SellerDashboard({ userId, emailVerified }: { userId: string; emailVerif
             {resendMsg && <p className="text-sm mt-2 text-emerald-600 font-bold bg-emerald-50 px-3 py-1 inline-block rounded-lg">{resendMsg}</p>}
           </div>
           <button onClick={handleResendVerification} disabled={resendLoading}
-            className="shrink-0 text-sm bg-amber-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-amber-700 disabled:opacity-60 transition-all shadow-md hover:shadow-lg">
+            className="shrink-0 text-sm bg-amber-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-amber-700 disabled:opacity-60 transition-all shadow-md hover:shadow-lg w-full sm:w-auto">
             {resendLoading ? 'Sending...' : 'Resend Email'}
           </button>
         </div>
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         {[
           { label: 'Total Listings', value: properties.length, icon: Home,        color: 'from-blue-500 to-blue-600', shadow: 'shadow-blue-500/20' },
           { label: 'Available',      value: available,          icon: TrendingUp,  color: 'from-emerald-400 to-emerald-500', shadow: 'shadow-emerald-500/20' },
           { label: 'Pending Review', value: pending,            icon: Clock,       color: 'from-amber-400 to-amber-500', shadow: 'shadow-amber-500/20' },
           { label: 'Sold / Rented',  value: sold,               icon: ArrowUpRight, color: 'from-purple-500 to-purple-600', shadow: 'shadow-purple-500/20' },
         ].map(({ label, value, icon: Icon, color, shadow }) => (
-          <div key={label} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex items-center gap-5 hover:shadow-md transition-shadow group">
-            <div className={`bg-gradient-to-br ${color} w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg ${shadow} transform group-hover:scale-105 transition-transform`}>
+          <div key={label} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-6 flex items-center gap-4 sm:gap-5 hover:shadow-md transition-shadow group">
+            <div className={`bg-gradient-to-br ${color} w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg ${shadow} transform group-hover:scale-105 transition-transform`}>
               <Icon size={24} className="text-white" />
             </div>
-            <div>
-              <p className="text-slate-500 text-sm font-semibold mb-1 uppercase tracking-wider">{label}</p>
-              <p className="text-3xl font-extrabold text-[#1a2e5a]">{value}</p>
+            <div className="min-w-0">
+              <p className="text-slate-500 text-xs sm:text-sm font-semibold mb-1 uppercase tracking-wider truncate">{label}</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-[#1a2e5a] truncate">{value}</p>
             </div>
           </div>
         ))}
@@ -122,8 +122,8 @@ function SellerDashboard({ userId, emailVerified }: { userId: string; emailVerif
 
       {/* Recent Properties Section */}
       <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-          <h2 className="font-extrabold text-[#1a2e5a] text-xl">My Recent Listings</h2>
+        <div className="p-4 sm:px-8 sm:py-6 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between bg-slate-50/50 gap-3">
+          <h2 className="font-extrabold text-[#1a2e5a] text-lg sm:text-xl">My Recent Listings</h2>
           {properties.length > 0 && (
             <Link href="/dashboard/properties" className="text-sm font-bold text-red-600 hover:text-red-700 hover:underline">
               View All
@@ -223,7 +223,7 @@ function WriterDashboard({ userId }: { userId: string }) {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm p-6">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
           <h2 className="font-bold text-[#1a2e5a] text-lg">My Recent Articles</h2>
           <Link href="/dashboard/blogs/new"
             className="bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2">
@@ -319,7 +319,7 @@ function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
             <h2 className="font-bold text-[#1a2e5a] text-lg">Website Traffic (Last 14 Days)</h2>
             <span className="text-xs bg-red-50 text-red-700 px-2 py-1 rounded-full font-semibold">Live</span>
           </div>
@@ -370,7 +370,7 @@ function AdminDashboard() {
           </div>
         </div>
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
             <h2 className="font-bold text-[#1a2e5a] text-lg">Recent Messages</h2>
             <Link href="/dashboard/messages" className="text-red-700 text-sm font-semibold hover:underline">View All</Link>
           </div>
