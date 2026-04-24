@@ -22,6 +22,8 @@ export interface IProperty extends Document {
   agentId:        string;
   submittedBy?:   string;
   views:          number;
+  amenities:      string[];
+  areaScheme?:    string;
   /** Approval workflow */
   approvalStatus: 'pending' | 'approved' | 'rejected';
   rejectionNote?: string;
@@ -50,6 +52,8 @@ const PropertySchema = new Schema<IProperty>(
     agentId:        { type: String, required: true },
     submittedBy:    { type: String },
     views:          { type: Number, default: 0 },
+    amenities:      [{ type: String }],
+    areaScheme:     { type: String },
     approvalStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
     rejectionNote:  { type: String },
   },

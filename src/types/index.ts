@@ -75,6 +75,7 @@ export interface Property {
   rentPeriod?: 'month' | 'year';
   location: string;
   city: string;
+  areaScheme?: string;
   area: number;
   areaUnit?: 'sqft' | 'sqyd' | 'marla' | 'kanal';
   bedrooms: number;
@@ -82,6 +83,7 @@ export interface Property {
   type: 'residential' | 'commercial' | 'office' | 'plot' | 'shop';
   status: 'available' | 'sold' | 'rented';
   images: string[];
+  amenities?: string[];
   featured: boolean;
   agentId: string;
   submittedBy?: string;

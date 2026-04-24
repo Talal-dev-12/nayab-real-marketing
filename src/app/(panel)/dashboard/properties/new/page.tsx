@@ -9,7 +9,8 @@ import { AREA_UNITS, toSqft } from '@/lib/areaUtils';
 import type { UserRole } from '@/lib/jwt';
 import type { AreaUnit } from '@/lib/areaUtils';
 
-function F({ label, ...props }: any) {
+const AMENITIES = ['Electricity', 'Gas', 'Water Supply', 'Security', 'Park', 'Mosque', 'Gym', 'Swimming Pool', 'Elevator', 'Car Parking', 'Backup Generator', 'High Speed Internet'];
+const KARACHI_AREAS = ['DHA (Defence Housing Authority)', 'Bahria Town Karachi', 'Clifton', 'Gulshan-e-Iqbal', 'Gulistan-e-Jauhar', 'North Nazimabad', 'Malir', 'Scheme 33', 'Korangi', 'PECHS', 'Tariq Road', 'F.B Area', 'Nazimabad', 'Saddar', 'Other'];function F({ label, ...props }: any) {
   return (
     <div>
       <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">{label}</label>
@@ -38,10 +39,18 @@ export default function NewPropertyPage() {
   const [urlInput,  setUrlInput]  = useState('');
   const [form, setForm] = useState({
     title: '', description: '', price: '', priceType: 'sale', rentPeriod: 'month',
-    location: '', city: 'Karachi', areaValue: '', areaUnit: 'sqft' as AreaUnit,
+    location: '', city: 'Karachi', areaScheme: '', areaValue: '', areaUnit: 'sqft' as AreaUnit,
     bedrooms: '', bathrooms: '',
     type: 'residential', status: 'available', featured: false, agentId: '',
+    amenities: [] as string[],
   });
+
+  const toggleAmenity = (amenity: string) => {
+    setForm(f => ({
+      ...f,
+      amenities: f.amenities.includes(amenity) ? f.amenities.filter(a => a !== amenity) : [...f.amenities, amenity]
+    }));
+  };
 
   useEffect(() => {
     if (currentUser && can(currentUser.role, 'assignAgent')) {
@@ -128,16 +137,26 @@ export default function NewPropertyPage() {
                 placeholder="Describe the property..." value={form.description}
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
             </div>
-            <F label="Location / Address *" placeholder="e.g. DHA Phase 6, Karachi"
-              value={form.location} onChange={(e: any) => setForm(f => ({ ...f, location: e.target.value }))} />
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">City</label>
               <select className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
-                value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))}>
+                value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value, areaScheme: e.target.value === 'Karachi' ? f.areaScheme : '' }))}>
                 <option>Karachi</option><option>Lahore</option><option>Islamabad</option>
                 <option>Rawalpindi</option><option>Faisalabad</option>
               </select>
             </div>
+            {form.city === 'Karachi' && (
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Area / Housing Scheme</label>
+                <select className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
+                  value={form.areaScheme} onChange={e => setForm(f => ({ ...f, areaScheme: e.target.value }))}>
+                  <option value="">-- Select Area --</option>
+                  {KARACHI_AREAS.map(a => <option key={a} value={a}>{a}</option>)}
+                </select>
+              </div>
+            )}
+            <F label="Precise Location / Address *" placeholder={form.city === 'Karachi' ? "e.g. Street 5, House 10" : "e.g. DHA Phase 6, Karachi"}
+              value={form.location} onChange={(e: any) => setForm(f => ({ ...f, location: e.target.value }))} />
             {can(role, 'assignAgent') && (
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Assign Agent *</label>
@@ -189,6 +208,19 @@ export default function NewPropertyPage() {
                     value={form.bathrooms} onChange={(e: any) => setForm(f => ({ ...f, bathrooms: e.target.value }))} />
                 </>
               )}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+            <h3 className="font-bold text-[#1a2e5a] border-b pb-2">Amenities</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {AMENITIES.map(amenity => (
+                <label key={amenity} className="flex items-center gap-2 cursor-pointer text-sm text-slate-700">
+                  <input type="checkbox" checked={form.amenities.includes(amenity)}
+                    onChange={() => toggleAmenity(amenity)} className="w-4 h-4 accent-red-700" />
+                  {amenity}
+                </label>
+              ))}
             </div>
           </div>
 
@@ -252,16 +284,7 @@ export default function NewPropertyPage() {
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-            <h3 className="font-bold text-[#1a2e5a] border-b pb-2">Status</h3>
-            <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Property Status</label>
-              <select className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
-                value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}>
-                <option value="available">Available</option>
-                <option value="sold">Sold</option>
-                <option value="rented">Rented</option>
-              </select>
-            </div>
+            <h3 className="font-bold text-[#1a2e5a] border-b pb-2">Visibility</h3>
             {can(role, 'markFeatured') && (
               <label className="flex items-center gap-3 cursor-pointer">
                 <input type="checkbox" checked={form.featured}

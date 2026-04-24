@@ -128,7 +128,7 @@ export default function PropertyDetailPage() {
   );
 
   const images = property.images?.length ? property.images : ['https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800'];
-  const amenities = ['Electricity Backup', 'Sui Gas', 'Boundary Wall', 'CCTV Security', 'Near Market', 'Near Mosque', 'Good Ventilation', 'Peaceful Environment'];
+  const amenities = property.amenities?.length ? property.amenities : [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -154,7 +154,10 @@ export default function PropertyDetailPage() {
               </span>
             </div>
             <h1 className="text-2xl md:text-3xl font-extrabold text-[#1a2e5a]">{property.title}</h1>
-            <div className="flex items-center gap-2 text-slate-500 mt-2"><MapPin size={16} className="text-red-700" /><span>{property.location}</span></div>
+            <div className="flex items-center gap-2 text-slate-500 mt-2">
+              <MapPin size={16} className="text-red-700" />
+              <span>{property.areaScheme ? `${property.areaScheme}, ` : ''}{property.location}</span>
+            </div>
           </div>
           <div className="text-right">
             <p className="text-3xl font-extrabold text-red-700">{formatPrice(property.price, property.priceType, property.rentPeriod)}</p>
@@ -235,17 +238,18 @@ export default function PropertyDetailPage() {
               <p className="text-slate-600 leading-relaxed">{property.description || 'No description available.'}</p>
             </div>
 
-            {/* Amenities */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h2 className="font-extrabold text-[#1a2e5a] text-xl mb-5 pb-3 border-b">Amenities & Features</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {amenities.map(a => (
-                  <div key={a} className="flex items-center gap-2 text-sm text-slate-700">
-                    <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />{a}
-                  </div>
-                ))}
+            {amenities.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <h2 className="font-extrabold text-[#1a2e5a] text-xl mb-5 pb-3 border-b">Amenities & Features</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {amenities.map(a => (
+                    <div key={a} className="flex items-center gap-2 text-sm text-slate-700">
+                      <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />{a}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Company section */}
             <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8">
