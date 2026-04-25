@@ -6,6 +6,8 @@ export interface PropertyFilters {
   priceType: string; // 'all' | 'sale' | 'rent'
   city:      string; // 'all' | 'Karachi' | 'Lahore' | 'Islamabad'
   search:    string;
+  minPrice:  string;
+  maxPrice:  string;
 }
 
 interface UsePropertiesOptions {
@@ -55,6 +57,8 @@ export function useProperties({
     if (filters.type      !== 'all') params.set('type',      filters.type);
     if (filters.city      !== 'all') params.set('city',      filters.city);
     if (filters.search)              params.set('search',    filters.search);
+    if (filters.minPrice)            params.set('minPrice',  filters.minPrice);
+    if (filters.maxPrice)            params.set('maxPrice',  filters.maxPrice);
 
     fetch(`/api/properties?${params}`)
       .then(r => {

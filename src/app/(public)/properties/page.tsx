@@ -12,7 +12,7 @@ const POPULAR_AREAS = [
 ];
 
 const DEFAULT_FILTERS: PropertyFilters = {
-  type: 'all', priceType: 'all', city: 'all', search: '',
+  type: 'all', priceType: 'all', city: 'all', search: '', minPrice: '', maxPrice: '',
 };
 
 export default function PropertiesPage() {
@@ -110,8 +110,8 @@ export default function PropertiesPage() {
           {/* Filters grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
 
-            {/* Search — spans wider */}
-            <div className="lg:col-span-5" ref={searchRef}>
+            {/* Search */}
+            <div className="lg:col-span-4" ref={searchRef}>
               <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">
                 Search Location
               </label>
@@ -180,7 +180,7 @@ export default function PropertiesPage() {
             </div>
 
             {/* Property Type */}
-            <div className="lg:col-span-3">
+            <div className="lg:col-span-2">
               <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">
                 Property Type
               </label>
@@ -216,6 +216,39 @@ export default function PropertiesPage() {
                   <option value="Karachi">Karachi</option>
                   <option value="Lahore">Lahore</option>
                   <option value="Islamabad">Islamabad</option>
+                </select>
+              </div>
+            </div>
+            {/* Price Range */}
+            <div className="lg:col-span-2">
+              <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">
+                Price Range
+              </label>
+              <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all">
+                <select
+                  className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none"
+                  value={`${filters.minPrice}-${filters.maxPrice}`}
+                  onChange={e => {
+                    const [minPrice, maxPrice] = e.target.value.split('-');
+                    setFilters(f => ({ ...f, minPrice: minPrice === 'all' ? '' : minPrice, maxPrice: maxPrice === 'all' ? '' : maxPrice }));
+                  }}
+                >
+                  <option value="-">All Prices</option>
+                  {filters.priceType === 'rent' ? (
+                    <>
+                      <option value="0-50000">Under 50k</option>
+                      <option value="50000-100000">50k - 1 Lac</option>
+                      <option value="100000-500000">1 Lac - 5 Lac</option>
+                      <option value="500000-">5 Lac+</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="0-5000000">Under 50 Lac</option>
+                      <option value="5000000-10000000">50 Lac - 1 Crore</option>
+                      <option value="10000000-50000000">1 Crore - 5 Crore</option>
+                      <option value="50000000-">5 Crore+</option>
+                    </>
+                  )}
                 </select>
               </div>
             </div>

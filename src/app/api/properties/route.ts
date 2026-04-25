@@ -20,6 +20,8 @@ export async function GET(req: NextRequest) {
     const priceType = searchParams.get('priceType') || '';
     const type = searchParams.get('type') || '';
     const city = searchParams.get('city') || '';
+    const minPrice = searchParams.get('minPrice') || '';
+    const maxPrice = searchParams.get('maxPrice') || '';
     const submittedBy = searchParams.get('submittedBy') || ''; // seller "my listings"
     const approvalStatus = searchParams.get('approvalStatus') || ''; // dashboard filter
     const dashboard = searchParams.get('dashboard') || 'false';
@@ -40,6 +42,12 @@ export async function GET(req: NextRequest) {
     if (priceType) filter.priceType = priceType;
     if (city) filter.city = city;
     if (submittedBy) filter.submittedBy = submittedBy;  // ← scope to seller
+    
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) (filter.price as Record<string, number>).$gte = Number(minPrice);
+      if (maxPrice) (filter.price as Record<string, number>).$lte = Number(maxPrice);
+    }
 
     // Protect public API 
     if (dashboard === 'true') {
