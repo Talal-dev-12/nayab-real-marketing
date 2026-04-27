@@ -5,6 +5,14 @@ import Pagination from '@/components/ui/Pagination';
 import { PropertyCardSkeleton } from '@/components/ui/Skeleton';
 import { Search, SlidersHorizontal, MapPin, X, Building2 } from 'lucide-react';
 import { useProperties, type PropertyFilters } from '@/hooks/useProperties';
+import PriceRangeSlider from '@/components/ui/PriceRangeSlider';
+
+const formatPrice = (value: number) => {
+  if (value === 0) return '0';
+  if (value >= 10000000) return `${(value / 10000000).toFixed(2).replace(/\.?0+$/, '')} Crore`;
+  if (value >= 100000) return `${(value / 100000).toFixed(2).replace(/\.?0+$/, '')} Lac`;
+  return `${(value / 1000).toFixed(0)}k`;
+};
 
 const POPULAR_AREAS = [
   'Clifton', 'DHA', 'Gulshan', 'Johar', 'Bahria Town',
@@ -111,7 +119,7 @@ export default function PropertiesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
 
             {/* Search */}
-            <div className="lg:col-span-4" ref={searchRef}>
+            <div className="lg:col-span-3" ref={searchRef}>
               <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">
                 Search Location
               </label>
@@ -121,8 +129,8 @@ export default function PropertiesPage() {
                   <input
                     type="text"
                     value={searchInput}
-                    placeholder="Area, title, or location..."
-                    className="outline-none text-sm flex-1 px-3 py-3 bg-transparent text-slate-800 placeholder:text-slate-400"
+                    placeholder="Area, title..."
+                    className="outline-none text-sm flex-1 px-3 py-3 bg-transparent text-slate-800 placeholder:text-slate-400 w-full"
                     onChange={e => { setSearchInput(e.target.value); setShowSuggestions(true); }}
                     onFocus={() => setShowSuggestions(true)}
                     onKeyDown={e => e.key === 'Enter' && triggerSearch()}
@@ -134,7 +142,7 @@ export default function PropertiesPage() {
                   )}
                   <button
                     onClick={triggerSearch}
-                    className="bg-[#1a2e5a] hover:bg-[#243d72] text-white px-5 py-3 text-sm font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap"
+                    className="bg-[#1a2e5a] hover:bg-[#243d72] text-white px-4 py-3 text-sm font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap"
                   >
                     <Search size={14} /> Search
                   </button>
@@ -170,7 +178,7 @@ export default function PropertiesPage() {
                 <select
                   className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none"
                   value={filters.priceType}
-                  onChange={e => setFilters(f => ({ ...f, priceType: e.target.value }))}
+                  onChange={e => setFilters(f => ({ ...f, priceType: e.target.value, minPrice: '', maxPrice: '' }))}
                 >
                   <option value="all">All Listings</option>
                   <option value="sale">For Sale</option>
@@ -220,36 +228,30 @@ export default function PropertiesPage() {
               </div>
             </div>
             {/* Price Range */}
-            <div className="lg:col-span-2">
-              <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">
-                Price Range
-              </label>
-              <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all">
-                <select
-                  className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none"
-                  value={`${filters.minPrice}-${filters.maxPrice}`}
-                  onChange={e => {
-                    const [minPrice, maxPrice] = e.target.value.split('-');
-                    setFilters(f => ({ ...f, minPrice: minPrice === 'all' ? '' : minPrice, maxPrice: maxPrice === 'all' ? '' : maxPrice }));
+            <div className="lg:col-span-3">
+              <div className="bg-white border border-slate-200 rounded-xl px-5 py-4 focus-within:border-red-500 focus-within:shadow-sm transition-all h-full flex flex-col justify-center">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">
+                  Price Range
+                </label>
+                <PriceRangeSlider
+                  min={0}
+                  max={filters.priceType === 'rent' ? 1000000 : 500000000}
+                  step={filters.priceType === 'rent' ? 10000 : 1000000}
+                  value={[
+                    filters.minPrice ? Number(filters.minPrice) : 0,
+                    filters.maxPrice ? Number(filters.maxPrice) : (filters.priceType === 'rent' ? 1000000 : 500000000)
+                  ]}
+                  onChange={(val) => {
+                    const [minPrice, maxPrice] = val;
+                    const maxAllowed = filters.priceType === 'rent' ? 1000000 : 500000000;
+                    setFilters(f => ({
+                      ...f,
+                      minPrice: minPrice === 0 ? '' : minPrice.toString(),
+                      maxPrice: maxPrice >= maxAllowed ? '' : maxPrice.toString()
+                    }));
                   }}
-                >
-                  <option value="-">All Prices</option>
-                  {filters.priceType === 'rent' ? (
-                    <>
-                      <option value="0-50000">Under 50k</option>
-                      <option value="50000-100000">50k - 1 Lac</option>
-                      <option value="100000-500000">1 Lac - 5 Lac</option>
-                      <option value="500000-">5 Lac+</option>
-                    </>
-                  ) : (
-                    <>
-                      <option value="0-5000000">Under 50 Lac</option>
-                      <option value="5000000-10000000">50 Lac - 1 Crore</option>
-                      <option value="10000000-50000000">1 Crore - 5 Crore</option>
-                      <option value="50000000-">5 Crore+</option>
-                    </>
-                  )}
-                </select>
+                  formatLabel={formatPrice}
+                />
               </div>
             </div>
           </div>
