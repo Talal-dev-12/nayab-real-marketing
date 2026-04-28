@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen bg-[#f4f7f6] flex items-center justify-center p-4 sm:p-8 font-sans">
       <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-[1100px] flex overflow-hidden lg:min-h-[700px] border border-white/50 relative">
-        
+
         {/* Subtle background glow effect */}
         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-100/50 rounded-full blur-3xl pointer-events-none" />
 
@@ -70,7 +70,7 @@ export default function ForgotPasswordPage() {
               <p className="text-slate-500 text-[16px] font-medium mb-6 leading-relaxed">
                 We've sent a secure reset code to <span className="text-[#1a2e5a] font-bold">{email}</span>. Redirecting you to the reset page...
               </p>
-              
+
               <div className="mt-8 pt-6 border-t border-slate-100 flex items-center gap-3 text-sm text-slate-400">
                 <ShieldCheck size={18} className="text-emerald-500" />
                 <span>Your account security is our top priority.</span>
@@ -142,26 +142,26 @@ export default function ForgotPasswordPage() {
         </div>
 
         {/* RIGHT PANEL (Image Banner) */}
-        <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-4 pr-4 self-center h-full min-h-[700px]">
-          <div className="w-full h-full relative flex items-center justify-center rounded-[2rem] overflow-hidden shadow-inner group">
+        <div className="hidden lg:block w-[55%] relative lg:h-[700px] self-center p-4">
+          <div className="w-full h-full relative flex items-center justify-center rounded-[2rem] overflow-hidden">
             <Image
-              src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-              alt="Luxury Real Estate"
+              src="/images/forgotpassword.avif"
+              alt="forgot password banner"
               fill
-              className="object-cover transform group-hover:scale-105 transition-transform duration-1000"
+              className="object-fill"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
               priority
             />
             {/* Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#1a2e5a]/90 via-[#1a2e5a]/40 to-transparent" />
-            
+
             {/* Glassmorphic info card */}
             <div className="absolute bottom-12 left-12 right-12 bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-2xl shadow-2xl transform transition-transform hover:-translate-y-1">
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-4">
                 <ShieldCheck size={24} className="text-white" />
               </div>
               <h2 className="text-white text-[24px] font-extrabold leading-tight mb-2">
-                Secure & Trusted <br/> Real Estate Platform
+                Secure & Trusted <br /> Real Estate Platform
               </h2>
               <p className="text-white/80 text-sm font-medium leading-relaxed">
                 We use bank-level security to protect your data and property listings. Your information is always safe with Nayab Real Marketing.

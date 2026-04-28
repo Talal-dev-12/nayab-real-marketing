@@ -14,61 +14,36 @@ const formatPrice = (value: number) => {
   return `${(value / 1000).toFixed(0)}k`;
 };
 
-const POPULAR_AREAS = [
-  'Clifton', 'DHA', 'Gulshan', 'Johar', 'Bahria Town',
-  'PECHS', 'North Nazimabad', 'Gulberg', 'F-7 Islamabad', 'Blue Area',
-];
-
 const DEFAULT_FILTERS: PropertyFilters = {
   type: 'all', priceType: 'all', city: 'all', search: '', minPrice: '', maxPrice: '',
 };
 
 export default function PropertiesPage() {
-  const [filters,         setFilters]         = useState<PropertyFilters>(DEFAULT_FILTERS);
-  const [page,            setPage]            = useState(1);
-  const [searchInput,     setSearchInput]     = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [localFilters, setLocalFilters] = useState<PropertyFilters>(DEFAULT_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState<PropertyFilters>(DEFAULT_FILTERS);
+  const [page, setPage] = useState(1);
 
-  const searchRef  = useRef<HTMLDivElement>(null);
   const gridTopRef = useRef<HTMLDivElement>(null);
 
   /* ── Data ── */
   const { properties, total, totalPages, loading } = useProperties({
-    filters,
+    filters: appliedFilters,
     page,
     limit: 12,
   });
 
   /* ── Side effects ── */
 
-  // Reset to page 1 on filter change
-  useEffect(() => { setPage(1); }, [filters]);
-
-  // Close suggestions dropdown on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node))
-        setShowSuggestions(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
+  // Reset to page 1 on applied filter change
+  useEffect(() => { setPage(1); }, [appliedFilters]);
 
   /* ── Handlers ── */
   const triggerSearch = () => {
-    setShowSuggestions(false);
-    setFilters(f => ({ ...f, search: searchInput.trim() }));
-  };
-
-  const pickSuggestion = (area: string) => {
-    setSearchInput(area);
-    setShowSuggestions(false);
-    setFilters(f => ({ ...f, search: area }));
+    setAppliedFilters(localFilters);
   };
 
   const clearSearch = () => {
-    setSearchInput('');
-    setFilters(f => ({ ...f, search: '' }));
+    setLocalFilters(f => ({ ...f, search: '' }));
   };
 
   const handlePageChange = (p: number) => {
@@ -77,10 +52,6 @@ export default function PropertiesPage() {
       gridTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 50);
   };
-
-  const suggestions = searchInput.trim()
-    ? POPULAR_AREAS.filter(a => a.toLowerCase().includes(searchInput.toLowerCase()))
-    : POPULAR_AREAS;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -101,158 +72,136 @@ export default function PropertiesPage() {
 
         {/* ── Filter bar — elevated card overlapping hero ── */}
         <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 -mt-20 relative z-20 mb-10">
-
-          {/* Header row */}
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-red-700/10 flex items-center justify-center">
-                <SlidersHorizontal size={18} className="text-red-700" />
+          
+          <div className="flex flex-col gap-6">
+            
+            {/* Header row & Search Input */}
+            <div className="flex flex-col lg:flex-row gap-4 items-center">
+              <div className="flex items-center gap-2.5 lg:w-[200px] flex-shrink-0 w-full">
+                <div className="w-10 h-10 rounded-xl bg-red-700/10 flex items-center justify-center">
+                  <SlidersHorizontal size={18} className="text-red-700" />
+                </div>
+                <h2 className="text-[#1a2e5a] font-bold text-lg">Filters</h2>
               </div>
-              <h2 className="text-[#1a2e5a] font-bold text-lg">Filter Properties</h2>
-            </div>
-            <div className="text-[13px] font-semibold text-slate-500 bg-slate-50 px-4 py-1.5 rounded-full border border-slate-100">
-              {loading ? 'Searching…' : `${total} propert${total === 1 ? 'y' : 'ies'} found`}
-            </div>
-          </div>
 
-          {/* Filters grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
-
-            {/* Search */}
-            <div className="lg:col-span-3" ref={searchRef}>
-              <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">
-                Search Location
-              </label>
-              <div className="relative">
-                <div className="flex items-center bg-slate-50 border border-slate-200 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm rounded-xl overflow-hidden transition-all">
-                  <Search size={16} className="text-slate-400 ml-3.5 flex-shrink-0" />
-                  <input
-                    type="text"
-                    value={searchInput}
-                    placeholder="Area, title..."
-                    className="outline-none text-sm flex-1 px-3 py-3 bg-transparent text-slate-800 placeholder:text-slate-400 w-full"
-                    onChange={e => { setSearchInput(e.target.value); setShowSuggestions(true); }}
-                    onFocus={() => setShowSuggestions(true)}
+              <div className="flex-1 w-full relative">
+                <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all overflow-hidden px-4 py-3.5">
+                  <Search size={18} className="text-slate-400 mr-3 flex-shrink-0" />
+                  <input 
+                    type="text" 
+                    placeholder="Search by area, title, or keyword..."
+                    className="w-full bg-transparent outline-none text-slate-800 placeholder-slate-400 text-sm font-medium"
+                    value={localFilters.search}
+                    onChange={e => setLocalFilters(f => ({ ...f, search: e.target.value }))}
                     onKeyDown={e => e.key === 'Enter' && triggerSearch()}
                   />
-                  {searchInput && (
-                    <button onClick={clearSearch} className="text-slate-400 hover:text-slate-600 px-2 transition-colors">
+                  {localFilters.search && (
+                    <button onClick={clearSearch} className="text-slate-400 hover:text-slate-600 transition-colors bg-slate-200/50 hover:bg-slate-200 rounded-full p-1">
                       <X size={14} />
                     </button>
                   )}
-                  <button
-                    onClick={triggerSearch}
-                    className="bg-[#1a2e5a] hover:bg-[#243d72] text-white px-4 py-3 text-sm font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap"
-                  >
-                    <Search size={14} /> Search
-                  </button>
                 </div>
-
-                {/* Suggestions dropdown */}
-                {showSuggestions && suggestions.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-2xl z-50 overflow-hidden py-1">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-4 pt-2.5 pb-1.5">
-                      Popular Areas
-                    </p>
-                    {suggestions.map(area => (
-                      <button
-                        key={area}
-                        onClick={() => pickSuggestion(area)}
-                        className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-slate-700 hover:bg-red-50 hover:text-red-700 transition-colors"
-                      >
-                        <MapPin size={14} className="text-red-400 flex-shrink-0" />
-                        {area}
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
-            </div>
 
-            {/* Listing Type */}
-            <div className="lg:col-span-2">
-              <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">
-                Listing Type
-              </label>
-              <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all">
-                <select
-                  className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none"
-                  value={filters.priceType}
-                  onChange={e => setFilters(f => ({ ...f, priceType: e.target.value, minPrice: '', maxPrice: '' }))}
+              <div className="flex items-center gap-3 w-full lg:w-auto">
+                <div className="hidden lg:flex text-[13px] font-semibold text-slate-500 bg-slate-50 px-4 py-3.5 rounded-xl border border-slate-100 whitespace-nowrap">
+                  {loading ? 'Searching…' : `${total} Found`}
+                </div>
+                <button 
+                  onClick={triggerSearch}
+                  className="w-full lg:w-auto bg-[#1a2e5a] hover:bg-[#243d72] text-white px-8 py-3.5 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 whitespace-nowrap shadow-sm hover:shadow-md"
                 >
-                  <option value="all">All Listings</option>
-                  <option value="sale">For Sale</option>
-                  <option value="rent">For Rent</option>
-                </select>
+                  <Search size={16} /> Search
+                </button>
               </div>
             </div>
 
-            {/* Property Type */}
-            <div className="lg:col-span-2">
-              <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">
-                Property Type
-              </label>
-              <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all">
-                <Building2 size={16} className="text-slate-400 mr-2 shrink-0" />
-                <select
-                  className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none"
-                  value={filters.type}
-                  onChange={e => setFilters(f => ({ ...f, type: e.target.value }))}
-                >
-                  <option value="all">All Types</option>
-                  <option value="residential">Residential</option>
-                  <option value="commercial">Commercial</option>
-                  <option value="office">Office</option>
-                  <option value="plot">Plot</option>
-                </select>
-              </div>
-            </div>
+            <div className="h-px bg-slate-100 w-full hidden md:block"></div>
 
-            {/* City */}
-            <div className="lg:col-span-2">
-              <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">
-                City
-              </label>
-              <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all">
-                <MapPin size={16} className="text-slate-400 mr-2 shrink-0" />
-                <select
-                  className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none"
-                  value={filters.city}
-                  onChange={e => setFilters(f => ({ ...f, city: e.target.value }))}
-                >
-                  <option value="all">All Cities</option>
-                  <option value="Karachi">Karachi</option>
-                  <option value="Lahore">Lahore</option>
-                  <option value="Islamabad">Islamabad</option>
-                </select>
+            {/* Bottom Row: Advanced Filters */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              
+              {/* Listing Type */}
+              <div>
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 block">Listing Type</label>
+                <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all">
+                  <select 
+                    className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none"
+                    value={localFilters.priceType}
+                    onChange={e => setLocalFilters(f => ({ ...f, priceType: e.target.value, minPrice: '', maxPrice: '' }))}
+                  >
+                    <option value="all">All Listings</option>
+                    <option value="sale">For Sale</option>
+                    <option value="rent">For Rent</option>
+                  </select>
+                </div>
               </div>
-            </div>
-            {/* Price Range */}
-            <div className="lg:col-span-3">
-              <div className="bg-white border border-slate-200 rounded-xl px-5 py-4 focus-within:border-red-500 focus-within:shadow-sm transition-all h-full flex flex-col justify-center">
-                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">
+
+              {/* Property Type */}
+              <div>
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 block">Property Type</label>
+                <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all flex items-center">
+                  <Building2 size={16} className="text-slate-400 mr-2.5 shrink-0" />
+                  <select 
+                    className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none"
+                    value={localFilters.type}
+                    onChange={e => setLocalFilters(f => ({ ...f, type: e.target.value }))}
+                  >
+                    <option value="all">All Types</option>
+                    <option value="residential">Residential</option>
+                    <option value="commercial">Commercial</option>
+                    <option value="office">Office</option>
+                    <option value="plot">Plot</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* City */}
+              <div>
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 block">City</label>
+                <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all flex items-center">
+                  <MapPin size={16} className="text-slate-400 mr-2.5 shrink-0" />
+                  <select 
+                    className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none"
+                    value={localFilters.city}
+                    onChange={e => setLocalFilters(f => ({ ...f, city: e.target.value }))}
+                  >
+                    <option value="all">All Cities</option>
+                    <option value="Karachi">Karachi</option>
+                    <option value="Lahore">Lahore</option>
+                    <option value="Islamabad">Islamabad</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Price Range */}
+              <div>
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">
                   Price Range
                 </label>
-                <PriceRangeSlider
-                  min={0}
-                  max={filters.priceType === 'rent' ? 1000000 : 500000000}
-                  step={filters.priceType === 'rent' ? 10000 : 1000000}
-                  value={[
-                    filters.minPrice ? Number(filters.minPrice) : 0,
-                    filters.maxPrice ? Number(filters.maxPrice) : (filters.priceType === 'rent' ? 1000000 : 500000000)
-                  ]}
-                  onChange={(val) => {
-                    const [minPrice, maxPrice] = val;
-                    const maxAllowed = filters.priceType === 'rent' ? 1000000 : 500000000;
-                    setFilters(f => ({
-                      ...f,
-                      minPrice: minPrice === 0 ? '' : minPrice.toString(),
-                      maxPrice: maxPrice >= maxAllowed ? '' : maxPrice.toString()
-                    }));
-                  }}
-                  formatLabel={formatPrice}
-                />
+                <div className="bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all h-[46px] flex flex-col justify-center mt-0.5">
+                  <PriceRangeSlider
+                    min={0}
+                    max={localFilters.priceType === 'rent' ? 1000000 : 500000000}
+                    step={localFilters.priceType === 'rent' ? 10000 : 1000000}
+                    value={[
+                      localFilters.minPrice ? Number(localFilters.minPrice) : 0,
+                      localFilters.maxPrice ? Number(localFilters.maxPrice) : (localFilters.priceType === 'rent' ? 1000000 : 500000000)
+                    ]}
+                    onChange={(val) => {
+                      const [minPrice, maxPrice] = val;
+                      const maxAllowed = localFilters.priceType === 'rent' ? 1000000 : 500000000;
+                      setLocalFilters(f => ({
+                        ...f,
+                        minPrice: minPrice === 0 ? '' : minPrice.toString(),
+                        maxPrice: maxPrice >= maxAllowed ? '' : maxPrice.toString()
+                      }));
+                    }}
+                    formatLabel={formatPrice}
+                  />
+                </div>
               </div>
+
             </div>
           </div>
         </div>
@@ -266,12 +215,15 @@ export default function PropertiesPage() {
             {[...Array(6)].map((_, i) => <PropertyCardSkeleton key={i} />)}
           </div>
         ) : properties.length === 0 ? (
-          <div className="text-center py-20 text-slate-500">
+          <div className="text-center py-20 text-slate-500 bg-white rounded-2xl border border-slate-100 shadow-sm">
             <Search size={48} className="mx-auto mb-4 text-slate-300" />
-            <p className="text-xl font-semibold">No properties found</p>
-            <p className="text-sm mt-2">Try a different area or adjust your filters</p>
-            {filters.search && (
-              <button onClick={clearSearch} className="mt-4 text-sm text-red-700 font-semibold hover:underline">
+            <p className="text-xl font-semibold text-slate-700">No properties found</p>
+            <p className="text-sm mt-2 text-slate-500">Try a different area or adjust your filters</p>
+            {appliedFilters.search && (
+              <button onClick={() => {
+                setLocalFilters(f => ({ ...f, search: '' }));
+                setAppliedFilters(f => ({ ...f, search: '' }));
+              }} className="mt-5 px-6 py-2 bg-red-50 text-red-700 rounded-xl font-semibold hover:bg-red-100 transition-colors">
                 Clear search
               </button>
             )}
@@ -291,7 +243,7 @@ export default function PropertiesPage() {
 
         {/* Page label */}
         {!loading && totalPages > 1 && (
-          <p className="text-center text-xs text-slate-400 mt-3">
+          <p className="text-center text-xs text-slate-400 mt-4 font-medium">
             Page {page} of {totalPages} &nbsp;·&nbsp; {total} properties
           </p>
         )}

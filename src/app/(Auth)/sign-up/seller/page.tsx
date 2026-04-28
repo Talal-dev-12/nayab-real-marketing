@@ -226,18 +226,15 @@ function SellerSignUpForm() {
         </div>
 
         {/* RIGHT PANEL (Image Banner) */}
-        <div className="hidden lg:block w-[55%] relative p-4 pl-0 py-5 pr-5 lg:h-[700px] self-center">
-          <div
-            className="w-full h-full"
-
-          >
+        <div className="hidden lg:block w-[55%] relative lg:h-[1000px] self-center pr-4">
+          <div className="w-full h-full relative flex items-center justify-center rounded-[2rem] overflow-hidden">
             <Image
-              src="/images/Seller-Subtract.svg"
+              src="/images/seller.jpg"
               alt="Seller Banner"
               fill
-              className="object-fill h-[700px]"
+              className="object-fill"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
               priority
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
             />
 
             {/* Added overlay to improve text contrast over image */}

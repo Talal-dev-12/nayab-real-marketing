@@ -51,14 +51,21 @@ function FilterPanel({
       {/* Category */}
       <div className="bg-white rounded-xl shadow-sm p-4">
         <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Category</p>
-        <div className="space-y-1">
-          {categories.map(cat => (
-            <button key={cat} onClick={() => { setCategory(cat); onClose?.(); }}
-              className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                category === cat ? 'bg-red-700 text-white' : 'text-slate-600 hover:bg-slate-50'}`}>
-              {cat === 'all' ? 'All Categories' : cat}
-            </button>
-          ))}
+        <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all relative">
+          <select
+            className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none pr-8"
+            value={category}
+            onChange={(e) => { setCategory(e.target.value); onClose?.(); }}
+          >
+            {categories.map(cat => (
+              <option key={cat} value={cat}>
+                {cat === 'all' ? 'All Categories' : cat}
+              </option>
+            ))}
+          </select>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
         </div>
       </div>
 
@@ -68,20 +75,22 @@ function FilterPanel({
           <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <MapPin size={12} className="text-red-600" /> Filter by Area
           </p>
-          <div className="space-y-1">
-            <button onClick={() => setAreaF('all')}
-              className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${areaF === 'all' ? 'bg-red-700 text-white' : 'text-slate-600 hover:bg-slate-50'}`}>
-              All Areas
-            </button>
-            {areas.map(a => (
-              <button key={a.slug} onClick={() => { setAreaF(a.slug); onClose?.(); }}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-between ${areaF === a.slug ? 'bg-red-700 text-white' : 'text-slate-600 hover:bg-slate-50'}`}>
-                <span>{a.label}</span>
-                <span className={`text-xs rounded-full px-1.5 py-0.5 ${areaF === a.slug ? 'bg-red-600 text-red-100' : 'bg-slate-100 text-slate-500'}`}>
-                  {a.blogCount}
-                </span>
-              </button>
-            ))}
+          <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all relative">
+            <select
+              className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none pr-8"
+              value={areaF}
+              onChange={(e) => { setAreaF(e.target.value); onClose?.(); }}
+            >
+              <option value="all">All Areas</option>
+              {areas.map(a => (
+                <option key={a.slug} value={a.slug}>
+                  {a.label} ({a.blogCount})
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
           </div>
           <Link href="/blogs/areas" className="flex items-center gap-1 text-xs text-red-600 font-semibold mt-3 hover:underline">
             View all areas →
@@ -95,20 +104,22 @@ function FilterPanel({
           <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <Building2 size={12} className="text-red-600" /> Housing Scheme
           </p>
-          <div className="space-y-1">
-            <button onClick={() => setSchemeF('all')}
-              className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${schemeF === 'all' ? 'bg-red-700 text-white' : 'text-slate-600 hover:bg-slate-50'}`}>
-              All Schemes
-            </button>
-            {visibleSchemes.map(s => (
-              <button key={s.slug} onClick={() => { setSchemeF(s.slug); onClose?.(); }}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-between ${schemeF === s.slug ? 'bg-red-700 text-white' : 'text-slate-600 hover:bg-slate-50'}`}>
-                <span>{s.label}</span>
-                <span className={`text-xs rounded-full px-1.5 py-0.5 ${schemeF === s.slug ? 'bg-red-600 text-red-100' : 'bg-slate-100 text-slate-500'}`}>
-                  {s.blogCount}
-                </span>
-              </button>
-            ))}
+          <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all relative">
+            <select
+              className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none pr-8"
+              value={schemeF}
+              onChange={(e) => { setSchemeF(e.target.value); onClose?.(); }}
+            >
+              <option value="all">All Schemes</option>
+              {visibleSchemes.map(s => (
+                <option key={s.slug} value={s.slug}>
+                  {s.label} ({s.blogCount})
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
           </div>
           <Link href="/blogs/schemes" className="flex items-center gap-1 text-xs text-red-600 font-semibold mt-3 hover:underline">
             View all schemes →
@@ -118,7 +129,7 @@ function FilterPanel({
 
       {hasFilters && (
         <button onClick={() => { clearFilters(); onClose?.(); }}
-          className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-semibold py-2.5 rounded-xl transition-colors">
+          className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-semibold py-2.5 rounded-xl transition-colors mt-2">
           <X size={14} /> Clear All Filters
         </button>
       )}

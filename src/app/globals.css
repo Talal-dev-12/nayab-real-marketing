@@ -24,7 +24,7 @@ body {
   .btn-primary {
     @apply bg-red-700 hover:bg-red-800 text-white font-semibold py-3 px-6 rounded transition-all duration-300;
   }
-  
+
   .btn-outline {
     @apply border-2 border-red-700 text-red-700 hover:bg-red-700 hover:text-white font-semibold py-3 px-6 rounded transition-all duration-300;
   }
@@ -64,13 +64,16 @@ body {
 .primary-gradient {
   background: linear-gradient(to bottom, #1a2e5a, #0f172a);
 }
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #c0392b;
   border-radius: 3px;
@@ -80,9 +83,11 @@ body {
 .prose h2 {
   @apply text-2xl font-bold text-gray-800 mt-8 mb-4;
 }
+
 .prose p {
   @apply text-gray-600 leading-relaxed mb-4;
 }
+
 .prose ul {
   @apply list-disc list-inside mb-4 text-gray-600;
 }
@@ -99,11 +104,13 @@ body {
   display: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
+
 @media (min-width: 768px) {
   .navbar-topbar {
     display: block;
   }
 }
+
 .navbar-topbar-inner {
   max-width: 80rem;
   margin: 0 auto;
@@ -112,11 +119,13 @@ body {
   justify-content: space-between;
   align-items: center;
 }
+
 .navbar-topbar-left {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
+
 .navbar-topbar-link {
   display: flex;
   align-items: center;
@@ -125,15 +134,18 @@ body {
   text-decoration: none;
   transition: color 0.2s ease;
 }
+
 .navbar-topbar-link:hover {
   color: #e2e8f0;
 }
+
 .navbar-topbar-divider {
   width: 1px;
   height: 14px;
   background: rgba(255, 255, 255, 0.15);
   margin: 0 0.5rem;
 }
+
 .navbar-topbar-right {
   display: flex;
   align-items: center;
@@ -151,6 +163,7 @@ body {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
+
 .navbar-scrolled {
   background: rgba(15, 26, 53, 0.85) !important;
   backdrop-filter: blur(20px) saturate(180%);
@@ -160,6 +173,7 @@ body {
     0 1px 0 rgba(255, 255, 255, 0.05) inset;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
+
 .navbar-container {
   max-width: 80rem;
   margin: 0 auto;
@@ -177,18 +191,26 @@ body {
   flex-shrink: 0;
   transition: opacity 0.2s ease;
 }
+
 .navbar-logo:hover {
   opacity: 0.9;
 }
+
 .navbar-logo-img {
   width: 130px;
   height: auto;
 }
+
 @media (min-width: 640px) {
-  .navbar-logo-img { width: 150px; }
+  .navbar-logo-img {
+    width: 150px;
+  }
 }
+
 @media (min-width: 1024px) {
-  .navbar-logo-img { width: 180px; }
+  .navbar-logo-img {
+    width: 180px;
+  }
 }
 
 /* ── Desktop Menu ─────────────────────────────────────────────────────────── */
@@ -197,6 +219,7 @@ body {
   align-items: center;
   gap: 0.25rem;
 }
+
 @media (min-width: 1024px) {
   .navbar-desktop-menu {
     display: flex;
@@ -221,6 +244,7 @@ body {
   align-items: center;
   gap: 0.35rem;
 }
+
 .navbar-link::after {
   content: "";
   position: absolute;
@@ -233,15 +257,19 @@ body {
   border-radius: 999px;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .navbar-link:hover {
   color: #ffffff;
 }
+
 .navbar-link:hover::after {
   transform: translateX(-50%) scaleX(1);
 }
+
 .navbar-link-active {
   color: #ffffff !important;
 }
+
 .navbar-link-active::after {
   transform: translateX(-50%) scaleX(1) !important;
   background: linear-gradient(90deg, #ef4444, #f97316) !important;
@@ -251,13 +279,16 @@ body {
 .navbar-tools-wrapper {
   position: relative;
 }
+
 .navbar-tools-trigger {
   gap: 0.3rem;
 }
+
 .navbar-tools-chevron {
   transition: transform 0.3s ease;
   color: rgba(148, 163, 184, 0.7);
 }
+
 .navbar-tools-chevron-open {
   transform: rotate(180deg);
 }
@@ -284,6 +315,7 @@ body {
   pointer-events: none;
   overflow: hidden;
 }
+
 .navbar-tools-dropdown-open {
   opacity: 1;
   visibility: visible;
@@ -303,12 +335,15 @@ body {
   color: #64748b;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
+
 .navbar-tools-header-icon {
   color: #f97316;
 }
+
 .navbar-tools-grid {
   padding: 0.5rem;
 }
+
 .navbar-tool-card {
   display: flex;
   align-items: center;
@@ -318,9 +353,11 @@ body {
   text-decoration: none;
   transition: all 0.2s ease;
 }
+
 .navbar-tool-card:hover {
   background: rgba(255, 255, 255, 0.06);
 }
+
 .navbar-tool-icon {
   flex-shrink: 0;
   width: 2.75rem;
@@ -332,17 +369,20 @@ body {
   color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
+
 .navbar-tool-info {
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
+
 .navbar-tool-label {
   font-size: 0.875rem;
   font-weight: 600;
   color: #e2e8f0;
   line-height: 1.3;
 }
+
 .navbar-tool-desc {
   font-size: 0.75rem;
   color: #64748b;
@@ -365,11 +405,13 @@ body {
   box-shadow: 0 4px 16px rgba(220, 38, 38, 0.35);
   overflow: hidden;
 }
+
 .navbar-cta:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 24px rgba(220, 38, 38, 0.5);
   background: linear-gradient(135deg, #ef4444, #dc2626);
 }
+
 .navbar-cta-pulse {
   position: absolute;
   top: 50%;
@@ -382,9 +424,19 @@ body {
   animation: ctaPulse 2.5s ease-in-out infinite;
   pointer-events: none;
 }
+
 @keyframes ctaPulse {
-  0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
-  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
 }
 
 /* ── Sign In Button ───────────────────────────────────────────────────────── */
@@ -403,6 +455,7 @@ body {
   transition: all 0.3s ease;
   background: rgba(255, 255, 255, 0.04);
 }
+
 .navbar-signin:hover {
   border-color: rgba(255, 255, 255, 0.5);
   background: rgba(255, 255, 255, 0.1);
@@ -414,6 +467,7 @@ body {
   position: relative;
   margin-left: 0.5rem;
 }
+
 .navbar-user-btn {
   display: flex;
   align-items: center;
@@ -425,16 +479,19 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
 }
+
 .navbar-user-btn:hover {
   background: rgba(255, 255, 255, 0.14);
   border-color: rgba(255, 255, 255, 0.2);
 }
+
 .navbar-user-avatar {
   width: 2rem;
   height: 2rem;
   border-radius: 999px;
   object-fit: cover;
 }
+
 .navbar-user-initials {
   width: 2rem;
   height: 2rem;
@@ -447,6 +504,7 @@ body {
   font-size: 0.7rem;
   font-weight: 700;
 }
+
 .navbar-user-name {
   color: white;
   font-size: 0.82rem;
@@ -456,13 +514,16 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .navbar-user-chevron {
   color: #94a3b8;
   transition: transform 0.3s ease;
 }
+
 .navbar-user-chevron-open {
   transform: rotate(180deg);
 }
+
 .navbar-user-dropdown {
   position: absolute;
   right: 0;
@@ -478,15 +539,25 @@ body {
   z-index: 60;
   animation: dropdownIn 0.2s ease;
 }
+
 @keyframes dropdownIn {
-  from { opacity: 0; transform: translateY(6px) scale(0.97); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
+
 .navbar-user-dropdown-header {
   padding: 0.85rem 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(255, 255, 255, 0.03);
 }
+
 .navbar-user-dropdown-name {
   font-size: 0.85rem;
   font-weight: 600;
@@ -495,6 +566,7 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .navbar-user-dropdown-email {
   font-size: 0.72rem;
   color: #64748b;
@@ -503,6 +575,7 @@ body {
   white-space: nowrap;
   margin-top: 0.1rem;
 }
+
 .navbar-user-dropdown-item {
   display: flex;
   align-items: center;
@@ -518,13 +591,16 @@ body {
   cursor: pointer;
   border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
+
 .navbar-user-dropdown-item:hover {
   background: rgba(255, 255, 255, 0.06);
   color: #ffffff;
 }
+
 .navbar-user-dropdown-logout {
   color: #f87171 !important;
 }
+
 .navbar-user-dropdown-logout:hover {
   background: rgba(239, 68, 68, 0.1) !important;
   color: #ef4444 !important;
@@ -544,9 +620,11 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
 }
+
 .navbar-mobile-toggle:hover {
   background: rgba(255, 255, 255, 0.14);
 }
+
 @media (min-width: 1024px) {
   .navbar-mobile-toggle {
     display: none;
@@ -562,11 +640,13 @@ body {
   pointer-events: none;
   transition: background 0.35s ease;
 }
+
 .navbar-mobile-overlay-open {
   background: rgba(0, 0, 0, 0.55);
   pointer-events: auto;
   backdrop-filter: blur(4px);
 }
+
 @media (min-width: 1024px) {
   .navbar-mobile-overlay {
     display: none;
@@ -590,9 +670,11 @@ body {
   box-shadow: -10px 0 40px rgba(0, 0, 0, 0.4);
   overflow-y: auto;
 }
+
 .navbar-mobile-panel-open {
   transform: translateX(0);
 }
+
 @media (min-width: 1024px) {
   .navbar-mobile-panel {
     display: none;
@@ -607,6 +689,7 @@ body {
   padding: 1rem 1.25rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
+
 .navbar-mobile-close {
   display: flex;
   align-items: center;
@@ -620,6 +703,7 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
 }
+
 .navbar-mobile-close:hover {
   color: white;
   background: rgba(255, 255, 255, 0.1);
@@ -631,6 +715,7 @@ body {
   padding: 0.75rem 0;
   overflow-y: auto;
 }
+
 .navbar-mobile-link {
   display: flex;
   align-items: center;
@@ -647,10 +732,12 @@ body {
   cursor: pointer;
   text-align: left;
 }
+
 .navbar-mobile-link:hover {
   color: #ffffff;
   background: rgba(255, 255, 255, 0.04);
 }
+
 .navbar-mobile-link-active {
   color: #ffffff !important;
   background: rgba(239, 68, 68, 0.08) !important;
@@ -661,14 +748,24 @@ body {
 .navbar-mobile-tools-trigger {
   font-size: 0.95rem;
 }
+
 .navbar-mobile-tools-list {
   padding: 0.25rem 0.75rem 0.5rem 1.25rem;
   animation: slideDown 0.3s ease;
 }
+
 @keyframes slideDown {
-  from { opacity: 0; max-height: 0; }
-  to { opacity: 1; max-height: 500px; }
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
 }
+
 .navbar-mobile-tool-item {
   display: flex;
   align-items: center;
@@ -678,9 +775,11 @@ body {
   text-decoration: none;
   transition: all 0.2s ease;
 }
+
 .navbar-mobile-tool-item:hover {
   background: rgba(255, 255, 255, 0.05);
 }
+
 .navbar-mobile-tool-icon {
   flex-shrink: 0;
   width: 2.25rem;
@@ -691,16 +790,19 @@ body {
   justify-content: center;
   color: white;
 }
+
 .navbar-mobile-tool-info {
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
+
 .navbar-mobile-tool-label {
   font-size: 0.82rem;
   font-weight: 600;
   color: #e2e8f0;
 }
+
 .navbar-mobile-tool-desc {
   font-size: 0.7rem;
   color: #64748b;
@@ -713,6 +815,7 @@ body {
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   margin-top: auto;
 }
+
 .navbar-mobile-user-info {
   display: flex;
   align-items: center;
@@ -722,6 +825,7 @@ body {
   background: rgba(255, 255, 255, 0.04);
   border-radius: 0.75rem;
 }
+
 .navbar-mobile-user-avatar {
   width: 2.75rem;
   height: 2.75rem;
@@ -729,6 +833,7 @@ body {
   object-fit: cover;
   flex-shrink: 0;
 }
+
 .navbar-mobile-user-initials {
   width: 2.75rem;
   height: 2.75rem;
@@ -742,6 +847,7 @@ body {
   font-weight: 700;
   flex-shrink: 0;
 }
+
 .navbar-mobile-user-name {
   font-size: 0.85rem;
   font-weight: 600;
@@ -750,6 +856,7 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .navbar-mobile-user-email {
   font-size: 0.72rem;
   color: #64748b;
@@ -757,6 +864,7 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .navbar-mobile-action {
   display: flex;
   align-items: center;
@@ -771,10 +879,12 @@ body {
   transition: all 0.2s ease;
   margin-bottom: 0.4rem;
 }
+
 .navbar-mobile-action:hover {
   background: rgba(255, 255, 255, 0.06);
   color: white;
 }
+
 .navbar-mobile-logout {
   display: flex;
   align-items: center;
@@ -791,14 +901,17 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
 }
+
 .navbar-mobile-logout:hover {
   background: linear-gradient(135deg, #ef4444, #dc2626);
 }
+
 .navbar-mobile-guest-actions {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
+
 .navbar-mobile-signin {
   display: flex;
   align-items: center;
@@ -813,10 +926,12 @@ body {
   text-decoration: none;
   transition: all 0.2s ease;
 }
+
 .navbar-mobile-signin:hover {
   border-color: rgba(255, 255, 255, 0.4);
   background: rgba(255, 255, 255, 0.06);
 }
+
 .navbar-mobile-cta {
   display: flex;
   align-items: center;
@@ -831,6 +946,7 @@ body {
   transition: all 0.2s ease;
   box-shadow: 0 4px 16px rgba(220, 38, 38, 0.3);
 }
+
 .navbar-mobile-cta:hover {
   background: linear-gradient(135deg, #ef4444, #dc2626);
   transform: translateY(-1px);

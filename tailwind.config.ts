@@ -25,6 +25,10 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('daisyui')],
+  daisyui: {
+    themes: false, // disable all themes so it doesn't override the custom app theme
+    base: false, // disable base styling
+  }
 }
 export default config
