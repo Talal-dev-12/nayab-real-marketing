@@ -8,6 +8,7 @@ import { can } from '@/lib/rbac';
 import { AREA_UNITS, toSqft, fromSqft, formatArea } from '@/lib/areaUtils';
 import type { UserRole } from '@/lib/jwt';
 import type { AreaUnit } from '@/lib/areaUtils';
+import Select from '@/components/ui/Select';
 
 const AMENITIES = ['Electricity', 'Gas', 'Water Supply', 'Security', 'Park', 'Mosque', 'Gym', 'Swimming Pool', 'Elevator', 'Car Parking', 'Backup Generator', 'High Speed Internet'];
 const KARACHI_AREAS = ['DHA (Defence Housing Authority)', 'Bahria Town Karachi', 'Clifton', 'Gulshan-e-Iqbal', 'Gulistan-e-Jauhar', 'North Nazimabad', 'Malir', 'Scheme 33', 'Korangi', 'PECHS', 'Tariq Road', 'F.B Area', 'Nazimabad', 'Saddar', 'Other'];function F({ label, ...props }: any) {
@@ -244,20 +245,32 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
             </div>
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">City</label>
-              <select className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
-                value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value, areaScheme: e.target.value === 'Karachi' ? f.areaScheme : '' }))}>
-                <option>Karachi</option><option>Lahore</option><option>Islamabad</option>
-                <option>Rawalpindi</option><option>Faisalabad</option>
-              </select>
+              <Select
+                value={form.city}
+                onChange={val => setForm(f => ({ ...f, city: val, areaScheme: val === 'Karachi' ? f.areaScheme : '' }))}
+                className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none focus-within:border-red-500 bg-white"
+                options={[
+                  { value: 'Karachi', label: 'Karachi' },
+                  { value: 'Lahore', label: 'Lahore' },
+                  { value: 'Islamabad', label: 'Islamabad' },
+                  { value: 'Rawalpindi', label: 'Rawalpindi' },
+                  { value: 'Faisalabad', label: 'Faisalabad' },
+                ]}
+              />
             </div>
             {form.city === 'Karachi' && (
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Area / Housing Scheme</label>
-                <select className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
-                  value={form.areaScheme} onChange={e => setForm(f => ({ ...f, areaScheme: e.target.value }))}>
-                  <option value="">-- Select Area --</option>
-                  {KARACHI_AREAS.map(a => <option key={a} value={a}>{a}</option>)}
-                </select>
+                <Select
+                  value={form.areaScheme}
+                  onChange={val => setForm(f => ({ ...f, areaScheme: val }))}
+                  className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none focus-within:border-red-500 bg-white"
+                  placeholder="-- Select Area --"
+                  options={[
+                    { value: '', label: '-- Select Area --' },
+                    ...KARACHI_AREAS.map(a => ({ value: a, label: a }))
+                  ]}
+                />
               </div>
             )}
             <F label="Precise Location / Address *" placeholder={form.city === 'Karachi' ? "e.g. Street 5, House 10" : "e.g. DHA Phase 6, Karachi"}
@@ -265,11 +278,16 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
             {can(role, 'assignAgent') && (
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Assign Agent</label>
-                <select className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
-                  value={form.agentId} onChange={e => setForm(f => ({ ...f, agentId: e.target.value }))}>
-                  <option value="">-- Select Agent --</option>
-                  {agents.map(a => <option key={a._id} value={a._id}>{a.name}</option>)}
-                </select>
+                <Select
+                  value={form.agentId}
+                  onChange={val => setForm(f => ({ ...f, agentId: val }))}
+                  className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none focus-within:border-red-500 bg-white"
+                  placeholder="-- Select Agent --"
+                  options={[
+                    { value: '', label: '-- Select Agent --' },
+                    ...agents.map(a => ({ value: a._id, label: a.name }))
+                  ]}
+                />
               </div>
             )}
           </div>
@@ -279,14 +297,18 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Property Type</label>
-                <select className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
-                  value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
-                  <option value="residential">Residential</option>
-                  <option value="commercial">Commercial</option>
-                  <option value="office">Office</option>
-                  <option value="plot">Plot</option>
-                  <option value="shop">Shop</option>
-                </select>
+                <Select
+                  value={form.type}
+                  onChange={val => setForm(f => ({ ...f, type: val }))}
+                  className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none focus-within:border-red-500 bg-white"
+                  options={[
+                    { value: 'residential', label: 'Residential' },
+                    { value: 'commercial', label: 'Commercial' },
+                    { value: 'office', label: 'Office' },
+                    { value: 'plot', label: 'Plot' },
+                    { value: 'shop', label: 'Shop' },
+                  ]}
+                />
               </div>
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Area *</label>
@@ -294,10 +316,14 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
                   <input type="number" placeholder="e.g. 5"
                     className="flex-1 border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
                     value={form.areaValue} onChange={e => setForm(f => ({ ...f, areaValue: e.target.value }))} />
-                  <select className="border-2 rounded-lg px-2 py-2.5 text-sm outline-none focus:border-red-500 bg-white"
-                    value={form.areaUnit} onChange={e => setForm(f => ({ ...f, areaUnit: e.target.value as AreaUnit }))}>
-                    {AREA_UNITS.map(u => <option key={u.value} value={u.value}>{u.abbr}</option>)}
-                  </select>
+                  <div className="w-[100px]">
+                    <Select
+                      value={form.areaUnit}
+                      onChange={val => setForm(f => ({ ...f, areaUnit: val as AreaUnit }))}
+                      className="border-2 rounded-lg px-3 py-2 text-sm outline-none focus-within:border-red-500 bg-white"
+                      options={AREA_UNITS.map(u => ({ value: u.value, label: u.abbr }))}
+                    />
+                  </div>
                 </div>
                 {form.areaValue && (
                   <p className="text-xs text-slate-400 mt-1">
@@ -370,20 +396,30 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
             <h3 className="font-bold text-[#1a2e5a] border-b pb-2">Pricing</h3>
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Listing Type</label>
-              <select className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
-                value={form.priceType} onChange={e => setForm(f => ({ ...f, priceType: e.target.value }))}>
-                <option value="sale">For Sale</option><option value="rent">For Rent</option>
-              </select>
+              <Select
+                value={form.priceType}
+                onChange={val => setForm(f => ({ ...f, priceType: val }))}
+                className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none focus-within:border-red-500 bg-white"
+                options={[
+                  { value: 'sale', label: 'For Sale' },
+                  { value: 'rent', label: 'For Rent' },
+                ]}
+              />
             </div>
             <F label="Price (PKR) *" type="number" placeholder="25000000"
               value={form.price} onChange={(e: any) => setForm(f => ({ ...f, price: e.target.value }))} />
             {form.priceType === 'rent' && (
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Rent Period</label>
-                <select className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
-                  value={form.rentPeriod} onChange={e => setForm(f => ({ ...f, rentPeriod: e.target.value }))}>
-                  <option value="month">Per Month</option><option value="year">Per Year</option>
-                </select>
+                <Select
+                  value={form.rentPeriod}
+                  onChange={val => setForm(f => ({ ...f, rentPeriod: val }))}
+                  className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none focus-within:border-red-500 bg-white"
+                  options={[
+                    { value: 'month', label: 'Per Month' },
+                    { value: 'year', label: 'Per Year' },
+                  ]}
+                />
               </div>
             )}
           </div>
@@ -392,12 +428,16 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
             <h3 className="font-bold text-[#1a2e5a] border-b pb-2">Status</h3>
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase mb-1 block">Property Status</label>
-              <select className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
-                value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}>
-                <option value="available">Available</option>
-                <option value="sold">Sold</option>
-                <option value="rented">Rented</option>
-              </select>
+              <Select
+                value={form.status}
+                onChange={val => setForm(f => ({ ...f, status: val }))}
+                className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none focus-within:border-red-500 bg-white"
+                options={[
+                  { value: 'available', label: 'Available' },
+                  { value: 'sold', label: 'Sold' },
+                  { value: 'rented', label: 'Rented' },
+                ]}
+              />
             </div>
             {can(role, 'markFeatured') && (
               <label className="flex items-center gap-3 cursor-pointer">

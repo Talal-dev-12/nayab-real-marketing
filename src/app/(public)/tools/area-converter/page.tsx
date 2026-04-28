@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Calculator, ArrowRightLeft, Info } from 'lucide-react';
+import Select from '@/components/ui/Select';
 
 const units = [
   { key: 'marla', label: 'Marla', toSqft: 272.25 },
@@ -48,9 +49,12 @@ export default function AreaConverter() {
             </div>
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">From Unit</label>
-              <select value={from} onChange={e => setFrom(e.target.value)} className="w-full border-2 rounded-xl px-5 py-4 text-lg font-semibold text-[#1a2e5a] outline-none focus:border-red-500 transition-colors bg-slate-50 focus:bg-white appearance-none cursor-pointer">
-                {units.map(u => <option key={u.key} value={u.key}>{u.label}</option>)}
-              </select>
+              <Select
+                value={from}
+                onChange={setFrom}
+                className="w-full border-2 rounded-xl px-5 py-3 text-lg font-semibold text-[#1a2e5a] outline-none focus:border-red-500 focus-within:border-red-500 transition-colors bg-slate-50 focus:bg-white"
+                options={units.map(u => ({ value: u.key, label: u.label }))}
+              />
             </div>
           </div>
 

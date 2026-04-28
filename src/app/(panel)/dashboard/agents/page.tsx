@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { api, uploadImage } from '@/lib/api-client';
 import { AdminCardSkeleton } from '@/components/ui/Skeleton';
+import Select from '@/components/ui/Select';
 import type { Agent } from '@/types';
 
 interface AgentWithStats extends Agent {
@@ -316,10 +317,12 @@ export default function AdminAgents() {
                 ))}
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase block mb-1.5">Specialization</label>
-                  <select value={editForm.specialization} onChange={e => setEditForm(f => f ? { ...f, specialization: e.target.value } : f)}
-                    className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500 transition-colors">
-                    {SPECS.map(s => <option key={s}>{s}</option>)}
-                  </select>
+                  <Select
+                    value={editForm.specialization}
+                    onChange={val => setEditForm(f => f ? { ...f, specialization: val } : f)}
+                    className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none focus-within:border-red-500 transition-colors bg-white"
+                    options={SPECS.map(s => ({ value: s, label: s }))}
+                  />
                 </div>
               </div>
               <div>

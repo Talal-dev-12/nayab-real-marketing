@@ -8,6 +8,7 @@ import { Search, MapPin, Building2, X, SlidersHorizontal } from 'lucide-react';
 import type { AreaSummary, SchemeSummary } from '@/types';
 import { useBlogs } from '@/hooks/useBlogs';
 import { usePagination } from '@/hooks/usePagination';
+import Select from '@/components/ui/Select';
 
 /* ─────────────────────────────────────────────
    FilterPanel — shared by sidebar + drawer
@@ -51,21 +52,16 @@ function FilterPanel({
       {/* Category */}
       <div className="bg-white rounded-xl shadow-sm p-4">
         <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Category</p>
-        <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all relative">
-          <select
-            className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none pr-8"
+        <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all relative">
+          <Select
             value={category}
-            onChange={(e) => { setCategory(e.target.value); onClose?.(); }}
-          >
-            {categories.map(cat => (
-              <option key={cat} value={cat}>
-                {cat === 'all' ? 'All Categories' : cat}
-              </option>
-            ))}
-          </select>
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-          </div>
+            onChange={(val) => { setCategory(val); onClose?.(); }}
+            className="w-full text-slate-700 font-medium py-1"
+            options={categories.map(cat => ({
+              value: cat,
+              label: cat === 'all' ? 'All Categories' : cat
+            }))}
+          />
         </div>
       </div>
 
@@ -75,22 +71,19 @@ function FilterPanel({
           <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <MapPin size={12} className="text-red-600" /> Filter by Area
           </p>
-          <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all relative">
-            <select
-              className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none pr-8"
+          <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all relative">
+            <Select
               value={areaF}
-              onChange={(e) => { setAreaF(e.target.value); onClose?.(); }}
-            >
-              <option value="all">All Areas</option>
-              {areas.map(a => (
-                <option key={a.slug} value={a.slug}>
-                  {a.label} ({a.blogCount})
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-            </div>
+              onChange={(val) => { setAreaF(val); onClose?.(); }}
+              className="w-full text-slate-700 font-medium py-1"
+              options={[
+                { value: 'all', label: 'All Areas' },
+                ...areas.map(a => ({
+                  value: a.slug,
+                  label: `${a.label} (${a.blogCount})`
+                }))
+              ]}
+            />
           </div>
           <Link href="/blogs/areas" className="flex items-center gap-1 text-xs text-red-600 font-semibold mt-3 hover:underline">
             View all areas →
@@ -104,22 +97,19 @@ function FilterPanel({
           <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <Building2 size={12} className="text-red-600" /> Housing Scheme
           </p>
-          <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all relative">
-            <select
-              className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none pr-8"
+          <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all relative">
+            <Select
               value={schemeF}
-              onChange={(e) => { setSchemeF(e.target.value); onClose?.(); }}
-            >
-              <option value="all">All Schemes</option>
-              {visibleSchemes.map(s => (
-                <option key={s.slug} value={s.slug}>
-                  {s.label} ({s.blogCount})
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-            </div>
+              onChange={(val) => { setSchemeF(val); onClose?.(); }}
+              className="w-full text-slate-700 font-medium py-1"
+              options={[
+                { value: 'all', label: 'All Schemes' },
+                ...visibleSchemes.map(s => ({
+                  value: s.slug,
+                  label: `${s.label} (${s.blogCount})`
+                }))
+              ]}
+            />
           </div>
           <Link href="/blogs/schemes" className="flex items-center gap-1 text-xs text-red-600 font-semibold mt-3 hover:underline">
             View all schemes →

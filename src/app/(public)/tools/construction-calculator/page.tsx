@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-   
+import Select from '@/components/ui/Select';
   
 import {
   AlertTriangle, CheckCircle, Info, ChevronDown, ChevronUp,
@@ -182,12 +182,17 @@ export default function ConstructionCalculator() {
             </div>
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Unit</label>
-              <select value={unit} onChange={e => setUnit(e.target.value)} className="w-full border-2 rounded-xl px-4 py-3 text-sm outline-none focus:border-sky-400">
-                <option value="sqyd">Sq. Yards</option>
-                <option value="marla">Marla</option>
-                <option value="kanal">Kanal</option>
-                <option value="sqft">Sq. Feet</option>
-              </select>
+              <Select
+                value={unit}
+                onChange={setUnit}
+                className="w-full border-2 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-sky-400 focus-within:border-sky-400 bg-white"
+                options={[
+                  { value: 'sqyd', label: 'Sq. Yards' },
+                  { value: 'marla', label: 'Marla' },
+                  { value: 'kanal', label: 'Kanal' },
+                  { value: 'sqft', label: 'Sq. Feet' },
+                ]}
+              />
             </div>
           </div>
 
@@ -204,18 +209,26 @@ export default function ConstructionCalculator() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Building Type</label>
-              <select value={type} onChange={e => { setType(e.target.value); setFloorIdx(1); }} className="w-full border-2 rounded-xl px-4 py-3 text-sm outline-none focus:border-sky-400">
-                <option value="residential">Residential</option>
-                <option value="commercial">Commercial</option>
-              </select>
+              <Select
+                value={type}
+                onChange={val => { setType(val); setFloorIdx(1); }}
+                className="w-full border-2 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-sky-400 focus-within:border-sky-400 bg-white"
+                options={[
+                  { value: 'residential', label: 'Residential' },
+                  { value: 'commercial', label: 'Commercial' },
+                ]}
+              />
             </div>
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">
                 Area / Society <span className="text-slate-400 font-normal normal-case">(affects cost)</span>
               </label>
-              <select value={society} onChange={e => setSociety(e.target.value)} className="w-full border-2 rounded-xl px-4 py-3 text-sm outline-none focus:border-sky-400">
-                {SOCIETIES.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
-              </select>
+              <Select
+                value={society}
+                onChange={setSociety}
+                className="w-full border-2 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-sky-400 focus-within:border-sky-400 bg-white"
+                options={SOCIETIES.map(s => ({ value: s.id, label: s.label }))}
+              />
             </div>
           </div>
 
@@ -233,15 +246,15 @@ export default function ConstructionCalculator() {
               Number of Floors
               {sqyd > 0 && <span className="ml-2 text-slate-400 font-normal normal-case">(max allowed: {maxLabel})</span>}
             </label>
-            <select
-              value={floorIdx}
-              onChange={e => setFloorIdx(parseInt(e.target.value))}
-              className="w-full border-2 rounded-xl px-4 py-3 text-sm outline-none focus:border-sky-400"
-            >
-              {FLOOR_OPTIONS.slice(0, maxFloorIdx).map((f, i) => (
-                <option key={i} value={i + 1}>{f.label}</option>
-              ))}
-            </select>
+            <Select
+              value={floorIdx.toString()}
+              onChange={val => setFloorIdx(parseInt(val))}
+              className="w-full border-2 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-sky-400 focus-within:border-sky-400 bg-white"
+              options={FLOOR_OPTIONS.slice(0, maxFloorIdx).map((f, i) => ({
+                value: (i + 1).toString(),
+                label: f.label
+              }))}
+            />
             {sqyd > 0 && floorIdx > maxFloorIdx && (
               <div className="mt-2 flex items-start gap-2 bg-red-50 border border-red-200 rounded-xl px-3 py-2 text-xs text-red-700">
                 <AlertTriangle size={13} className="shrink-0 mt-0.5" />

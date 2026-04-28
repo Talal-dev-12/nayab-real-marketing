@@ -10,6 +10,7 @@ import { api, uploadImage } from "@/lib/api-client";
 import { can } from "@/lib/rbac";
 import type { UserRole } from "@/lib/jwt";
 import type { ManagedArea, ManagedScheme } from "@/types";
+import Select from '@/components/ui/Select';
 
 export default function EditBlogPage() {
   const router = useRouter();
@@ -391,11 +392,20 @@ export default function EditBlogPage() {
           <div className="bg-white rounded-xl shadow-sm p-5 space-y-4">
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase mb-2 block">Category</label>
-              <select className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
-                value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}>
-                <option>Real Estate</option><option>Buying Guide</option><option>Market Analysis</option>
-                <option>Investment</option><option>Property Tips</option><option>Rental Guide</option><option>Legal Advice</option>
-              </select>
+              <Select
+                value={form.category}
+                onChange={val => setForm(f => ({ ...f, category: val }))}
+                className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none focus-within:border-red-500 bg-white"
+                options={[
+                  { value: 'Real Estate', label: 'Real Estate' },
+                  { value: 'Buying Guide', label: 'Buying Guide' },
+                  { value: 'Market Analysis', label: 'Market Analysis' },
+                  { value: 'Investment', label: 'Investment' },
+                  { value: 'Property Tips', label: 'Property Tips' },
+                  { value: 'Rental Guide', label: 'Rental Guide' },
+                  { value: 'Legal Advice', label: 'Legal Advice' },
+                ]}
+              />
             </div>
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase mb-2 block">Author</label>
@@ -419,29 +429,31 @@ export default function EditBlogPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Area</label>
-                  <select 
+                  <Select
                     value={form.areaSlug}
-                    onChange={e => {
-                      const selected = areas.find(a => a.slug === e.target.value);
+                    onChange={val => {
+                      const selected = areas.find(a => a.slug === val);
                       if (selected) {
                         setForm(f => ({ ...f, areaSlug: selected.slug, areaLabel: selected.name }));
                       } else {
                         setForm(f => ({ ...f, areaSlug: '', areaLabel: '' }));
                       }
                     }}
-                    className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-400"
-                  >
-                    <option value="">— No Area —</option>
-                    {areas.map(a => <option key={a._id} value={a.slug}>{a.name}</option>)}
-                  </select>
+                    className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none focus-within:border-blue-400 bg-white"
+                    placeholder="— No Area —"
+                    options={[
+                      { value: '', label: '— No Area —' },
+                      ...areas.map(a => ({ value: a.slug, label: a.name }))
+                    ]}
+                  />
                   {form.areaSlug && <p className="text-xs text-slate-400 mt-1">URL: /blogs/areas/<strong>{form.areaSlug}</strong></p>}
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Housing Scheme</label>
-                  <select 
+                  <Select
                     value={form.schemeSlug}
-                    onChange={e => {
-                      const selected = schemes.find(s => s.slug === e.target.value);
+                    onChange={val => {
+                      const selected = schemes.find(s => s.slug === val);
                       if (selected) {
                         const updates: any = { schemeSlug: selected.slug, schemeLabel: selected.name };
                         if (selected.areaId && !form.areaSlug) {
@@ -456,11 +468,13 @@ export default function EditBlogPage() {
                         setForm(f => ({ ...f, schemeSlug: '', schemeLabel: '' }));
                       }
                     }}
-                    className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-400"
-                  >
-                    <option value="">— No Scheme —</option>
-                    {schemes.map(s => <option key={s._id} value={s.slug}>{s.name} {s.areaName ? `(${s.areaName})` : ''}</option>)}
-                  </select>
+                    className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none focus-within:border-blue-400 bg-white"
+                    placeholder="— No Scheme —"
+                    options={[
+                      { value: '', label: '— No Scheme —' },
+                      ...schemes.map(s => ({ value: s.slug, label: `${s.name} ${s.areaName ? `(${s.areaName})` : ''}` }))
+                    ]}
+                  />
                   {form.schemeSlug && <p className="text-xs text-slate-400 mt-1">URL: /blogs/schemes/<strong>{form.schemeSlug}</strong></p>}
                 </div>
               </div>

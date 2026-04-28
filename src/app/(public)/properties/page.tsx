@@ -6,6 +6,7 @@ import { PropertyCardSkeleton } from '@/components/ui/Skeleton';
 import { Search, SlidersHorizontal, MapPin, X, Building2 } from 'lucide-react';
 import { useProperties, type PropertyFilters } from '@/hooks/useProperties';
 import PriceRangeSlider from '@/components/ui/PriceRangeSlider';
+import Select from '@/components/ui/Select';
 
 const formatPrice = (value: number) => {
   if (value === 0) return '0';
@@ -125,15 +126,16 @@ export default function PropertiesPage() {
               <div>
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 block">Listing Type</label>
                 <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all">
-                  <select 
-                    className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none"
+                  <Select
                     value={localFilters.priceType}
-                    onChange={e => setLocalFilters(f => ({ ...f, priceType: e.target.value, minPrice: '', maxPrice: '' }))}
-                  >
-                    <option value="all">All Listings</option>
-                    <option value="sale">For Sale</option>
-                    <option value="rent">For Rent</option>
-                  </select>
+                    onChange={val => setLocalFilters(f => ({ ...f, priceType: val, minPrice: '', maxPrice: '' }))}
+                    className="w-full text-slate-700"
+                    options={[
+                      { value: 'all', label: 'All Listings' },
+                      { value: 'sale', label: 'For Sale' },
+                      { value: 'rent', label: 'For Rent' },
+                    ]}
+                  />
                 </div>
               </div>
 
@@ -142,17 +144,18 @@ export default function PropertiesPage() {
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 block">Property Type</label>
                 <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all flex items-center">
                   <Building2 size={16} className="text-slate-400 mr-2.5 shrink-0" />
-                  <select 
-                    className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none"
+                  <Select
                     value={localFilters.type}
-                    onChange={e => setLocalFilters(f => ({ ...f, type: e.target.value }))}
-                  >
-                    <option value="all">All Types</option>
-                    <option value="residential">Residential</option>
-                    <option value="commercial">Commercial</option>
-                    <option value="office">Office</option>
-                    <option value="plot">Plot</option>
-                  </select>
+                    onChange={val => setLocalFilters(f => ({ ...f, type: val }))}
+                    className="w-full text-slate-700"
+                    options={[
+                      { value: 'all', label: 'All Types' },
+                      { value: 'residential', label: 'Residential' },
+                      { value: 'commercial', label: 'Commercial' },
+                      { value: 'office', label: 'Office' },
+                      { value: 'plot', label: 'Plot' },
+                    ]}
+                  />
                 </div>
               </div>
 
@@ -161,16 +164,17 @@ export default function PropertiesPage() {
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 block">City</label>
                 <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all flex items-center">
                   <MapPin size={16} className="text-slate-400 mr-2.5 shrink-0" />
-                  <select 
-                    className="w-full bg-transparent outline-none text-sm text-slate-700 font-medium cursor-pointer appearance-none"
+                  <Select
                     value={localFilters.city}
-                    onChange={e => setLocalFilters(f => ({ ...f, city: e.target.value }))}
-                  >
-                    <option value="all">All Cities</option>
-                    <option value="Karachi">Karachi</option>
-                    <option value="Lahore">Lahore</option>
-                    <option value="Islamabad">Islamabad</option>
-                  </select>
+                    onChange={val => setLocalFilters(f => ({ ...f, city: val }))}
+                    className="w-full text-slate-700"
+                    options={[
+                      { value: 'all', label: 'All Cities' },
+                      { value: 'Karachi', label: 'Karachi' },
+                      { value: 'Lahore', label: 'Lahore' },
+                      { value: 'Islamabad', label: 'Islamabad' },
+                    ]}
+                  />
                 </div>
               </div>
 

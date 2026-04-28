@@ -6,6 +6,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, Legend
 } from 'recharts';
+import Select from '@/components/ui/Select';
 
 const dailyData = Array.from({ length: 30 }, (_, i) => ({
   day: `Nov ${i + 1}`,
@@ -62,16 +63,17 @@ export default function AdminTrafficPage() {
           <h1 className="font-heading text-3xl font-bold text-navy">Analytics & Traffic</h1>
           <p className="text-gray-400 text-sm mt-1">Monitor your website performance and visitor insights</p>
         </div>
-        <select
+        <Select
           value={period}
-          onChange={(e) => setPeriod(e.target.value)}
-          className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary bg-white text-navy"
-        >
-          <option value="7d">Last 7 Days</option>
-          <option value="30d">Last 30 Days</option>
-          <option value="90d">Last 3 Months</option>
-          <option value="1y">Last Year</option>
-        </select>
+          onChange={setPeriod}
+          className="border border-gray-200 rounded-xl px-4 py-2 text-sm focus-within:border-primary bg-white text-navy"
+          options={[
+            { value: '7d', label: 'Last 7 Days' },
+            { value: '30d', label: 'Last 30 Days' },
+            { value: '90d', label: 'Last 3 Months' },
+            { value: '1y', label: 'Last Year' },
+          ]}
+        />
       </div>
 
       {/* Summary Stats */}

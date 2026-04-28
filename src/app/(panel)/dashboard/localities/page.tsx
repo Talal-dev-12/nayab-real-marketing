@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { api, uploadImage } from '@/lib/api-client';
 import { TableRowSkeleton } from '@/components/ui/Skeleton';
+import Select from '@/components/ui/Select';
 import type { ManagedArea, ManagedScheme } from '@/types';
 
 type Tab = 'areas' | 'schemes';
@@ -500,15 +501,19 @@ export default function LocalitiesPage() {
 
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Parent Area (optional)</label>
-                <select value={schemeForm.areaId}
-                  onChange={e => {
-                    const selected = allAreas.find(a => a._id === e.target.value);
-                    setSchemeForm(f => ({ ...f, areaId: e.target.value, areaName: selected?.name || '' }));
+                <Select
+                  value={schemeForm.areaId}
+                  onChange={val => {
+                    const selected = allAreas.find(a => a._id === val);
+                    setSchemeForm(f => ({ ...f, areaId: val, areaName: selected?.name || '' }));
                   }}
-                  className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500">
-                  <option value="">— No area —</option>
-                  {allAreas.map(a => <option key={a._id} value={a._id}>{a.name}</option>)}
-                </select>
+                  className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none focus-within:border-red-500 bg-white"
+                  placeholder="— No area —"
+                  options={[
+                    { value: '', label: '— No area —' },
+                    ...allAreas.map(a => ({ value: a._id, label: a.name }))
+                  ]}
+                />
               </div>
 
               <div>

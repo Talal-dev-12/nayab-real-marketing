@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, Upload, X, Loader2 } from 'lucide-react';
 import { api, uploadImage } from '@/lib/api-client';
+import Select from '@/components/ui/Select';
 
 function Field({ label, required, ...props }: any) {
   return (
@@ -105,17 +106,18 @@ export default function NewAgentPage() {
               value={form.phone} onChange={(e: any) => setForm(f => ({ ...f, phone: e.target.value }))} />
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Specialization</label>
-              <select
-                className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500"
+              <Select
                 value={form.specialization}
-                onChange={e => setForm(f => ({ ...f, specialization: e.target.value }))}
-              >
-                <option>Residential & Commercial</option>
-                <option>Luxury & Plots</option>
-                <option>Commercial & Investment</option>
-                <option>Rental Properties</option>
-                <option>Industrial & Warehouse</option>
-              </select>
+                onChange={val => setForm(f => ({ ...f, specialization: val }))}
+                className="w-full border-2 rounded-lg px-3 py-2 text-sm outline-none focus-within:border-red-500 bg-white"
+                options={[
+                  { value: 'Residential & Commercial', label: 'Residential & Commercial' },
+                  { value: 'Luxury & Plots', label: 'Luxury & Plots' },
+                  { value: 'Commercial & Investment', label: 'Commercial & Investment' },
+                  { value: 'Rental Properties', label: 'Rental Properties' },
+                  { value: 'Industrial & Warehouse', label: 'Industrial & Warehouse' },
+                ]}
+              />
             </div>
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Bio / About</label>

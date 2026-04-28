@@ -61,10 +61,13 @@ const HERO_SLIDES = [
   },
 ];
 
+import Select from "@/components/ui/Select";
+
 export default function HeroSection() {
   const [searchType, setSearchType] = useState<"all" | "sale" | "rent">("all");
   const [location, setLocation] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
+  const [propertyType, setPropertyType] = useState("");
 
   return (
     <>
@@ -189,19 +192,24 @@ export default function HeroSection() {
                   />
                 </div>
 
-                <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 sm:py-3.5 min-w-[170px] focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all">
-                  <Building2 size={18} className="text-slate-400 shrink-0" />
-                  <select className="flex-1 outline-none text-slate-700 text-[13px] sm:text-sm bg-transparent appearance-none cursor-pointer font-bold">
-                    <option>Property Type</option>
-                    <option>Residential</option>
-                    <option>Commercial</option>
-                    <option>Plot</option>
-                    <option>Office</option>
-                  </select>
+                <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 sm:py-2.5 min-w-[200px] focus-within:border-red-500 focus-within:bg-white focus-within:shadow-sm transition-all relative">
+                  <Select
+                    value={propertyType}
+                    onChange={setPropertyType}
+                    placeholder="Property Type"
+                    icon={<Building2 size={18} className="text-slate-400" />}
+                    className="flex-1 text-[13px] sm:text-sm bg-transparent font-bold"
+                    options={[
+                      { value: "Residential", label: "Residential" },
+                      { value: "Commercial", label: "Commercial" },
+                      { value: "Plot", label: "Plot" },
+                      { value: "Office", label: "Office" },
+                    ]}
+                  />
                 </div>
 
                 <Link
-                  href={`/properties${searchType !== "all" ? `?type=${searchType}` : ""}${location ? `&location=${encodeURIComponent(location)}` : ""}`}
+                  href={`/properties${searchType !== "all" ? `?type=${searchType}` : ""}${location ? `&location=${encodeURIComponent(location)}` : ""}${propertyType ? `&propType=${propertyType}` : ""}`}
                   className="bg-red-700 hover:bg-red-800 active:scale-[0.97] text-white px-8 py-3.5 rounded-xl font-bold text-[13px] sm:text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-lg shadow-red-700/25"
                 >
                   Search
