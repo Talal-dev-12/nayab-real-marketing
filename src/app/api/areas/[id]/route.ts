@@ -37,6 +37,9 @@ export const PUT = requireAdmin(async (req: NextRequest, _user: JwtPayload, ctx:
     if (body.image !== undefined)       update.image = body.image;
     if (body.description !== undefined) update.description = body.description;
     if (body.order !== undefined)       update.order = body.order;
+    if (body.restaurants !== undefined) update.restaurants = body.restaurants;
+    if (body.popularPlaces !== undefined) update.popularPlaces = body.popularPlaces;
+    if (body.markets !== undefined) update.markets = body.markets;
 
     const area = await Area.findByIdAndUpdate(id, update, { returnDocument: "after" });
     if (!area) return NextResponse.json({ error: 'Area not found' }, { status: 404 });

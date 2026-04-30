@@ -1,19 +1,19 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-   
-  
+
+
 import BlogCard from '@/components/ui/BlogCard';
 import PropertyCard from '@/components/ui/PropertyCard';
-import { MapPin, Building2, ArrowLeft, FileText, Home } from 'lucide-react';
+import { MapPin, Building2, ArrowLeft, FileText, Home, Utensils, Landmark, ShoppingBag } from 'lucide-react';
 import { connectDB } from '@/lib/mongodb';
 import { Area } from '@/models/Area';
 
 interface Props { params: Promise<{ area: string }> }
 
 async function getAreaData(areaSlug: string) {
-  const base = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  const base = process.env.NEXTAUTH_URL;
   await connectDB();
-  
+
   const areaDoc = await Area.findOne({ slug: areaSlug }).lean();
 
   const [blogsRes, taxRes] = await Promise.all([
@@ -30,6 +30,44 @@ async function getAreaData(areaSlug: string) {
   const propsData = await propsRes.json();
 
   return { blogs: blogsData.blogs ?? [], areaInfo, schemes, areaDoc, properties: propsData.properties ?? [] };
+}
+
+async function getGeoPlaces(label: string) {
+  try {
+    const geoApiKey = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY;
+    if (!geoApiKey) {
+      console.warn('GEOAPIFY_API_KEY not set in environment variables');
+      return null;
+    }
+    
+    const geoUrl = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(label + ', Karachi')}&apiKey=${geoApiKey}`;
+    const geoRes = await fetch(geoUrl, { next: { revalidate: 86400 } });
+    if (!geoRes.ok) return null;
+    const geoData = await geoRes.json();
+    
+    if (!geoData.features?.length) return null;
+    
+    const { lon, lat } = geoData.features[0].properties;
+    
+    const [restRes, tourRes, markRes] = await Promise.all([
+      fetch(`https://api.geoapify.com/v2/places?categories=catering.restaurant&filter=circle:${lon},${lat},3000&limit=5&apiKey=${geoApiKey}`, { next: { revalidate: 86400 } }),
+      fetch(`https://api.geoapify.com/v2/places?categories=tourism&filter=circle:${lon},${lat},3000&limit=5&apiKey=${geoApiKey}`, { next: { revalidate: 86400 } }),
+      fetch(`https://api.geoapify.com/v2/places?categories=commercial.supermarket&filter=circle:${lon},${lat},3000&limit=5&apiKey=${geoApiKey}`, { next: { revalidate: 86400 } })
+    ]);
+    
+    const [restaurants, tourism, markets] = await Promise.all([
+      restRes.json(), tourRes.json(), markRes.json()
+    ]);
+    
+    return {
+      restaurants: restaurants.features?.map((f: any) => f.properties.name).filter(Boolean) || [],
+      popularPlaces: tourism.features?.map((f: any) => f.properties.name).filter(Boolean) || [],
+      markets: markets.features?.map((f: any) => f.properties.name).filter(Boolean) || []
+    };
+  } catch (error) {
+    console.error('Geoapify error:', error);
+    return null;
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -57,14 +95,14 @@ export default async function AreaPage({ params }: Props) {
   if (area === 'null' || area === 'undefined') {
     return (
       <div className="min-h-screen bg-gray-50">
-        
+
         <div className="max-w-3xl mx-auto px-4 py-20 text-center">
           <MapPin size={48} className="mx-auto mb-4 text-slate-300" />
           <h1 className="text-2xl font-bold text-slate-600 mb-2">Invalid Area Page</h1>
           <p className="text-slate-400 mb-6">This blog has no area assigned. Please edit it in the admin panel.</p>
           <Link href="/blogs/areas" className="text-red-600 font-semibold hover:underline">← Browse all areas</Link>
         </div>
-     
+
       </div>
     );
   }
@@ -72,9 +110,17 @@ export default async function AreaPage({ params }: Props) {
   const { blogs, areaInfo, schemes, areaDoc, properties } = await getAreaData(area);
   const label = areaDoc?.name || areaInfo?.label || area.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
 
+  const geoPlaces = await getGeoPlaces(label);
+
+  const displayRestaurants = areaDoc?.restaurants?.length > 0 ? areaDoc.restaurants : (geoPlaces?.restaurants || []);
+  const displayPopularPlaces = areaDoc?.popularPlaces?.length > 0 ? areaDoc.popularPlaces : (geoPlaces?.popularPlaces || []);
+  const displayMarkets = areaDoc?.markets?.length > 0 ? areaDoc.markets : (geoPlaces?.markets || []);
+
+  const hasPlaces = displayRestaurants.length > 0 || displayPopularPlaces.length > 0 || displayMarkets.length > 0;
+
   return (
     <div className="min-h-screen bg-gray-50">
-      
+
 
       {/* Hero */}
       <div className="primary-gradient py-16">
@@ -100,7 +146,7 @@ export default async function AreaPage({ params }: Props) {
           <p className="text-slate-300 max-w-2xl mt-2">
             Property investment guides, market insights and development news for {label}, Karachi.
           </p>
-          
+
           {areaDoc?.description && (
             <div className="mt-4 p-4 bg-white/10 rounded-xl border border-white/10 backdrop-blur-sm max-w-4xl">
               <p className="text-slate-200 text-sm leading-relaxed whitespace-pre-wrap">{areaDoc.description}</p>
@@ -123,23 +169,55 @@ export default async function AreaPage({ params }: Props) {
 
       <div className="max-w-5xl mx-auto px-4 py-12">
 
-        {/* Map Section */}
-        <div className="mb-10">
-          <h2 className="font-extrabold text-[#1a2e5a] text-xl mb-4 flex items-center gap-2">
-            <MapPin size={18} className="text-red-600" /> Location & Nearby
-          </h2>
-          <div className="w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-sm border border-slate-200">
-            <iframe
-              src={`https://maps.google.com/maps?q=${encodeURIComponent(label + ', Karachi')}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen={false}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
+        {/* Notable Places Section */}
+        {hasPlaces && (
+          <div className="mb-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {displayRestaurants.length > 0 && (
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 className="font-extrabold text-[#1a2e5a] text-lg mb-4 flex items-center gap-2">
+                  <Utensils size={18} className="text-red-600" /> Famous Restaurants
+                </h3>
+                <ul className="space-y-2">
+                  {displayRestaurants.map((item: string, idx: number) => (
+                    <li key={idx} className="text-slate-600 text-sm flex items-start gap-2">
+                      <span className="text-red-500 mt-1">•</span> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
+            {displayPopularPlaces.length > 0 && (
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 className="font-extrabold text-[#1a2e5a] text-lg mb-4 flex items-center gap-2">
+                  <Landmark size={18} className="text-red-600" /> Popular Places
+                </h3>
+                <ul className="space-y-2">
+                  {displayPopularPlaces.map((item: string, idx: number) => (
+                    <li key={idx} className="text-slate-600 text-sm flex items-start gap-2">
+                      <span className="text-red-500 mt-1">•</span> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {displayMarkets.length > 0 && (
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 className="font-extrabold text-[#1a2e5a] text-lg mb-4 flex items-center gap-2">
+                  <ShoppingBag size={18} className="text-red-600" /> Well-known Markets
+                </h3>
+                <ul className="space-y-2">
+                  {displayMarkets.map((item: string, idx: number) => (
+                    <li key={idx} className="text-slate-600 text-sm flex items-start gap-2">
+                      <span className="text-red-500 mt-1">•</span> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
-        </div>
+        )}
 
         {/* Schemes section */}
         {schemes.length > 0 && (
@@ -207,6 +285,25 @@ export default async function AreaPage({ params }: Props) {
             </div>
           )}
         </div>
+
+        {/* Map Section */}
+        <div className="mt-16">
+          <h2 className="font-extrabold text-[#1a2e5a] text-xl mb-5 flex items-center gap-2">
+            <MapPin size={18} className="text-red-600" /> Location Map
+          </h2>
+          <div className="w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+            <iframe
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(label + ', Karachi')}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen={false}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
+
       </div>
     </div>
   );

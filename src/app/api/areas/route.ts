@@ -48,7 +48,7 @@ export const POST = requireAdmin(async (req: NextRequest, _user: JwtPayload, _ct
   try {
     await connectDB();
     const body = await req.json();
-    const { name, image, description, order } = body;
+    const { name, image, description, order, restaurants, popularPlaces, markets } = body;
 
     if (!name?.trim()) {
       return NextResponse.json({ error: 'Area name is required' }, { status: 400 });
@@ -66,6 +66,9 @@ export const POST = requireAdmin(async (req: NextRequest, _user: JwtPayload, _ct
       image: image || '',
       description: description || '',
       order: order ?? 0,
+      restaurants: Array.isArray(restaurants) ? restaurants : [],
+      popularPlaces: Array.isArray(popularPlaces) ? popularPlaces : [],
+      markets: Array.isArray(markets) ? markets : [],
     });
 
     return NextResponse.json(area, { status: 201 });

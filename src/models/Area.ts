@@ -6,6 +6,9 @@ export interface IArea extends Document {
   image:        string;   // Cloudinary URL — drone shot / high-quality visual
   description:  string;
   order:        number;   // manual sort for carousel display
+  restaurants:  string[];
+  popularPlaces: string[];
+  markets:      string[];
   createdAt:    Date;
   updatedAt:    Date;
 }
@@ -17,6 +20,9 @@ const AreaSchema = new Schema<IArea>(
     image:       { type: String, default: '' },
     description: { type: String, default: '' },
     order:       { type: Number, default: 0 },
+    restaurants: { type: [String], default: [] },
+    popularPlaces: { type: [String], default: [] },
+    markets:     { type: [String], default: [] },
   },
   { timestamps: true }
 );

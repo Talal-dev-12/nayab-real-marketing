@@ -49,6 +49,9 @@ export interface ManagedArea {
   image: string;
   description: string;
   order: number;
+  restaurants?: string[];
+  popularPlaces?: string[];
+  markets?: string[];
   createdAt: string;
 }
 

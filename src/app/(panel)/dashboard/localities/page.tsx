@@ -12,10 +12,10 @@ import type { ManagedArea, ManagedScheme } from '@/types';
 type Tab = 'areas' | 'schemes';
 
 /* ─── Modal form state ───────────────────────────────────────────────────────── */
-interface AreaForm { name: string; image: string; description: string; order: number; }
+interface AreaForm { name: string; image: string; description: string; order: number; restaurants: string; popularPlaces: string; markets: string; }
 interface SchemeForm { name: string; logo: string; image: string; areaId: string; areaName: string; description: string; order: number; }
 
-const emptyArea: AreaForm = { name: '', image: '', description: '', order: 0 };
+const emptyArea: AreaForm = { name: '', image: '', description: '', order: 0, restaurants: '', popularPlaces: '', markets: '' };
 const emptyScheme: SchemeForm = { name: '', logo: '', image: '', areaId: '', areaName: '', description: '', order: 0 };
 
 export default function LocalitiesPage() {
@@ -83,18 +83,29 @@ export default function LocalitiesPage() {
   const openAreaCreate = () => { setEditingArea(null); setAreaForm(emptyArea); setAreaModal(true); setError(''); };
   const openAreaEdit = (a: ManagedArea) => {
     setEditingArea(a);
-    setAreaForm({ name: a.name, image: a.image, description: a.description, order: a.order });
+    setAreaForm({ 
+      name: a.name, image: a.image, description: a.description, order: a.order,
+      restaurants: a.restaurants ? a.restaurants.join(', ') : '',
+      popularPlaces: a.popularPlaces ? a.popularPlaces.join(', ') : '',
+      markets: a.markets ? a.markets.join(', ') : ''
+    });
     setAreaModal(true); setError('');
   };
 
   const saveArea = async () => {
     if (!areaForm.name.trim()) { setError('Area name is required'); return; }
     setAreaSaving(true); setError('');
+    const payload = {
+      ...areaForm,
+      restaurants: areaForm.restaurants.split(',').map(s => s.trim()).filter(Boolean),
+      popularPlaces: areaForm.popularPlaces.split(',').map(s => s.trim()).filter(Boolean),
+      markets: areaForm.markets.split(',').map(s => s.trim()).filter(Boolean),
+    };
     try {
       if (editingArea) {
-        await api.put(`/api/areas/${editingArea._id}`, areaForm);
+        await api.put(`/api/areas/${editingArea._id}`, payload);
       } else {
-        await api.post('/api/areas', areaForm);
+        await api.post('/api/areas', payload);
       }
       setAreaModal(false);
       fetchAreas();
@@ -407,6 +418,27 @@ export default function LocalitiesPage() {
                 <textarea rows={2} placeholder="Brief description..." value={areaForm.description}
                   onChange={e => setAreaForm(f => ({ ...f, description: e.target.value }))}
                   className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500 resize-none" />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Famous Restaurants (comma separated)</label>
+                <input type="text" placeholder="e.g. KFC, McDonald's, Local Cafe" value={areaForm.restaurants}
+                  onChange={e => setAreaForm(f => ({ ...f, restaurants: e.target.value }))}
+                  className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500" />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Popular Places (comma separated)</label>
+                <input type="text" placeholder="e.g. Central Park, Museum" value={areaForm.popularPlaces}
+                  onChange={e => setAreaForm(f => ({ ...f, popularPlaces: e.target.value }))}
+                  className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500" />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase mb-1.5 block">Markets (comma separated)</label>
+                <input type="text" placeholder="e.g. Sunday Market, Super Mall" value={areaForm.markets}
+                  onChange={e => setAreaForm(f => ({ ...f, markets: e.target.value }))}
+                  className="w-full border-2 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-red-500" />
               </div>
 
               <div>

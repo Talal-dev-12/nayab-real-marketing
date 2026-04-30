@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 async function getAreas() {
   try {
-    const base = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const base = process.env.NEXTAUTH_URL;
     const res = await fetch(`${base}/api/blogs/taxonomy`, { cache: 'no-store' });
     if (!res.ok) return { areas: [], schemes: [] };
     return res.json();
@@ -101,7 +101,7 @@ export default async function AreasIndexPage() {
           </div>
         )}
       </div>
-   
+
     </div>
   );
 }
