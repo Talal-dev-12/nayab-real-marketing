@@ -8,10 +8,7 @@ import type { AreaSummary, SchemeSummary } from '@/types';
 
 function Carousel({ items, renderCard, autoPlaySpeed = 1, reverse = false }: { items: any[], renderCard: (item: any) => React.ReactNode, autoPlaySpeed?: number, reverse?: boolean }) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isDown, setIsDown] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
+  const interactionState = useRef({ isHovered: false, isDown: false, startX: 0, scrollLeft: 0 });
 
   // Triple items for seamless infinite scroll
   const duplicatedItems = [...items, ...items, ...items];
@@ -47,6 +44,7 @@ function Carousel({ items, renderCard, autoPlaySpeed = 1, reverse = false }: { i
 
     const scroll = (time: number) => {
       const el = scrollRef.current;
+      const { isHovered, isDown } = interactionState.current;
       if (el && !isHovered && !isDown && items.length > 0) {
         const deltaTime = time - lastTime;
         if (deltaTime > 16) {
@@ -71,7 +69,7 @@ function Carousel({ items, renderCard, autoPlaySpeed = 1, reverse = false }: { i
 
     animationFrameId = requestAnimationFrame(scroll);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [isHovered, isDown, autoPlaySpeed, reverse, items, isInView]);
+  }, [autoPlaySpeed, reverse, items, isInView]);
 
   const handlePrev = () => {
     const el = scrollRef.current;
@@ -87,29 +85,29 @@ function Carousel({ items, renderCard, autoPlaySpeed = 1, reverse = false }: { i
 
   return (
     <div className="relative group"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => { setIsHovered(false); setIsDown(false); }}
-      onMouseUp={() => setIsDown(false)}
+      onMouseEnter={() => { interactionState.current.isHovered = true; }}
+      onMouseLeave={() => { interactionState.current.isHovered = false; interactionState.current.isDown = false; }}
+      onMouseUp={() => { interactionState.current.isDown = false; }}
     >
       <div 
         ref={scrollRef}
         className="flex gap-5 overflow-x-hidden cursor-grab active:cursor-grabbing pb-4"
         onMouseDown={(e) => {
-          setIsDown(true);
+          interactionState.current.isDown = true;
           const el = scrollRef.current;
           if (el) {
-            setStartX(e.pageX - el.offsetLeft);
-            setScrollLeft(el.scrollLeft);
+            interactionState.current.startX = e.pageX - el.offsetLeft;
+            interactionState.current.scrollLeft = el.scrollLeft;
           }
         }}
         onMouseMove={(e) => {
-          if (!isDown) return;
+          if (!interactionState.current.isDown) return;
           e.preventDefault();
           const el = scrollRef.current;
           if (el) {
             const x = e.pageX - el.offsetLeft;
-            const walk = (x - startX) * 2;
-            el.scrollLeft = scrollLeft - walk;
+            const walk = (x - interactionState.current.startX) * 2;
+            el.scrollLeft = interactionState.current.scrollLeft - walk;
           }
         }}
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}

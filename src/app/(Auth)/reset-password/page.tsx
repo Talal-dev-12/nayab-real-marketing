@@ -222,9 +222,9 @@ function ResetPasswordContent() {
               src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
               alt="Reset Password Banner"
               fill
+              unoptimized
               className="object-cover object-right"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
-              priority
             />
 
             <div className="absolute top-12 right-12 max-w-[340px] text-right z-10">

@@ -148,9 +148,9 @@ export default function ForgotPasswordPage() {
               src="/images/forgotpassword.avif"
               alt="forgot password banner"
               fill
+              unoptimized
               className="object-fill"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
-              priority
             />
             {/* Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#1a2e5a]/90 via-[#1a2e5a]/40 to-transparent" />

@@ -232,9 +232,9 @@ function SellerSignUpForm() {
               src="/images/seller.jpg"
               alt="Seller Banner"
               fill
+              unoptimized
               className="object-fill"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
-              priority
             />
 
             {/* Added overlay to improve text contrast over image */}

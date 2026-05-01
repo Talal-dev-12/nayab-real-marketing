@@ -214,9 +214,9 @@ function SignInForm() {
               src="/images/sign-in.svg"
               alt="Login Banner"
               fill
+              unoptimized
               className="object-fill"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
-              priority
             />
             <div className="absolute top-12 right-12 max-w-[340px] text-right z-10">
               <h2 className="text-[#1a2e5a] text-[24px] font-bold leading-tight drop-shadow-md">
