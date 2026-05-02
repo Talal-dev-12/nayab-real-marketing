@@ -23,12 +23,21 @@ const config: Config = {
       fontFamily: {
         sans: ['Nunito Sans', 'sans-serif'],
       },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
+        }
+      },
+      animation: {
+        marquee: 'marquee 25s linear infinite',
+      }
     },
   },
   plugins: [require('daisyui')],
   daisyui: {
-    themes: false, // disable all themes so it doesn't override the custom app theme
-    base: false, // disable base styling
+    themes: false,
+    base: false,
   }
 }
 export default config

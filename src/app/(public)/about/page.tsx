@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import React from 'react';
 import { Award, Users, Home, Star, CheckCircle, Building, Wrench } from 'lucide-react';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: "About Us | Nayab Real Marketing",
@@ -72,16 +73,25 @@ export default function AboutPage() {
 
           {/* Image Grid */}
           <div className="grid grid-cols-2 gap-4 sticky top-8">
-            <img 
-              src="https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=600" 
-              alt="Real Estate Building" 
-              className="rounded-2xl object-cover h-64 w-full shadow-lg" 
-            />
-            <img 
-              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600" 
-              alt="Team Meeting" 
-              className="rounded-2xl object-cover h-64 w-full mt-8 shadow-lg" 
-            />
+            <div className="relative h-64 w-full rounded-2xl overflow-hidden shadow-lg">
+              <Image 
+                src="https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=600" 
+                alt="Real Estate Building" 
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover" 
+              />
+            </div>
+            <div className="relative h-64 w-full mt-8 rounded-2xl overflow-hidden shadow-lg">
+              <Image 
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600" 
+                alt="Team Meeting" 
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover" 
+              />
+            </div>
             <div className="col-span-2 bg-[#1a2e5a] rounded-2xl p-6 text-white shadow-lg mt-2">
               <h4 className="font-bold text-lg mb-2">Why Choose Us?</h4>
               <p className="text-sm text-blue-100 opacity-90">

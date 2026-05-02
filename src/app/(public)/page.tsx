@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import HeroSection from "@/components/sections/HeroSection";
-import StatsBar from "@/components/sections/StatsBar";
 
 export const metadata: Metadata = {
   title: "Nayab Real Marketing | Premium Real Estate in Pakistan",
@@ -29,11 +28,10 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <HeroSection />
-      <StatsBar />
       <ExploreTools />
       <ExploreLocalities />
-      <FeaturedProperties />
       <WhyChooseUs />
+      <FeaturedProperties />
       <LatestBlogs />
       <CallToAction />
     </div>
