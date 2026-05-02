@@ -28,6 +28,8 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <HeroSection />
+      {/* Visual Separation Line */}
+      <div className="h-3 w-full bg-gradient-to-r from-[#0f1e3d] via-[#1a2e5a] to-[#0f1e3d] shadow-md relative z-20"></div>
       <ExploreTools />
       <ExploreLocalities />
       <WhyChooseUs />
