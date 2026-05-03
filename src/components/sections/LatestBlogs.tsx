@@ -27,7 +27,7 @@ export default function LatestBlogs() {
   }, []);
 
   return (
-    <section className="py-20 max-w-7xl mx-auto px-4">
+    <section className="py-12 md:py-16 max-w-7xl mx-auto px-4">
       <div className="text-center mb-12">
         <p className="section-subtitle">Our Blog</p>
         <h2 className="text-4xl font-extrabold text-[#1a2e5a]">

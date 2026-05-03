@@ -100,7 +100,7 @@ export default function FeaturedProperties() {
         .carousel-arrow svg { transition: color 0.2s; }
         .carousel-arrow:hover svg { color: white; }
       `}</style>
-      <section className="py-20">
+      <section className="py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-10 gap-4">

@@ -79,7 +79,7 @@ const tools = [
 
 export default function ExploreTools() {
   return (
-    <section className="py-24 bg-slate-50 relative overflow-hidden">
+    <section className="py-12 md:py-16 bg-slate-50 relative overflow-hidden">
       {/* Subtle Background Pattern */}
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none"></div>
 

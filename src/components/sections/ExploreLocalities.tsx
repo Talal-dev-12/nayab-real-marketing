@@ -149,7 +149,7 @@ export default function ExploreLocalities() {
   // Show skeletons while loading
   if (loading) {
     return (
-      <section className="py-20 bg-slate-50 overflow-hidden">
+      <section className="py-12 md:py-16 bg-slate-50 overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-6 space-y-16">
           <div className="space-y-4">
             <div className="h-4 w-28 bg-slate-200 rounded animate-pulse" />
@@ -173,7 +173,7 @@ export default function ExploreLocalities() {
   if (areas.length === 0 && schemes.length === 0) return null;
 
   return (
-    <section className="py-24 bg-slate-50 overflow-hidden">
+    <section className="py-12 md:py-16 bg-slate-50 overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-6 space-y-24">
 
         {/* ── Explore Areas ── */}

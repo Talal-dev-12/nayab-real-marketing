@@ -4,7 +4,7 @@ import { Phone } from "lucide-react";
 export default function CallToAction() {
   return (
     <section
-      className="py-24 relative overflow-hidden"
+      className="py-12 md:py-16 relative overflow-hidden"
       style={{
         backgroundImage:
           "url(https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=1400&auto=format&fit=crop)",
