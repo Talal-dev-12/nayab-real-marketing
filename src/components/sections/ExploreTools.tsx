@@ -82,20 +82,15 @@ export default function ExploreTools() {
     <section className="py-24 bg-slate-50 relative overflow-hidden">
       {/* Subtle Background Pattern */}
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none"></div>
-      
+
       <div className="max-w-7xl mx-auto px-4 relative z-10">
-        
+
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-100/50 border border-red-200 mb-6">
-              <span className="w-2 h-2 rounded-full bg-red-600"></span>
-              <span className="text-xs font-bold text-red-700 uppercase tracking-widest">
-                Smart Real Estate Tools
-              </span>
-            </div>
+
             <h2 className="text-4xl sm:text-5xl font-extrabold text-[#1a2e5a] leading-tight">
-              Calculate, Compare & <br/>
+              Calculate, Compare & <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-red-400">
                 Make Smarter Decisions
               </span>
