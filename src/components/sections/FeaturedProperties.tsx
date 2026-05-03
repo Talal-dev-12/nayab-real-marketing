@@ -24,7 +24,7 @@ export default function FeaturedProperties() {
       .then((d) => {
         if (mounted) setProperties(d.properties ?? []);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => {
         if (mounted) setPropsLoading(false);
       });
@@ -100,7 +100,7 @@ export default function FeaturedProperties() {
         .carousel-arrow svg { transition: color 0.2s; }
         .carousel-arrow:hover svg { color: white; }
       `}</style>
-      <section className="py-12 md:py-16">
+      <section className="py-12 md:py-4">
         <div className="max-w-7xl mx-auto px-4">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-10 gap-4">
@@ -136,18 +136,18 @@ export default function FeaturedProperties() {
             >
               {propsLoading
                 ? [...Array(6)].map((_, i) => (
-                    <div key={i} style={{ flex: "0 0 340px" }}>
-                      <PropertyCardSkeleton />
-                    </div>
-                  ))
+                  <div key={i} style={{ flex: "0 0 340px" }}>
+                    <PropertyCardSkeleton />
+                  </div>
+                ))
                 : properties.map((p) => (
-                    <div
-                      key={p._id}
-                      className="transition-transform duration-300 hover:-translate-y-1"
-                    >
-                      <PropertyCard property={p} />
-                    </div>
-                  ))}
+                  <div
+                    key={p._id}
+                    className="transition-transform duration-300 hover:-translate-y-1"
+                  >
+                    <PropertyCard property={p} />
+                  </div>
+                ))}
             </div>
 
             {/* Right arrow */}

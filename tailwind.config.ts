@@ -19,6 +19,11 @@ const config: Config = {
           dark: '#0f1e3d',
           light: '#2c4a8a',
         },
+        secondary: {
+          DEFAULT: '#1a2e5a',
+          dark: '#0f1e3d',
+          light: '#2c4a8a',
+        },
       },
       fontFamily: {
         sans: ['Nunito Sans', 'sans-serif'],
