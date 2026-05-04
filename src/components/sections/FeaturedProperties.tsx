@@ -59,7 +59,8 @@ export default function FeaturedProperties() {
           scroll-snap-type: x mandatory;
           -webkit-overflow-scrolling: touch;
           scrollbar-width: none;
-          padding-bottom: 0.5rem;
+          padding-top: 0.5rem;
+          padding-bottom: 1.5rem;
         }
         .prop-carousel::-webkit-scrollbar { display: none; }
         .prop-carousel > * {
@@ -76,29 +77,32 @@ export default function FeaturedProperties() {
           top: 50%;
           transform: translateY(-50%);
           z-index: 10;
-          width: 44px;
-          height: 44px;
+          width: 48px;
+          height: 48px;
           border-radius: 50%;
-          background: white;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(8px);
+          box-shadow: 0 4px 15px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          transition: background 0.2s, box-shadow 0.2s, opacity 0.2s;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          color: #334155;
           border: none;
         }
-        .carousel-arrow:hover {
+        .carousel-arrow:hover:not(:disabled) {
           background: #b91c1c;
-          box-shadow: 0 6px 24px rgba(185,28,28,0.35);
           color: white;
+          box-shadow: 0 8px 25px rgba(185,28,28,0.4);
+          transform: translateY(-50%) scale(1.05);
         }
         .carousel-arrow:disabled {
-          opacity: 0.3;
+          opacity: 0;
           pointer-events: none;
+          transform: translateY(-50%) scale(0.9);
         }
         .carousel-arrow svg { transition: color 0.2s; }
-        .carousel-arrow:hover svg { color: white; }
       `}</style>
       <section className="py-12 md:py-4">
         <div className="max-w-7xl mx-auto px-4">
@@ -120,12 +124,12 @@ export default function FeaturedProperties() {
             {/* Left arrow */}
             <button
               className="carousel-arrow"
-              style={{ left: -22 }}
+              style={{ left: -24 }}
               onClick={() => scrollCarousel("left")}
               disabled={!canScrollLeft}
               aria-label="Scroll left"
             >
-              <ChevronLeft size={20} className="text-gray-700" />
+              <ChevronLeft size={24} strokeWidth={2} />
             </button>
 
             {/* Cards track */}
@@ -153,12 +157,12 @@ export default function FeaturedProperties() {
             {/* Right arrow */}
             <button
               className="carousel-arrow"
-              style={{ right: -22 }}
+              style={{ right: -24 }}
               onClick={() => scrollCarousel("right")}
               disabled={!canScrollRight}
               aria-label="Scroll right"
             >
-              <ChevronRight size={20} className="text-gray-700" />
+              <ChevronRight size={24} strokeWidth={2} />
             </button>
           </div>
 

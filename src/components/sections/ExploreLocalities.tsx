@@ -124,11 +124,11 @@ function Carousel({ items, renderCard, autoPlaySpeed = 1, reverse = false }: { i
       <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-slate-50 to-transparent z-10 hidden sm:block" />
 
       {/* Navigation Arrows */}
-      <button onClick={handlePrev} className="absolute left-2 top-1/2 -translate-y-1/2 bg-white text-slate-800 p-2.5 rounded-full shadow-lg opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-all hover:bg-slate-50 z-20 border border-slate-200">
-        <ChevronLeft size={20} />
+      <button onClick={handlePrev} className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm text-slate-800 w-10 h-10 flex items-center justify-center rounded-full shadow-[0_4px_15px_rgba(0,0,0,0.1)] opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 hover:bg-red-700 hover:text-white hover:scale-110 z-20 border border-slate-200/50">
+        <ChevronLeft size={20} strokeWidth={2.5} />
       </button>
-      <button onClick={handleNext} className="absolute right-2 top-1/2 -translate-y-1/2 bg-white text-slate-800 p-2.5 rounded-full shadow-lg opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-all hover:bg-slate-50 z-20 border border-slate-200">
-        <ChevronRight size={20} />
+      <button onClick={handleNext} className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm text-slate-800 w-10 h-10 flex items-center justify-center rounded-full shadow-[0_4px_15px_rgba(0,0,0,0.1)] opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 hover:bg-red-700 hover:text-white hover:scale-110 z-20 border border-slate-200/50">
+        <ChevronRight size={20} strokeWidth={2.5} />
       </button>
     </div>
   );
