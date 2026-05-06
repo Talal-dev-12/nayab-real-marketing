@@ -209,7 +209,11 @@ export default function HeroSection() {
                 </div>
 
                 <Link
-                  href={`/properties${searchType !== "all" ? `?type=${searchType}` : ""}${location ? `&location=${encodeURIComponent(location)}` : ""}${propertyType ? `&propType=${propertyType}` : ""}`}
+                  href={`/properties?${[
+                    searchType !== "all" ? `priceType=${searchType}` : "",
+                    location ? `search=${encodeURIComponent(location)}` : "",
+                    propertyType ? `type=${propertyType.toLowerCase()}` : ""
+                  ].filter(Boolean).join("&")}`}
                   className="bg-red-700 hover:bg-red-800 active:scale-[0.97] text-white px-8 py-3.5 rounded-xl font-bold text-[13px] sm:text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-lg shadow-red-700/25"
                 >
                   Search

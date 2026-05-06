@@ -1,5 +1,6 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import PropertyCard from '@/components/ui/PropertyCard';
 import Pagination from '@/components/ui/Pagination';
 import { PropertyCardSkeleton } from '@/components/ui/Skeleton';
@@ -15,13 +16,20 @@ const formatPrice = (value: number) => {
   return `${(value / 1000).toFixed(0)}k`;
 };
 
-const DEFAULT_FILTERS: PropertyFilters = {
-  type: 'all', priceType: 'all', city: 'all', search: '', minPrice: '', maxPrice: '',
-};
+function PropertiesContent() {
+  const searchParams = useSearchParams();
 
-export default function PropertiesPage() {
-  const [localFilters, setLocalFilters] = useState<PropertyFilters>(DEFAULT_FILTERS);
-  const [appliedFilters, setAppliedFilters] = useState<PropertyFilters>(DEFAULT_FILTERS);
+  const initialFilters: PropertyFilters = {
+    type: searchParams.get('type') || 'all',
+    priceType: searchParams.get('priceType') || 'all',
+    city: searchParams.get('city') || 'all',
+    search: searchParams.get('search') || '',
+    minPrice: searchParams.get('minPrice') || '',
+    maxPrice: searchParams.get('maxPrice') || '',
+  };
+
+  const [localFilters, setLocalFilters] = useState<PropertyFilters>(initialFilters);
+  const [appliedFilters, setAppliedFilters] = useState<PropertyFilters>(initialFilters);
   const [page, setPage] = useState(1);
 
   const gridTopRef = useRef<HTMLDivElement>(null);
@@ -254,5 +262,17 @@ export default function PropertiesPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function PropertiesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <PropertiesContent />
+    </Suspense>
   );
 }
