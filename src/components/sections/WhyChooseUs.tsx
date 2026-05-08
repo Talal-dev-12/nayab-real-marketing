@@ -32,7 +32,7 @@ export default function WhyChooseUs() {
                 </div>
                 <h3 className="text-2xl font-medium text-navy mb-4">100% Verified Properties</h3>
                 <p className="text-gray-600 leading-relaxed text-[15px]">
-                  Every listing undergoes rigorous physical and legal scrutiny. Complete legal clearance and zero fraud risk guaranteed, providing you with absolute peace of mind for your investment.
+                  Every property is carefully checked by our team. We ensure all legal documents are clear so you can invest safely without any worries.
                 </p>
               </div>
 
@@ -41,9 +41,9 @@ export default function WhyChooseUs() {
                 <div className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center mb-8 bg-transparent transition-all duration-500 group-hover:-rotate-12 group-hover:border-primary group-hover:bg-primary/5">
                   <FileText className="w-6 h-6 text-gray-700 transition-colors duration-500 group-hover:text-primary" strokeWidth={1.5} />
                 </div>
-                <h3 className="text-2xl font-medium text-navy mb-4">Flawless Legal Assistance</h3>
+                <h3 className="text-2xl font-medium text-navy mb-4">Easy Legal Help</h3>
                 <p className="text-gray-600 leading-relaxed text-[15px]">
-                  We handle all NOC approvals, seamless title transfers, and complex tax documentation. Our expert legal team ensures that your property transactions are smooth and compliant.
+                  We take care of all the paperwork, approvals, and transfers for you. Our expert legal team makes sure your property deals are smooth and stress-free.
                 </p>
               </div>
 
@@ -54,9 +54,9 @@ export default function WhyChooseUs() {
               <div className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center mb-8 bg-transparent transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 group-hover:border-primary group-hover:bg-primary/5">
                 <Award className="w-6 h-6 text-gray-700 transition-colors duration-500 group-hover:text-primary" strokeWidth={1.5} />
               </div>
-              <h3 className="text-2xl font-medium text-navy mb-4">Over 25 Years of Excellence</h3>
+              <h3 className="text-2xl font-medium text-navy mb-4">Over 25 Years of Trust</h3>
               <p className="text-gray-600 leading-relaxed text-[15px]">
-                Since 1997, Nayab Real Marketing has transformed how Pakistan invests in property. No guesswork, no hidden fees—just absolute transparency and elite expertise. Join thousands of satisfied clients who have trusted us to build their future securely.
+                Since 1997, Nayab Real Marketing has helped people in Karachi invest safely in property. We believe in clear deals with no hidden fees. Join thousands of happy clients who trust us to build their future securely.
               </p>
             </div>
 
@@ -70,11 +70,11 @@ export default function WhyChooseUs() {
             <h3 className="text-3xl font-medium text-white mb-6 leading-tight">Sell Your Property</h3>
             
             <p className="text-blue-100/80 leading-relaxed text-[15px] mb-6">
-              Maximize your returns with Nayab Real Marketing. We leverage our extensive network, premium marketing strategies, and real-time market data to ensure your property sells quickly and at the best possible price.
+              Get the best price for your property with Nayab Real Marketing. We use our large network and smart marketing to help you sell quickly.
             </p>
             
             <p className="text-blue-100/80 leading-relaxed text-[15px] mb-12 flex-grow">
-              From professional valuation to seamless negotiations and secure legal transfers, our expert team manages the entire selling process so you can sit back and relax.
+              From checking your property's value to handling the paperwork, our expert team manages everything so you can relax.
             </p>
 
             <Link href="/contact" className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-primary hover:bg-primary-dark text-white font-medium rounded-full transition-colors w-fit">

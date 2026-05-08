@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   keywords: "Nayab Real Marketing About Us, Who We Are – Nayab Real Estate, Scheme 33 properties, Nayab Real Marketing properties in Scheme 33 Karachi, DHA properties, Gulzar-e-Hijri properties, Paradise Bakery area properties, Maskan Johar properties",
   openGraph: {
     title: "About Us | Nayab Real Marketing",
-    description: "Discover our journey of trust, resilience, and real estate excellence since 1997.",
+    description: "Discover our journey of trust and real estate excellence in Karachi since 1997.",
     url: "https://nayabrealmarketing.com/about",
     siteName: "Nayab Real Marketing",
     type: "website",
@@ -39,7 +39,7 @@ export default function AboutPage() {
             Who We Are – <span className="text-red-400">Nayab Real Estate</span>
           </h1>
           <p className="text-slate-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-            Your trusted partner in Pakistan's real estate sector. Connecting you with premium properties and delivering excellence through decades of market knowledge and resilience.
+            Your trusted partner in Karachi's real estate sector. We help you find the best properties with our years of experience and deep market knowledge.
           </p>
         </div>
       </section>
@@ -54,19 +54,19 @@ export default function AboutPage() {
 
             <div className="space-y-5 text-slate-600 text-lg leading-relaxed">
               <p>
-                Welcome to Nayab Real Marketing, your trusted partner in Pakistan's real estate sector. Our journey began in 1997 with a passion for connecting people with their ideal properties. What started as a part-time endeavor quickly transformed into a lifelong commitment to real estate excellence.
+                Welcome to Nayab Real Marketing, your trusted partner in Karachi's real estate market. We started our journey in 1997 with a simple goal: to help people find their perfect properties. What began as a small effort quickly grew into a lifelong dedication to real estate excellence.
               </p>
               <p>
-                In 2003, we established our first office in DHA, gathering invaluable experience in high-level corporate dealings and managing premium <strong className="text-slate-800 font-semibold">DHA properties</strong>. Though the early years tested our resilience, these challenges became our greatest strength.
+                In 2003, we opened our first office in DHA, gaining valuable experience in corporate dealings and managing premium <strong className="text-slate-800 font-semibold">DHA properties</strong>. The challenges we faced early on only made us stronger.
               </p>
               <p>
-                We soon shifted our focus to <strong className="text-slate-800 font-semibold">Scheme 33 properties</strong>, where we achieved remarkable success. In 2008, A. Nadeem, Adnan Ahmed, and Munir Ahmed officially founded Nayab Real Marketing. Since then, we have successfully developed, marketed, and sold extensive <strong className="text-slate-800 font-semibold">Nayab Real Marketing properties in Scheme 33 Karachi</strong>, as well as highly sought-after <strong className="text-slate-800 font-semibold">Gulzar-e-Hijri properties</strong>.
+                Later, we focused on <strong className="text-slate-800 font-semibold">Scheme 33 properties</strong>, where we found great success. In 2008, A. Nadeem, Adnan Ahmed, and Munir Ahmed officially founded Nayab Real Marketing. Since then, we have successfully developed, marketed, and sold many <strong className="text-slate-800 font-semibold">Nayab Real Marketing properties in Scheme 33 Karachi</strong>, along with popular <strong className="text-slate-800 font-semibold">Gulzar-e-Hijri properties</strong>.
               </p>
               <p>
-                We are proud to offer excellent opportunities in well-known, thriving locations, including exclusive <strong className="text-slate-800 font-semibold">Paradise Bakery area properties</strong> and prime <strong className="text-slate-800 font-semibold">Maskan Johar properties</strong>.
+                We are proud to offer great opportunities in well-known, active locations, including the <strong className="text-slate-800 font-semibold">Paradise Bakery area properties</strong> and prime <strong className="text-slate-800 font-semibold">Maskan Johar properties</strong>.
               </p>
               <p className="pt-2 border-t border-slate-200 mt-4">
-                Today, <strong className="text-slate-800 font-semibold">Nayab Real Marketing About Us</strong> represents decades of market knowledge, resilience, and an unwavering commitment to helping our clients make safe and profitable investments.
+                Today, <strong className="text-slate-800 font-semibold">Nayab Real Marketing About Us</strong> stands for decades of market knowledge and a strong commitment to helping our clients make safe, profitable investments.
               </p>
             </div>
           </div>
@@ -105,7 +105,7 @@ export default function AboutPage() {
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-3xl md:text-4xl font-extrabold text-[#1a2e5a] mb-6">Comprehensive Services</h2>
             <p className="text-slate-600 text-lg">
-              Beyond buying and selling, we offer a complete suite of services to ensure your real estate journey is seamless, secure, and perfectly tailored to your needs.
+              Beyond buying and selling, we offer many services to make sure your real estate journey is easy, safe, and fits your needs perfectly.
             </p>
           </div>
 
@@ -113,27 +113,27 @@ export default function AboutPage() {
             {[
               {
                 title: 'Real Estate Consultancy',
-                desc: 'Expert guidance on market trends and investment strategies to maximize your returns.',
+                desc: 'Expert advice on market trends to help you get the best returns on your investment.',
                 icon: TrendingUp,
               },
               {
                 title: 'Interior Design Services',
-                desc: 'Transform your spaces with our premium, modern interior design solutions tailored to your lifestyle.',
+                desc: 'Transform your spaces with our modern interior design solutions made for your lifestyle.',
                 icon: Palette,
               },
               {
                 title: 'Construction Services',
-                desc: 'End-to-end construction management delivering high-quality builds on time and within budget.',
+                desc: 'Complete construction management to deliver high-quality builds on time and within budget.',
                 icon: HardHat,
               },
               {
                 title: 'Legal Documentation Services',
-                desc: 'Flawless and transparent handling of all legal paperwork, ensuring secure ownership transfers.',
+                desc: 'Clear and safe handling of all legal paperwork, making sure ownership transfers are secure.',
                 icon: FileText,
               },
               {
                 title: 'Office Meeting Setup',
-                desc: 'Schedule a professional appointment with our experts in our modern corporate office environment.',
+                desc: 'Schedule a meeting with our experts in our modern office environment.',
                 icon: Calendar,
               }
             ].map((service, index) => (

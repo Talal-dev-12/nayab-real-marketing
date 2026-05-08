@@ -3,11 +3,11 @@ import dynamic from 'next/dynamic';
 import HeroSection from "@/components/sections/HeroSection";
 
 export const metadata: Metadata = {
-  title: "Nayab Real Marketing | Premium Real Estate in Pakistan",
-  description: "Find your dream property with Nayab Real Marketing. We offer verified listings, expert investment consulting, and comprehensive real estate services in Karachi and across Pakistan.",
-  keywords: "real estate Pakistan, properties Karachi, buy house Karachi, Nayab Real Marketing, property investment",
+  title: "Nayab Real Marketing | Premium Real Estate in Karachi",
+  description: "Find your dream property with Nayab Real Marketing. We offer verified listings, expert investment consulting, and comprehensive real estate services in Karachi.",
+  keywords: "real estate Karachi, properties Karachi, buy house Karachi, Nayab Real Marketing, property investment",
   openGraph: {
-    title: "Nayab Real Marketing | Premium Real Estate in Pakistan",
+    title: "Nayab Real Marketing | Premium Real Estate in Karachi",
     description: "Discover verified property listings, investment guides, and real estate services in Karachi.",
     url: "https://nayabrealmarketing.com",
     siteName: "Nayab Real Marketing",

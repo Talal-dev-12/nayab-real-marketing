@@ -17,25 +17,25 @@ import "swiper/css/effect-fade";
 const HERO_SLIDES = [
   {
     img: "/heroImages/1.avif",
-    tag: "Pakistan's Trusted Real Estate Partner",
+    tag: "Karachi's Trusted Real Estate Partner",
     title: (
       <>
         Find Your <span className="text-red-400">Perfect</span>
-        <br /> Property in Pakistan
+        <br /> Property in Karachi
       </>
     ),
-    desc: "Explore thousands of verified properties across Karachi, Lahore, and Islamabad. Buy, sell, or rent with Nayab Real Marketing — your trusted partner since 2010.",
+    desc: "Explore thousands of verified properties across Karachi. Buy, sell, or rent with Nayab Real Marketing — your trusted partner since 1997.",
   },
   {
     img: "/heroImages/2.avif",
     tag: "Investment Opportunities",
     title: (
       <>
-        Premium <span className="text-red-400">Commercial</span>
+        Great <span className="text-red-400">Commercial</span>
         <br /> Spaces Available
       </>
     ),
-    desc: "Grow your business with premium commercial locations. High-visibility shops, strategic corporate offices, and central commercial plots ready for acquisition.",
+    desc: "Grow your business with the best commercial locations. High-visibility shops, corporate offices, and central commercial plots ready for you.",
   },
   {
     img: "/heroImages/3.avif",
@@ -46,18 +46,18 @@ const HERO_SLIDES = [
         <br /> Awaits You
       </>
     ),
-    desc: "Discover ultra-modern luxury apartments and sprawling villas tailored completely to your high-end lifestyle. Hand-picked move-in ready homes.",
+    desc: "Discover beautiful modern apartments and large villas made for your lifestyle. Hand-picked homes ready for you to move in.",
   },
   {
     img: "/heroImages/4.avif",
-    tag: "High-Yield Returns",
+    tag: "Safe Investments",
     title: (
       <>
         Secure Your <span className="text-red-400">Future</span>
         <br /> Today
       </>
     ),
-    desc: "Invest securely in high-yield approved housing schemes backed completely by Nayab Real Marketing. Guaranteeing authenticity, rapid returns, and absolute transparency.",
+    desc: "Invest safely in approved housing schemes with Nayab Real Marketing. We offer secure options and clear details for your peace of mind.",
   },
 ];
 
@@ -185,7 +185,7 @@ export default function HeroSection() {
                   <Search size={18} className="text-slate-400 shrink-0" />
                   <input
                     type="text"
-                    placeholder="Search by area, city, or property name..."
+                    placeholder="Search by area or property name in Karachi..."
                     className="flex-1 outline-none text-slate-700 text-[13px] sm:text-sm bg-transparent placeholder:text-slate-400 font-medium"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}

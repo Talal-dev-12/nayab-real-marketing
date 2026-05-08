@@ -28,8 +28,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-6">
-              Your trusted partner in real estate. We help you find the perfect
-              property — whether you're buying, selling, or renting in Pakistan.
+              Your trusted partner in real estate. We help you find the perfect property — whether you're buying, selling, or renting in Karachi.
             </p>
             <div className="flex gap-3">
               {[
