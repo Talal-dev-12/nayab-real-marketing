@@ -227,7 +227,7 @@ function SignUpForm() {
         <div className="hidden lg:block w-[55%] relative lg:h-[700px] self-center">
           <div className="w-full h-full relative flex items-start justify-center rounded-[2.5rem] overflow-hidden">
             <Image
-              src="/images/Seller-Subtract.svg"
+              src="/images/sign-up.avif"
               alt="Login Banner"
               fill
               unoptimized
