@@ -92,29 +92,29 @@ function SignUpForm() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-8 font-sans">
-      <div className="bg-white rounded-[2rem] shadow-xl w-full max-w-[1100px] 2xl:max-w-[1440px] flex overflow-hidden lg:min-h-[700px] 2xl:min-h-[850px]">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-[900px] lg:max-w-[1000px] 2xl:max-w-[1440px] flex overflow-hidden lg:min-h-[550px] 2xl:min-h-[850px]">
         {/* LEFT PANEL */}
-        <div className="w-full max-w-md md:max-w-xl lg:max-w-[45%] lg:w-[45%] mx-auto lg:mx-0 p-8 sm:p-12 xl:p-14 2xl:p-20 flex flex-col justify-center bg-white relative shrink-0">
+        <div className="w-full max-w-md md:max-w-xl lg:max-w-[45%] lg:w-[45%] mx-auto lg:mx-0 p-6 sm:p-8 md:p-10 2xl:p-20 flex flex-col justify-center bg-white relative shrink-0">
 
-          <Link href="/" className="inline-flex flex-row items-center gap-3 mb-10 group self-start">
-            <div className="w-12 h-12 bg-red-700 rounded-xl flex items-center justify-center group-hover:bg-red-600 transition-colors">
-              <Home size={24} className="text-white" />
+          <Link href="/" className="inline-flex flex-row items-center gap-2 mb-4 group self-start">
+            <div className="w-10 h-10 bg-red-700 rounded-xl flex items-center justify-center group-hover:bg-red-600 transition-colors">
+              <Home size={20} className="text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="font-extrabold text-[1.1rem] leading-none tracking-tight text-[#1a2e5a]">NAYAB</span>
-              <span className="font-extrabold text-[1.1rem] leading-none tracking-tight text-[#1a2e5a]">REAL MARKETING</span>
+              <span className="font-extrabold text-[0.95rem] leading-none tracking-tight text-[#1a2e5a]">NAYAB</span>
+              <span className="font-extrabold text-[0.95rem] leading-none tracking-tight text-[#1a2e5a]">REAL MARKETING</span>
             </div>
           </Link>
 
-          <h1 className="text-[2.5rem] font-bold text-[#1a2e5a] mb-2 tracking-tight leading-tight">Create Account</h1>
-          <p className="text-slate-500 text-[15px] font-medium mb-8">Sign up for free and start browsing</p>
+          <h1 className="text-3xl font-bold text-[#1a2e5a] mb-2 tracking-tight leading-tight">Create Account</h1>
+          <p className="text-slate-500 text-sm font-medium mb-5">Sign up for free and start browsing</p>
 
-          <div className="space-y-3 mb-6">
+          <div className="space-y-3 mb-4">
             <button
               type="button"
               onClick={handleGoogle}
               disabled={googleLoading || loading}
-              className="w-full flex items-center justify-center gap-3 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 border border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
             >
               <GoogleIcon />
               {googleLoading ? 'Redirecting...' : 'Sign up with Google'}
@@ -123,45 +123,45 @@ function SignUpForm() {
               type="button"
               disabled
               onClick={() => alert('Apple login not configured yet.')}
-              className="w-full flex items-center justify-center gap-3 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 border border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <AppleIcon />
               Sign up with Apple
             </button>
           </div>
 
-          <div className="relative mb-6">
+          <div className="relative mb-4">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200" /></div>
             <div className="relative flex justify-center text-xs"><span className="bg-white px-4 text-slate-400 font-medium tracking-wide">Or register with email</span></div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-3">
             <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors">
-              <label className="text-[11px] text-slate-400 font-medium block">Full Name</label>
+              <label className="text-[10px] text-slate-400 font-medium block">Full Name</label>
               <input
                 type="text" required autoComplete="name" value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                className="w-full bg-transparent outline-none text-[#1a2e5a] text-[15px] pb-0.5 placeholder:text-slate-400 font-medium"
+                className="w-full bg-transparent outline-none text-[#1a2e5a] text-sm pb-0.5 placeholder:text-slate-400 font-medium"
                 placeholder="Ali Hassan"
               />
             </div>
 
             <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors">
-              <label className="text-[11px] text-slate-400 font-medium block">Email</label>
+              <label className="text-[10px] text-slate-400 font-medium block">Email</label>
               <input
                 type="email" required autoComplete="email" value={form.email}
                 onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                className="w-full bg-transparent outline-none text-[#1a2e5a] text-[15px] pb-0.5 placeholder:text-slate-400 font-medium"
+                className="w-full bg-transparent outline-none text-[#1a2e5a] text-sm pb-0.5 placeholder:text-slate-400 font-medium"
                 placeholder="you@email.com"
               />
             </div>
 
             <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors relative">
-              <label className="text-[11px] text-slate-400 font-medium block">Password</label>
+              <label className="text-[10px] text-slate-400 font-medium block">Password</label>
               <input
                 type={showPass ? 'text' : 'password'} required autoComplete="new-password" value={form.password}
                 onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                className="w-full bg-transparent outline-none text-[#1a2e5a] text-[15px] pb-0.5 font-medium tracking-wider placeholder:text-slate-400 placeholder:tracking-normal"
+                className="w-full bg-transparent outline-none text-[#1a2e5a] text-sm pb-0.5 font-medium tracking-wider placeholder:text-slate-400 placeholder:tracking-normal"
                 placeholder="••••••••••••••••"
               />
               <button type="button" onClick={() => setShowPass(s => !s)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
@@ -170,17 +170,17 @@ function SignUpForm() {
             </div>
 
             {form.password.length > 0 && !passwordValid && (
-              <p className="text-[12px] text-red-500 font-medium px-1">
+              <p className="text-[10px] text-red-500 font-medium px-1">
                 Write a strong password (min 8 chars, 1 capital letter, 1 number, etc.).
               </p>
             )}
 
             <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors relative">
-              <label className="text-[11px] text-slate-400 font-medium block">Confirm Password</label>
+              <label className="text-[10px] text-slate-400 font-medium block">Confirm Password</label>
               <input
                 type={showConfirm ? 'text' : 'password'} required autoComplete="new-password" value={form.confirm}
                 onChange={e => setForm(f => ({ ...f, confirm: e.target.value }))}
-                className="w-full bg-transparent outline-none text-[#1a2e5a] text-[15px] pb-0.5 font-medium tracking-wider placeholder:text-slate-400 placeholder:tracking-normal"
+                className="w-full bg-transparent outline-none text-[#1a2e5a] text-sm pb-0.5 font-medium tracking-wider placeholder:text-slate-400 placeholder:tracking-normal"
                 placeholder="••••••••••••••••"
               />
               <button type="button" onClick={() => setShowConfirm(s => !s)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
@@ -192,7 +192,7 @@ function SignUpForm() {
             )}
 
             {error && (
-              <div className="bg-red-50 border border-red-100 text-red-700 text-[13px] px-4 py-3 rounded-xl flex items-start gap-2 mt-2">
+              <div className="bg-red-50 border border-red-100 text-red-700 text-xs px-4 py-2 rounded-xl flex items-start gap-2 mt-2">
                 <AlertCircle size={15} className="mt-0.5 flex-shrink-0" />
                 <span className="font-medium">{error}</span>
               </div>
@@ -200,18 +200,18 @@ function SignUpForm() {
 
             <button
               type="submit" disabled={loading || googleLoading}
-              className="w-full bg-[#1a2e5a] hover:bg-[#112040] disabled:opacity-60 text-white mt-4 py-4 rounded-xl font-semibold text-[15px] transition-colors shadow-sm"
+              className="w-full bg-[#1a2e5a] hover:bg-[#112040] disabled:opacity-60 text-white mt-4 py-2 rounded-xl font-semibold text-sm transition-colors shadow-sm"
             >
               {loading ? 'Creating account…' : 'Create Account'}
             </button>
           </form>
 
-          <p className="mt-4 text-center text-[12px] text-slate-400 font-medium">
+          <p className="mt-4 text-center text-[10px] text-slate-400 font-medium">
             By creating an account you agree to our{' '}
             <Link href="/terms-of-service" className="underline hover:text-slate-600">Terms</Link> and <Link href="/privacy-policy" className="underline hover:text-slate-600">Privacy Policy</Link>.
           </p>
 
-          <p className="mt-4 text-center text-[14px] font-medium text-slate-700">
+          <p className="mt-4 text-center text-xs font-medium text-slate-700">
             Already have an account?{' '}
             <Link href="/sign-in" className="text-red-700 font-semibold hover:underline decoration-red-700 underline-offset-4">
               Sign In
@@ -219,13 +219,13 @@ function SignUpForm() {
           </p>
 
           <div className="mt-4 pt-4 border-t text-center">
-            <p className="text-[13px] text-slate-500 font-medium">Want to list your properties? <Link href="/sign-up/seller" className="text-red-700 font-semibold hover:underline">Create a Seller Account</Link></p>
+            <p className="text-xs text-slate-500 font-medium">Want to list your properties? <Link href="/sign-up/seller" className="text-red-700 font-semibold hover:underline">Create a Seller Account</Link></p>
           </div>
         </div>
 
         {/* RIGHT PANEL (Image Banner) */}
-        <div className="hidden lg:block w-[55%] relative lg:h-[700px] self-center">
-          <div className="w-full h-full relative flex items-center justify-center rounded-[2.5rem] overflow-hidden">
+        <div className="hidden lg:block w-[55%] relative lg:h-[550px] self-center">
+          <div className="w-full h-full relative flex items-center justify-center rounded-3xl overflow-hidden">
             <Image
               src="/images/sign-up.avif"
               alt="Login Banner"
@@ -234,8 +234,8 @@ function SignUpForm() {
               className="object-fill"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
             />
-            <div className="absolute top-12 right-12 max-w-[340px] text-right z-10">
-              <h2 className="text-[#1a2e5a] text-[24px] font-bold leading-tight drop-shadow-md">
+            <div className="absolute top-8 right-8 max-w-[340px] text-right z-10">
+              <h2 className="text-[#1a2e5a] text-xl font-bold leading-tight drop-shadow-md">
                 Join thousands of users Discovering <br /> Their dream properties.
               </h2>
             </div>

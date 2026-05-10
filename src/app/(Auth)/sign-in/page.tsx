@@ -98,32 +98,32 @@ function SignInForm() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-8 font-sans">
-      <div className="bg-white rounded-[2rem] shadow-xl w-full max-w-[1100px] flex overflow-hidden lg:min-h-[700px]">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-[900px] lg:max-w-[1000px] flex overflow-hidden lg:min-h-[550px]">
         {/* LEFT PANEL */}
-        <div className="w-full lg:w-[45%] p-8 sm:p-12 xl:pr-8 xl:pl-8 flex flex-col justify-start bg-white relative shrink-0">
+        <div className="w-full lg:w-[45%] p-6 sm:p-8 md:p-10 flex flex-col justify-start bg-white relative shrink-0">
 
           {/* Logo element matched to theme */}
-          <Link href="/" className="inline-flex flex-row items-center gap-3 mb-10 group">
-            <div className="w-12 h-12 bg-red-700 rounded-xl flex items-center justify-center group-hover:bg-red-600 transition-colors">
-              <Home size={24} className="text-white" />
+          <Link href="/" className="inline-flex flex-row items-center gap-2 mb-4 group">
+            <div className="w-10 h-10 bg-red-700 rounded-xl flex items-center justify-center group-hover:bg-red-600 transition-colors">
+              <Home size={20} className="text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="font-extrabold text-[1.1rem] leading-none tracking-tight text-[#1a2e5a]">NAYAB</span>
-              <span className="font-extrabold text-[1.1rem] leading-none tracking-tight text-[#1a2e5a]">REAL MARKETING</span>
+              <span className="font-extrabold text-[0.95rem] leading-none tracking-tight text-[#1a2e5a]">NAYAB</span>
+              <span className="font-extrabold text-[0.95rem] leading-none tracking-tight text-[#1a2e5a]">REAL MARKETING</span>
             </div>
           </Link>
 
           {/* Titles */}
-          <h1 className="text-[2.5rem] font-bold text-[#1a2e5a] mb-2 tracking-tight leading-tight">Welcome Back</h1>
-          <p className="text-slate-500 text-[15px] font-medium mb-8">Let's login to grab amazing deal</p>
+          <h1 className="text-3xl font-bold text-[#1a2e5a] mb-2 tracking-tight leading-tight">Welcome Back</h1>
+          <p className="text-slate-500 text-sm font-medium mb-5">Let's login to grab amazing deal</p>
 
           {/* Social Logins */}
-          <div className="space-y-3 mb-6">
+          <div className="space-y-3 mb-4">
             <button
               type="button"
               onClick={handleGoogle}
               disabled={googleLoading || loading}
-              className="w-full flex items-center justify-center gap-3 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 border border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
             >
               <GoogleIcon />
               {googleLoading ? 'Redirecting...' : 'Continue with Google'}
@@ -132,39 +132,39 @@ function SignInForm() {
               type="button"
               disabled
               onClick={() => alert('Apple login not configured yet.')}
-              className="w-full flex items-center justify-center gap-3 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 border border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <AppleIcon />
               Continue with Apple
             </button>
           </div>
 
-          <div className="relative mb-6">
+          <div className="relative mb-4">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200" /></div>
             <div className="relative flex justify-center text-xs"><span className="bg-white px-4 text-slate-400 font-medium tracking-wide">Or</span></div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2.5 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors">
-              <label className="text-[11px] text-slate-400 font-medium block">Email</label>
+            <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors">
+              <label className="text-[10px] text-slate-400 font-medium block">Email</label>
               <input
                 type="email"
                 required
                 value={form.email}
                 onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                className="w-full bg-transparent outline-none text-[#1a2e5a] text-[15px] pb-0.5 placeholder:text-slate-400 font-medium"
+                className="w-full bg-transparent outline-none text-[#1a2e5a] text-sm pb-0.5 placeholder:text-slate-400 font-medium"
                 placeholder="you@email.com"
               />
             </div>
 
-            <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2.5 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors relative">
-              <label className="text-[11px] text-slate-400 font-medium block">Password</label>
+            <div className="bg-[#f8f9fa] border border-slate-100 rounded-xl px-4 py-2 hover:border-slate-300 focus-within:border-[#1a2e5a] focus-within:bg-white transition-colors relative">
+              <label className="text-[10px] text-slate-400 font-medium block">Password</label>
               <input
                 type={showPass ? 'text' : 'password'}
                 required
                 value={form.password}
                 onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                className="w-full bg-transparent outline-none text-[#1a2e5a] text-[15px] pb-0.5 font-medium tracking-wider placeholder:text-slate-400 placeholder:tracking-normal"
+                className="w-full bg-transparent outline-none text-[#1a2e5a] text-sm pb-0.5 font-medium tracking-wider placeholder:text-slate-400 placeholder:tracking-normal"
                 placeholder="••••••••••••••••"
               />
               <button
@@ -183,9 +183,9 @@ function SignInForm() {
             <div className="flex items-center justify-between mt-4">
               <label className="flex items-center gap-2 cursor-pointer group">
                 <input type="checkbox" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} className="w-3.5 h-3.5 rounded border-slate-300 text-red-700 focus:ring-red-700 cursor-pointer" />
-                <span className="text-[14px] font-medium text-slate-700 group-hover:text-slate-900 transition-colors">Remember me</span>
+                <span className="text-xs font-medium text-slate-700 group-hover:text-slate-900 transition-colors">Remember me</span>
               </label>
-              <Link href="/forgot-password" className="text-[14px] font-semibold text-red-700 hover:text-red-800 hover:underline underline-offset-2">
+              <Link href="/forgot-password" className="text-xs font-semibold text-red-700 hover:text-red-800 hover:underline underline-offset-2">
                 Forgot Password?
               </Link>
             </div>
@@ -194,12 +194,12 @@ function SignInForm() {
             <button
               type="submit"
               disabled={loading || googleLoading}
-              className="w-full bg-[#1a2e5a] hover:bg-[#112040] disabled:opacity-60 text-white mt-4 py-4 rounded-xl font-semibold text-[15px] transition-colors shadow-sm"
+              className="w-full bg-[#1a2e5a] hover:bg-[#112040] disabled:opacity-60 text-white mt-4 py-2 rounded-xl font-semibold text-sm transition-colors shadow-sm"
             >
               {loading ? 'Please wait...' : 'Login'}
             </button>
           </form>
-          <p className="mt-6 text-center text-[14px] font-medium text-slate-700">
+          <p className="mt-6 text-center text-xs font-medium text-slate-700">
             Don't have an account?{' '}
             <Link href="/sign-up" className="text-red-700 font-semibold hover:underline decoration-red-700 underline-offset-4">
               Sign Up
@@ -208,8 +208,8 @@ function SignInForm() {
         </div>
 
         {/* RIGHT PANEL (Image Banner) */}
-        <div className="hidden lg:block w-[55%] relative lg:h-[700px] self-center">
-          <div className="w-full h-full relative flex items-center justify-center rounded-[2.5rem] overflow-hidden">
+        <div className="hidden lg:block w-[55%] relative lg:h-[550px] self-center">
+          <div className="w-full h-full relative flex items-center justify-center rounded-3xl overflow-hidden">
             <Image
               src="/images/sign-in.svg"
               alt="Login Banner"
@@ -218,8 +218,8 @@ function SignInForm() {
               className="object-fill"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
             />
-            <div className="absolute top-12 right-12 max-w-[340px] text-right z-10">
-              <h2 className="text-[#1a2e5a] text-[24px] font-bold leading-tight drop-shadow-md">
+            <div className="absolute top-8 right-8 max-w-[340px] text-right z-10">
+              <h2 className="text-[#1a2e5a] text-xl font-bold leading-tight drop-shadow-md">
                 Browse thousands of properties to buy,<br /> sell, or rent <br /> with trusted agents.
               </h2>
             </div>
