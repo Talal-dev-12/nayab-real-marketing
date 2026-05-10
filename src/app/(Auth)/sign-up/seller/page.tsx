@@ -93,9 +93,9 @@ function SellerSignUpForm() {
   };
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-8 font-sans">
-      <div className="bg-white rounded-[2rem] shadow-xl w-full max-w-[1100px] flex overflow-hidden lg:min-h-[700px]">
+      <div className="bg-white rounded-[2rem] shadow-xl w-full max-w-[1100px] 2xl:max-w-[1440px] flex overflow-hidden lg:min-h-[700px] 2xl:min-h-[850px]">
         {/* LEFT PANEL */}
-        <div className="w-full lg:w-[45%] p-8 sm:p-12 xl:p-14 flex flex-col justify-center bg-white relative shrink-0">
+        <div className="w-full max-w-md md:max-w-xl lg:max-w-[45%] lg:w-[45%] mx-auto lg:mx-0 p-8 sm:p-12 xl:p-14 2xl:p-20 flex flex-col justify-center bg-white relative shrink-0">
           <Link href="/" className="inline-flex flex-row items-center gap-3 mb-8 group self-start">
             <div className="w-12 h-12 bg-red-700 rounded-xl flex items-center justify-center group-hover:bg-red-600 transition-colors">
               <Home size={24} className="text-white" />

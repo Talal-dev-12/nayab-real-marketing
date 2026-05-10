@@ -92,9 +92,9 @@ function SignUpForm() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-8 font-sans">
-      <div className="bg-white rounded-[2rem] shadow-xl w-full max-w-[1100px] flex overflow-hidden lg:min-h-[700px]">
+      <div className="bg-white rounded-[2rem] shadow-xl w-full max-w-[1100px] 2xl:max-w-[1440px] flex overflow-hidden lg:min-h-[700px] 2xl:min-h-[850px]">
         {/* LEFT PANEL */}
-        <div className="w-full lg:w-[45%] p-8 sm:p-12 xl:p-14 flex flex-col justify-center bg-white relative shrink-0">
+        <div className="w-full max-w-md md:max-w-xl lg:max-w-[45%] lg:w-[45%] mx-auto lg:mx-0 p-8 sm:p-12 xl:p-14 2xl:p-20 flex flex-col justify-center bg-white relative shrink-0">
 
           <Link href="/" className="inline-flex flex-row items-center gap-3 mb-10 group self-start">
             <div className="w-12 h-12 bg-red-700 rounded-xl flex items-center justify-center group-hover:bg-red-600 transition-colors">
@@ -225,14 +225,14 @@ function SignUpForm() {
 
         {/* RIGHT PANEL (Image Banner) */}
         <div className="hidden lg:block w-[55%] relative lg:h-[700px] self-center">
-          <div className="w-full h-full relative flex items-start justify-center rounded-[2.5rem] overflow-hidden">
+          <div className="w-full h-full relative flex items-center justify-center rounded-[2.5rem] overflow-hidden">
             <Image
               src="/images/sign-up.avif"
               alt="Login Banner"
               fill
               unoptimized
               className="object-fill"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vh"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
             />
             <div className="absolute top-12 right-12 max-w-[340px] text-right z-10">
               <h2 className="text-[#1a2e5a] text-[24px] font-bold leading-tight drop-shadow-md">
