@@ -17,7 +17,6 @@ import "swiper/css/effect-fade";
 const HERO_SLIDES = [
   {
     img: "/heroImages/1.avif",
-    tag: "Karachi's Trusted Real Estate Partner",
     title: (
       <>
         Find Your <span className="text-red-400">Perfect</span>
@@ -28,7 +27,6 @@ const HERO_SLIDES = [
   },
   {
     img: "/heroImages/2.avif",
-    tag: "Investment Opportunities",
     title: (
       <>
         Great <span className="text-red-400">Commercial</span>
@@ -39,7 +37,6 @@ const HERO_SLIDES = [
   },
   {
     img: "/heroImages/3.avif",
-    tag: "Dream Homes",
     title: (
       <>
         Luxury <span className="text-red-400">Living</span>
@@ -50,7 +47,6 @@ const HERO_SLIDES = [
   },
   {
     img: "/heroImages/4.avif",
-    tag: "Safe Investments",
     title: (
       <>
         Secure Your <span className="text-red-400">Future</span>
@@ -110,9 +106,9 @@ export default function HeroSection() {
             effect="fade"
             slidesPerView={1}
             loop={true}
-            speed={1200}
+            speed={600}
             autoplay={{
-              delay: 4500,
+              delay: 5000,
               disableOnInteraction: false,
             }}
             pagination={{ el: ".swiper-pagination", clickable: true }}
@@ -145,9 +141,7 @@ export default function HeroSection() {
             {/* Changing Text area (locked height prevents search bar bounce) */}
             <div className="min-h-[290px] sm:min-h-[260px] md:min-h-[240px] flex flex-col justify-end pb-8">
               <div key={activeIndex}>
-                <div className="inline-flex items-center gap-2 bg-red-700 text-white text-[13px] font-bold px-4 py-1.5 rounded-full mb-5 animate-fade-up">
-                  <Star size={13} fill="currentColor" /> {HERO_SLIDES[activeIndex].tag}
-                </div>
+                
 
                 <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white leading-[1.15] mb-4 animate-fade-up delay-1 tracking-tight">
                   {HERO_SLIDES[activeIndex].title}
