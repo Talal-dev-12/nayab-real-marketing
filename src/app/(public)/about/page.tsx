@@ -99,67 +99,95 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Services Section */}
-      <section className="bg-white py-20 lg:py-28 border-y border-slate-100">
-        <div className="max-w-7xl mx-auto px-4">
+      {/* Our Divisions Section */}
+      <section className="bg-slate-50 py-20 lg:py-28 border-y border-slate-200 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-[#1a2e5a] mb-6">Comprehensive Services</h2>
+            <div className="inline-block px-4 py-2 bg-red-100 text-red-700 font-bold rounded-full text-sm mb-6 animate-fade-in">
+              Complete Real Estate & Development Solutions
+            </div>
+            <h2 className="text-3xl md:text-5xl font-extrabold text-[#1a2e5a] mb-6">Our Brand Divisions</h2>
             <p className="text-slate-600 text-lg">
-              Beyond buying and selling, we offer many services to make sure your real estate journey is easy, safe, and fits your needs perfectly.
+              We proudly operate through four specialized divisions, each focused on providing excellence in its field under one trusted brand.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                title: 'Real Estate Consultancy',
-                desc: 'Expert advice on market trends to help you get the best returns on your investment.',
-                icon: TrendingUp,
-              },
-              {
-                title: 'Interior Design Services',
-                desc: 'Transform your spaces with our modern interior design solutions made for your lifestyle.',
-                icon: Palette,
-              },
-              {
-                title: 'Construction Services',
-                desc: 'Complete construction management to deliver high-quality builds on time and within budget.',
-                icon: HardHat,
-              },
-              {
-                title: 'Legal Documentation Services',
-                desc: 'Clear and safe handling of all legal paperwork, making sure ownership transfers are secure.',
-                icon: FileText,
-              },
-              {
-                title: 'Office Meeting Setup',
-                desc: 'Schedule a meeting with our experts in our modern office environment.',
-                icon: Calendar,
-              }
-            ].map((service, index) => (
-              <div
-                key={service.title}
-                className="group bg-slate-50 p-8 rounded-2xl hover:bg-white hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 border border-slate-100"
-              >
-                <div className="bg-white w-14 h-14 rounded-xl flex items-center justify-center shadow-sm mb-6 group-hover:scale-110 group-hover:bg-red-50 transition-all duration-300">
-                  <service.icon className="text-red-700" size={24} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Division 1: Nayab Marketing */}
+            <div className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-100">
+              <div className="h-48 relative overflow-hidden bg-blue-900">
+                <Image src="/divisions/marketing_banner.png" alt="Nayab Marketing" fill className="object-cover opacity-60 group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                <div className="absolute bottom-6 left-6 text-white z-10">
+                  <h3 className="text-2xl font-bold flex items-center gap-2"><TrendingUp className="text-blue-400" /> Nayab Marketing</h3>
                 </div>
-                <h3 className="text-xl font-bold text-[#1a2e5a] mb-3">{service.title}</h3>
-                <p className="text-slate-600 leading-relaxed text-sm md:text-base">
-                  {service.desc}
-                </p>
               </div>
-            ))}
-          </div>
+              <div className="p-8">
+                <p className="text-slate-600 mb-6 line-clamp-3">
+                  Specializes in real estate marketing, digital branding, lead generation, and property promotion strategies to help businesses grow.
+                </p>
+                <Link href="/nayab-marketing" className="inline-flex items-center gap-2 text-blue-600 font-bold hover:text-blue-800 transition-colors">
+                  Explore Nayab Marketing <TrendingUp size={18} />
+                </Link>
+              </div>
+            </div>
 
-          <div className="mt-16 text-center">
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 bg-[#1a2e5a] hover:bg-[#0A1230] text-white px-8 py-4 rounded-xl font-bold text-sm md:text-base transition-all shadow-lg hover:shadow-xl active:scale-95"
-            >
-              <Calendar size={18} />
-              Book an Appointment
-            </Link>
+            {/* Division 2: Nayab Construction */}
+            <div className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-100">
+              <div className="h-48 relative overflow-hidden bg-amber-900">
+                <Image src="/divisions/construction_banner.png" alt="Nayab Construction" fill className="object-cover opacity-60 group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                <div className="absolute bottom-6 left-6 text-white z-10">
+                  <h3 className="text-2xl font-bold flex items-center gap-2"><HardHat className="text-amber-400" /> Nayab Construction</h3>
+                </div>
+              </div>
+              <div className="p-8">
+                <p className="text-slate-600 mb-6 line-clamp-3">
+                  Focuses on high-quality residential and commercial construction projects, combining modern engineering with reliable workmanship.
+                </p>
+                <Link href="/nayab-construction" className="inline-flex items-center gap-2 text-amber-600 font-bold hover:text-amber-800 transition-colors">
+                  Explore Nayab Construction <HardHat size={18} />
+                </Link>
+              </div>
+            </div>
+
+            {/* Division 3: Nayab Interior */}
+            <div className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-100">
+              <div className="h-48 relative overflow-hidden bg-emerald-900">
+                <Image src="/divisions/interior_banner.png" alt="Nayab Interior" fill className="object-cover opacity-60 group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                <div className="absolute bottom-6 left-6 text-white z-10">
+                  <h3 className="text-2xl font-bold flex items-center gap-2"><Palette className="text-emerald-400" /> Nayab Interior</h3>
+                </div>
+              </div>
+              <div className="p-8">
+                <p className="text-slate-600 mb-6 line-clamp-3">
+                  Provides modern interior design solutions that transform spaces into stylish, functional, and comfortable luxury environments.
+                </p>
+                <Link href="/nayab-interior" className="inline-flex items-center gap-2 text-emerald-600 font-bold hover:text-emerald-800 transition-colors">
+                  Explore Nayab Interior <Palette size={18} />
+                </Link>
+              </div>
+            </div>
+
+            {/* Division 4: Nayab Properties */}
+            <div className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-slate-100">
+              <div className="h-48 relative overflow-hidden bg-purple-900">
+                <Image src="/divisions/properties_banner.png" alt="Nayab Properties" fill className="object-cover opacity-60 group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                <div className="absolute bottom-6 left-6 text-white z-10">
+                  <h3 className="text-2xl font-bold flex items-center gap-2"><Building className="text-purple-400" /> Nayab Properties</h3>
+                </div>
+              </div>
+              <div className="p-8">
+                <p className="text-slate-600 mb-6 line-clamp-3">
+                  Deals with buying, selling, renting, and investment consultancy for residential and commercial properties with expert guidance.
+                </p>
+                <Link href="/nayab-properties" className="inline-flex items-center gap-2 text-purple-600 font-bold hover:text-purple-800 transition-colors">
+                  Explore Nayab Properties <Building size={18} />
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
